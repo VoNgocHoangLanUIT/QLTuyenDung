@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Double Slider Form</title>
+  <link rel="stylesheet" th:href="@{fe/css/stylelogon.css}" />
+  <!-- Liên kết đến Font Awesome để sử dụng các biểu tượng mạng xã hội -->
+  <link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css}">
+</head>
+<body>
+  <div class="container" id="container">
+    <div class="form-container register-container">
+      <form th:action="@{/register}" method="post">
+        <h1>Tạo tài khoản</h1>
+        <div class="social-container">
+          <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="social"><i class="fab fa-google"></i></a>
+          <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#" class="social"><i class="fab fa-github"></i></a>
+        </div>
+        <span>hoặc sử dụng email để đăng ký</span>
+        <input type="text" name="username" placeholder="Tên người dùng" required/>
+        <input type="email" name="email" placeholder="Email" required/>
+        <input type="password" name ="password" placeholder="Password" required/>
+        <select name="roleName" required>
+          <option value="">Chọn vai trò của bạn</option>
+          <option value="ADMIN">Admin</option>
+          <option value="RECRUITER">Nhà tuyển dụng</option>
+          <option value="CANDIDATE">Ứng cử viên</option>
+          <option value="HR_STAFF">Nhân viên tuyển dụng</option>
+          <option value="CV_STAFF">Nhân viên hồ sơ</option>
+        </select>
+        <button>Đăng ký</button>
+      </form>
+    </div>
+
+    <div class="form-container login-container">
+      <form th:action="@{/login}" method="post">
+        <h1>Đăng nhập</h1>
+        <div th:if="${registerError}" class="alert alert-danger">
+          <span th:text="${errorMessage}">Email đã được đăng ký cho vai trò này!</span>
+        </div>
+        <div th:if="${param.register}" class="alert alert-success">
+          Đăng ký tài khoản thành công!
+        </div>
+        <div th:if="${param.error}" class="alert alert-danger">
+          Email hoặc mật khẩu không đúng!
+        </div>
+        <div th:if="${param.logout}" class="alert alert-success">
+          Đăng xuất thành công!
+        </div>
+        <div class="social-container">
+          <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="social"><i class="fab fa-google"></i></a>
+          <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#" class="social"><i class="fab fa-github"></i></a>
+        </div>
+        <span>hoặc sử dụng tài khoản của bạn</span>
+        <input type="email" name="email" placeholder="Email" />
+        <input type="password" name="password" placeholder="Password" />
+        <a href="#">Quên mật khẩu?</a>
+        <button>Đăng nhập</button>
+      </form>
+    </div>
+
+    <div class="overlay-container">
+      <div class="overlay">
+        <div class="overlay-panel overlay-left">
+          <h1>Chào mừng trở lại!</h1>
+          <p>Đăng nhập để kết nối với tài khoản của bạn</p>
+          <button class="ghost" id="signIn">Đăng nhập</button>
+        </div>
+        <div class="overlay-panel overlay-right">
+          <h1>Xin chào bạn mới!</h1>
+          <p>Nhập thông tin của bạn để tạo tài khoản</p>
+          <button class="ghost" id="signUp">Đăng ký</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script th:src="@{fe/js/scriptlogon.js}"></script>
+</body>
+</html>

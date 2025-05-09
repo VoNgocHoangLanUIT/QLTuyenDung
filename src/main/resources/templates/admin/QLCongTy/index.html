@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments/head :: head}"></head>
+<body class="hold-transition skin-blue sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+
+<div th:replace="~{admin/fragments/header :: header}"></div>
+  <!-- =============================================== -->
+
+  <!-- Left side column. contains the sidebar -->
+<div th:replace="~{admin/fragments/sidebar :: sidebar}"></div>
+  <!-- =============================================== -->
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Quản lý công ty
+      </h1>
+      <ol class="breadcrumb">
+        <li><a th:href="@{/admin}"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Danh sách công ty</li>
+      </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div th:if="${success}" class="alert alert-success alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        <span th:text="${success}"></span>
+      </div>
+      <div th:if="${error}" class="alert alert-danger alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        <span th:text="${error}"></span>
+      </div>
+            <div class="box">
+              <div class="box-header with-border">
+                <h3 class="box-title">Danh sách công ty</h3>
+                <div class="box-tools">
+                    <a class="btn btn-success" th:href="@{/admin/add-congty}">Thêm công ty</a>
+                </div>
+              </div>
+              <!-- /.box-header -->
+              <div class="box-body">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th style="width: 10px">ID</th>
+                      <th>Tên công ty</th>
+                      <th>Lĩnh vực hoạt động</th>
+                      <th style="width: 120px">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(dsCongTy)}">
+                      <td colspan="7" class="text-center">Không có dữ liệu</td>
+                    </tr>
+                    <tr th:each="cty : ${dsCongTy}">
+                        <td th:text="${cty.id}"></td>
+                        <td th:text="${cty.tenCongTy}"></td>
+                        <td th:text="${cty.linhVuc}"></td>
+                        <td>
+                          <a th:href="@{/admin/edit-congty/{id}(id=${cty.id})}" 
+                             class="btn btn-primary btn-xs">Sửa</a>
+                          <a th:href="@{/admin/delete-congty/{id}(id=${cty.id})}" 
+                             class="btn btn-danger btn-xs"
+                             onclick="return confirm('Bạn có chắc chắn muốn xóa?')">Xóa</a>
+                        </td>
+                  </tr>
+                  
+                </tbody></table>
+              </div>
+              <!-- /.box-body -->
+              <div class="box-footer clearfix">
+                <ul class="pagination pagination-sm no-margin pull-right">
+                  <li><a href="#">«</a></li>
+                  <li><a href="#">1</a></li>
+                  <li><a href="#">2</a></li>
+                  <li><a href="#">3</a></li>
+                  <li><a href="#">»</a></li>
+                </ul>
+              </div>
+            </div>
+            <!-- /.box -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  <div th:replace="~{admin/fragments/footer :: footer}">
+
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery 3 -->
+
+<div th:replace="~{admin/fragments/script :: script}"></div>
+</body>
+</html>

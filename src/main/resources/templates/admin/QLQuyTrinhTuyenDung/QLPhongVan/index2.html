@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments/head :: head}"></head>
+<body class="hold-transition skin-blue sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+
+<div th:replace="~{admin/fragments/header :: header}"></div>
+  <!-- Left side column. contains the sidebar -->
+<div th:replace="~{admin/fragments/sidebar :: sidebar}"></div>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Chi tiết phỏng vấn
+        <small>Đơn ứng tuyển #<span th:text="${donUngTuyen.id}"></span></small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a th:href="@{/admin}"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a th:href="@{/admin/dsphongvan}">Quản lý phỏng vấn</a></li>
+        <li class="active">Chi tiết phỏng vấn</li>
+      </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div th:if="${success}" class="alert alert-success alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        <span th:text="${success}"></span>
+      </div>
+      <div th:if="${error}" class="alert alert-danger alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        <span th:text="${error}"></span>
+      </div>
+      
+      <!-- Thông tin ứng viên và đơn ứng tuyển -->
+      <div class="box box-primary">
+        <div class="box-header with-border">
+          <h3 class="box-title">Thông tin đơn ứng tuyển</h3>
+        </div>
+        <div class="box-body">
+          <div class="row">
+            <div class="col-md-6">
+              <table class="table table-bordered table-striped">
+                <tr>
+                  <th style="width: 30%">Họ và tên ứng viên:</th>
+                  <td th:text="${donUngTuyen.user.hoTen}"></td>
+                </tr>
+                <tr>
+                  <th>Email:</th>
+                  <td th:text="${donUngTuyen.user.email}"></td>
+                </tr>
+                <tr>
+                  <th>Số điện thoại:</th>
+                  <td th:text="${donUngTuyen.user.soDienThoai}"></td>
+                </tr>
+                <tr>
+                  <th>CV:</th>
+                  <td>
+                    <a th:if="${donUngTuyen.user.cvFile != null}" 
+                       th:href="@{/files/{filename}(filename=${donUngTuyen.user.cvFile})}" 
+                       target="_blank" class="btn btn-xs btn-primary">
+                      <i class="fa fa-file-pdf-o"></i> Xem CV
+                    </a>
+                    <span th:unless="${donUngTuyen.user.cvFile != null}">Chưa có CV</span>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="col-md-6">
+              <table class="table table-bordered table-striped">
+                <tr>
+                  <th style="width: 30%">Vị trí ứng tuyển:</th>
+                  <td th:text="${donUngTuyen.tinTuyenDung.viTri}"></td>
+                </tr>
+                <tr>
+                  <th>Công ty:</th>
+                  <td th:text="${donUngTuyen.tinTuyenDung.congty.tenCongTy}"></td>
+                </tr>
+                <tr>
+                  <th>Trạng thái đơn:</th>
+                  <td>
+                    <span th:switch="${donUngTuyen.trangThai}">
+                      <span th:case="'phongvan'" class="label label-primary">Phỏng vấn</span>
+                      <span th:case="'datuyendung'" class="label label-success">Đã tuyển</span>
+                      <span th:case="'tuchoi'" class="label label-danger">Từ chối</span>
+                      <span th:case="*" class="label label-default" th:text="${donUngTuyen.trangThai}"></span>
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <th>Ngày ứng tuyển:</th>
+                  <td th:text="${#dates.format(donUngTuyen.ngayUngTuyen, 'dd/MM/yyyy HH:mm')}"></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Danh sách các phỏng vấn theo thời gian -->
+      <h4>Lịch trình phỏng vấn</h4>
+      
+      <!-- Hiển thị phỏng vấn dạng timeline -->
+      <ul class="timeline">
+        <!-- Lặp qua từng phỏng vấn -->
+        <li th:each="phongVan, stat : ${listPhongVan}" th:class="${stat.odd} ? 'timeline-inverted' : ''">
+          <div th:class="'timeline-badge ' + (${phongVan.trangThai == 'dat'} ? 'bg-green' : (${phongVan.trangThai == 'truot'} ? 'bg-red' : 'bg-blue'))">
+            <i th:class="'fa ' + (${phongVan.trangThai == 'dat'} ? 'fa-check' : (${phongVan.trangThai == 'truot'} ? 'fa-times' : 'fa-clock-o'))"></i>
+          </div>
+          
+          <div class="timeline-panel box">
+            <div class="box-header with-border">
+              <h3 class="box-title">Phỏng vấn #<span th:text="${phongVan.id}"></span></h3>
+              <div class="box-tools pull-right">
+                <span th:class="'label ' + (${phongVan.trangThai == 'dat'} ? 'label-success' : (${phongVan.trangThai == 'truot'} ? 'label-danger' : 'label-primary'))">
+                  <span th:switch="${phongVan.trangThai}">
+                    <span th:case="'dat'">Đạt</span>
+                    <span th:case="'truot'">Trượt</span>
+                    <span th:case="*">Chờ phỏng vấn</span>
+                  </span>
+                </span>
+              </div>
+            </div>
+            <div class="box-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <dl class="dl-horizontal">
+                    <dt>Thời gian:</dt>
+                    <dd th:text="${#dates.format(phongVan.ngayPV, 'dd/MM/yyyy HH:mm')}"></dd>
+                    
+                    <dt>Địa điểm:</dt>
+                    <dd th:text="${phongVan.diaDiem != null ? phongVan.diaDiem : 'Chưa xác định'}"></dd>
+                  </dl>
+                </div>
+                <div class="col-md-6">
+                  <dl class="dl-horizontal">                    
+                    <dt>Nhân viên phỏng vấn:</dt>
+                    <dd th:text="${phongVan.nhanVienTD != null ? phongVan.nhanVienTD.hoTen : 'Chưa phân công'}"></dd>
+                    
+                    <dt>Điểm đánh giá:</dt>
+                    <dd>
+                      <div th:if="${phongVan.diemDanhGia > 0}">
+                        <div class="progress" style="margin-bottom: 0; height: 20px;">
+                          <div th:class="'progress-bar ' + (${phongVan.diemDanhGia >= 7 ? 'progress-bar-success' : (phongVan.diemDanhGia >= 5 ? 'progress-bar-primary' : 'progress-bar-danger')})" 
+                              role="progressbar" 
+                              th:style="'width: ' + ${phongVan.diemDanhGia * 10} + '%; min-width: 2em; line-height: 20px;'" 
+                              th:text="${phongVan.diemDanhGia} + '/10'">
+                          </div>
+                        </div>
+                      </div>
+                      <span th:unless="${phongVan.diemDanhGia > 0}">Chưa đánh giá</span>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+              
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label>Nhận xét:</label>
+                    <div class="well well-sm" th:text="${phongVan.nhanXet != null ? phongVan.nhanXet : 'Chưa có nhận xét'}"></div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Nút thao tác -->
+              <div class="row">
+                <div class="col-md-12 text-right">
+                  <button type="button" class="btn btn-primary" data-toggle="modal" 
+                          th:attr="data-target='#evaluateModal-' + ${phongVan.id}">
+                      <i class="fa fa-edit"></i> Đánh giá phỏng vấn
+                  </button>
+                  <button type="button" class="btn btn-primary" data-toggle="modal" 
+                          th:attr="data-target='#assignStaffModal-' + ${phongVan.id}"
+                          th:if="${phongVan.nhanVienTD == null}">
+                    <i class="fa fa-user-plus"></i> Phân công nhân viên
+                  </button>
+                  <button type="button" class="btn btn-info" data-toggle="modal" 
+                          th:attr="data-target='#editScheduleModal-' + ${phongVan.id}">
+                    <i class="fa fa-calendar"></i> Sửa lịch phỏng vấn
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Modal phân công nhân viên -->
+          <div class="modal fade" th:id="'assignStaffModal-' + ${phongVan.id}" tabindex="-1" role="dialog" 
+               th:attr="aria-labelledby='assignStaffModalLabel-' + ${phongVan.id}">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <form th:action="@{/admin/phancongpv}" method="post">
+                  <input type="hidden" name="phongVanId" th:value="${phongVan.id}">
+                  <input type="hidden" name="tinTuyenDungId" th:value="${donUngTuyen.tinTuyenDung.id}">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" th:id="'assignStaffModalLabel-' + ${phongVan.id}">
+                      Phân công nhân viên phỏng vấn
+                    </h4>
+                  </div>
+                  <div class="modal-body">
+                    <div class="form-group">
+                      <label>Chọn nhân viên:</label>
+                      <div class="checkbox">
+                        <label>
+                          <input type="checkbox" id="selectAllStaff"> <strong>Chọn tất cả</strong>
+                        </label>
+                      </div>
+                      <div class="input-group">
+                        <input type="text" id="staffSearch" class="form-control" placeholder="Tìm nhân viên...">
+                        <span class="input-group-btn">
+                          <button class="btn btn-default" type="button"><i class="fa fa-search"></i></button>
+                        </span>
+                      </div>
+                      <div id="staffCheckboxList" class="well well-sm" style="max-height: 200px; overflow-y: auto; margin-top: 10px;">
+                        <!-- Staff checkboxes will be loaded here -->
+                      </div>
+                      <div id="staffLoadingMessage" class="text-muted">
+                        <i class="fa fa-spinner fa-spin"></i> Đang tải danh sách nhân viên...
+                      </div>
+                      <div id="staffErrorMessage" class="text-danger" style="display: none;">
+                        <i class="fa fa-exclamation-triangle"></i> Lỗi tải danh sách nhân viên
+                      </div>
+                      <div id="staffEmptyMessage" class="text-warning" style="display: none;">
+                        <i class="fa fa-info-circle"></i> Không có nhân viên tuyển dụng
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="modal fade" th:id="'editScheduleModal-' + ${phongVan.id}" tabindex="-1" role="dialog" 
+                th:attr="aria-labelledby='editScheduleModalLabel-' + ${phongVan.id}">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <form th:action="@{/admin/capnhat-lich-phongvan}" method="post">
+                  <input type="hidden" name="phongVanId" th:value="${phongVan.id}">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      <h4 class="modal-title" th:id="'editScheduleModalLabel-' + ${phongVan.id}">Sửa lịch phỏng vấn #<span th:text="${phongVan.id}"></span></h4>
+                    </div>
+                    <div class="modal-body">
+                      <div class="form-group">
+                        <label>Thời gian:</label>
+                        <div class="input-group date">
+                          <div class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                          </div>
+                          <input type="datetime-local" class="form-control pull-right interview-date" name="ngayPV" required
+                                  th:attr="data-original-value=${#dates.format(phongVan.ngayPV, 'yyyy-MM-dd''T''HH:mm')}">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label>Địa điểm:</label>
+                        <input type="text" class="form-control" name="diaDiem" placeholder="Nhập địa điểm phỏng vấn" 
+                                th:value="${phongVan.diaDiem}">
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                      <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                    </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <!-- Thêm modal đánh giá phỏng vấn vào bên trong vòng lặp timeline -->
+          <div class="modal fade" th:id="'evaluateModal-' + ${phongVan.id}" tabindex="-1" role="dialog" 
+                th:attr="aria-labelledby='evaluateModalLabel-' + ${phongVan.id}">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <form th:action="@{/admin/danh-gia-pv}" method="post">
+                  <input type="hidden" name="phongVanId" th:value="${phongVan.id}">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" th:id="'evaluateModalLabel-' + ${phongVan.id}">Đánh giá phỏng vấn #<span th:text="${phongVan.id}"></span></h4>
+                  </div>
+                  <div class="modal-body">
+                    <div class="form-group">
+                      <label>Điểm đánh giá (0-10):</label>
+                      <input type="number" class="form-control" name="diemDanhGia" min="0" max="10" 
+                              th:value="${phongVan.diemDanhGia}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label>Nhận xét:</label>
+                      <textarea class="form-control" name="nhanXet" rows="5" placeholder="Nhập nhận xét về ứng viên"
+                                th:text="${phongVan.nhanXet}"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label>Trạng thái:</label>
+                      <select class="form-control" name="trangThai" required>
+                        <option value="chopv" th:selected="${phongVan.trangThai == null || phongVan.trangThai == 'chopv'}">Chờ phỏng vấn</option>
+                        <option value="dat" th:selected="${phongVan.trangThai == 'dat'}">Đạt</option>
+                        <option value="truot" th:selected="${phongVan.trangThai == 'truot'}">Trượt</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">Lưu đánh giá</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </section>  
+  </div>  
+
+
+
+  <div th:replace="~{admin/fragments/footer :: footer}"></div>
+</div>
+<!-- ./wrapper -->
+
+<div th:replace="~{admin/fragments/script :: script}"></div>
+<script>
+$(document).ready(function() {
+  // Khởi tạo các modal phân công nhân viên
+  $('[id^=assignStaffModal-]').each(function() {
+    var modalId = $(this).attr('id');
+    var phongVanId = modalId.split('-')[1];
+    var tinTuyenDungId = $('[name=tinTuyenDungId]', this).val();
+    var donUngTuyenId = $('[name=donUngTuyenId]').val();
+    
+    $(this).on('show.bs.modal', function() {
+      // Reset và hiển thị loading
+      $('#staffCheckboxList', this).empty();
+      $('#staffErrorMessage', this).hide();
+      $('#staffEmptyMessage', this).hide();
+      $('#staffLoadingMessage', this).show();
+      
+      // Reset select all checkbox
+      $('#selectAllStaff', this).prop('checked', false);
+      
+      // Fetch staff data
+      fetch("/admin/get-nhanvien-by-congty?tinTuyenDungId=" + tinTuyenDungId + "&donUngTuyenId=" + donUngTuyenId)
+        .then(function(response) {
+          if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.status);
+          }
+          return response.json();
+        })
+        .then(function(data) {
+          $('#staffLoadingMessage').hide();
+          
+          if (data && data.length > 0) {
+            // Create checkbox list
+            data.forEach(function(staff) {
+              var checkboxDiv = $('<div class="checkbox staff-item"></div>');
+              var label = $('<label></label>');
+              var checkbox = $('<input type="checkbox" name="nhanVienIds" value="' + staff.id + '" class="staff-checkbox">');
+              
+              label.append(checkbox);
+              label.append(' ' + staff.hoTen);
+              
+              checkboxDiv.append(label);
+              $('#staffCheckboxList').append(checkboxDiv);
+            });
+            
+            // Enable staff search
+            $('#staffSearch').on('keyup', function() {
+              var value = $(this).val().toLowerCase();
+              $('#staffCheckboxList .checkbox').each(function() {
+                var text = $(this).text().toLowerCase();
+                $(this).toggle(text.indexOf(value) > -1);
+              });
+            });
+            
+            // Handle "Select All" functionality
+            $('#selectAllStaff').on('change', function() {
+              var isChecked = $(this).prop('checked');
+              $('#staffCheckboxList .checkbox:visible .staff-checkbox').prop('checked', isChecked);
+            });
+            
+            // Update "Select All" state when individual checkboxes change
+            $(document).on('change', '.staff-checkbox', function() {
+              updateSelectAllCheckbox();
+            });
+          } else {
+            $('#staffEmptyMessage').show();
+          }
+        })
+        .catch(function(error) {
+          console.error("Fetch error:", error);
+          $('#staffLoadingMessage').hide();
+          $('#staffErrorMessage').show();
+        });
+    });
+  });
+  
+  // Function to update the "Select All" checkbox state
+  function updateSelectAllCheckbox() {
+    var totalVisible = $('#staffCheckboxList .checkbox:visible').length;
+    var checkedVisible = $('#staffCheckboxList .checkbox:visible .staff-checkbox:checked').length;
+    
+    if (totalVisible > 0 && totalVisible === checkedVisible) {
+      $('#selectAllStaff').prop('checked', true);
+    } else {
+      $('#selectAllStaff').prop('checked', false);
+    }
+  }
+  
+  // Format date fields
+  $('input[type="datetime-local"]').each(function() {
+    // Set default value to today if not set
+    if (!$(this).val()) {
+      var now = new Date();
+      var year = now.getFullYear();
+      var month = (now.getMonth() + 1).toString().padStart(2, '0');
+      var day = now.getDate().toString().padStart(2, '0');
+      var hours = now.getHours().toString().padStart(2, '0');
+      var minutes = now.getMinutes().toString().padStart(2, '0');
+      
+      $(this).val(`${year}-${month}-${day}T${hours}:${minutes}`);
+    }
+  });
+
+  $('.interview-date').each(function() {
+    var originalValue = $(this).data('original-value');
+    if (originalValue) {
+      // Format the date to YYYY-MM-DDTHH:MM format for datetime-local input
+      $(this).val(originalValue);
+    } else {
+      // If there's no date yet, set default to now
+      var now = new Date();
+      var year = now.getFullYear();
+      var month = (now.getMonth() + 1).toString().padStart(2, '0');
+      var day = now.getDate().toString().padStart(2, '0');
+      var hours = now.getHours().toString().padStart(2, '0');
+      var minutes = now.getMinutes().toString().padStart(2, '0');
+      
+      $(this).val(`${year}-${month}-${day}T${hours}:${minutes}`);
+    }
+  });
+  
+  // Confirm before updating interview schedule
+  $('[id^=editScheduleModal-] form').on('submit', function(e) {
+    var confirmation = confirm('Bạn có chắc chắn muốn cập nhật lịch phỏng vấn này không?');
+    if (!confirmation) {
+      e.preventDefault();
+    }
+  });
+});
+</script>
+</body>
+</html>

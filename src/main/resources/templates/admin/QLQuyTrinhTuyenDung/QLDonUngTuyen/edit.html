@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments/head :: head}"></head>
+<body class="hold-transition skin-blue sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+
+<div th:replace="~{admin/fragments/header :: header}"></div>
+  <!-- =============================================== -->
+
+  <!-- Left side column. contains the sidebar -->
+<div th:replace="~{admin/fragments/sidebar :: sidebar}"></div>
+  <!-- =============================================== -->
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Cập nhật đơn ứng tuyển
+      </h1>
+      <ol class="breadcrumb">
+        <li><a th:href="@{/admin}"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a th:href="@{/admin/dsdonut}">Danh sách đơn ứng tuyển</a></li>
+        <li class="active">Cập nhật đơn ứng tuyển</li>
+      </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class = "col-md-6">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                  <h3 class="box-title">Thông tin đơn ứng tuyển</h3>
+                </div>
+
+                <div th:if="${error}" class="alert alert-danger" role="alert">
+                  <span th:text="${error}"></span>
+                </div>
+                <!-- /.box-header -->
+                <!-- form start -->
+                <form role="form" method="post" th:action="@{/admin/edit-donut/{id}(id=${donUngTuyen.id})}"
+                      th:object="${donUngTuyen}">
+                  <input type="hidden" th:field="*{id}">
+                  <input type="hidden" th:field="*{user.id}">
+                  <input type="hidden" th:field="*{tinTuyenDung.id}">
+                  <div class="box-body">
+                    <div class="form-group">
+                      <label>Trạng thái</label>
+                      <div class="radio">
+                          <label>
+                              <input type="radio" th:field="*{trangThai}" 
+                                     value="dangduyet" required>
+                              Đang duyệt hồ sơ
+                          </label>
+                      </div>
+                      <div class="radio">
+                          <label>
+                              <input type="radio" th:field="*{trangThai}" 
+                                     value="dangcho">
+                              Đang chờ bài test
+                          </label>
+                      </div>
+                      <div class="radio">
+                          <label>
+                              <input type="radio" th:field="*{trangThai}" 
+                                     value="phongvan">
+                              Phỏng vấn
+                          </label>
+                      </div>
+                      <div class="radio">
+                          <label>
+                              <input type="radio" th:field="*{trangThai}" 
+                                     value="datuyendung">
+                              Đã tuyển
+                          </label>
+                      </div>
+                      <div class="radio">
+                          <label>
+                              <input type="radio" th:field="*{trangThai}" 
+                                     value="tuchoi">
+                              Từ chối
+                          </label>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /.box-body -->
+    
+                  <div class="box-footer">
+                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                    <a th:href="@{/admin/dsdonut}" class="btn btn-default">Hủy</a>
+                  </div>
+                </form>
+              </div>
+        </div>
+      
+
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  <div th:replace="~{admin/fragments/footer :: footer}">
+
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery 3 -->
+
+<div th:replace="~{admin/fragments/script :: script}"></div>
+</body>
+</html>

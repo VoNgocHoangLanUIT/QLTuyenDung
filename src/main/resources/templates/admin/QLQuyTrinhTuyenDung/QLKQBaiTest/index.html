@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments/head :: head}"></head>
+<body class="hold-transition skin-blue sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+
+<div th:replace="~{admin/fragments/header :: header}"></div>
+  <!-- =============================================== -->
+
+  <!-- Left side column. contains the sidebar -->
+<div th:replace="~{admin/fragments/sidebar :: sidebar}"></div>
+  <!-- =============================================== -->
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Quản lý kết quả bài test
+      </h1>
+      <ol class="breadcrumb">
+        <li><a th:href="@{/admin}"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Danh sách kết quả bài test</li>
+      </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div th:if="${success}" class="alert alert-success alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        <span th:text="${success}"></span>
+      </div>
+      <div th:if="${error}" class="alert alert-danger alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        <span th:text="${error}"></span>
+      </div>
+            <div class="box box-default">
+              <div class="box-header with-border">
+                  <h3 class="box-title">Bộ lọc kết quả</h3>
+                  <div class="box-tools pull-right">
+                      <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                          <i class="fa fa-minus"></i>
+                      </button>
+                  </div>
+              </div>
+              <div class="box-body">
+                  <form th:action="@{/admin/dskqbaitest}" method="get">
+                      <div class="row">
+                          <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Điểm Ngôn ngữ từ:</label>
+                                  <input type="number" class="form-control" name="diemNgonNgu" 
+                                        th:value="${param.diemNgonNgu}"
+                                        min="0" max="100" step="1">
+                              </div>
+                          </div>
+                          <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Điểm Logic từ:</label>
+                                  <input type="number" class="form-control" name="diemLogic"
+                                        th:value="${param.diemLogic}"
+                                        min="0" max="100" step="1">
+                              </div>
+                          </div>
+                          <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Điểm Chuyên môn từ:</label>
+                                  <input type="number" class="form-control" name="diemChuyenMon"
+                                        th:value="${param.diemChuyenMon}"
+                                        min="0" max="100" step="1">
+                              </div>
+                          </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-md-12">
+                              <button type="submit" class="btn btn-primary">
+                                  <i class="fa fa-search"></i> Tìm kiếm
+                              </button>
+                              <a th:href="@{/admin/dskqbaitest}" class="btn btn-default">
+                                  <i class="fa fa-refresh"></i> Làm mới
+                              </a>
+                          </div>
+                      </div>
+                  </form>
+              </div>
+            </div>
+          <form th:action="@{/admin/duyetphongvan}" method="post" id="approveForm">
+            <div class="box">
+              <div class="box-header with-border">
+                <h3 class="box-title">Danh sách kết quả bài test</h3>
+                <div class="box-tools">
+                  <button type="submit" class="btn btn-success" onclick="return confirm('Xác nhận cho phép phỏng vấn các đơn đã chọn?')">
+                    <i class="fa fa-check"></i> Duyệt phỏng vấn
+                  </button>
+                  <a class="btn btn-success" th:href="@{/admin/add-kqbaitest}">
+                    <i class="fa fa-plus"></i> Thêm kết quả
+                  </a>
+                </div>
+              </div>
+              <!-- /.box-header -->
+              <div class="box-body">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th width="40">
+                        <input type="checkbox" id="checkAll">
+                      </th>
+                      <th>Ứng viên</th>
+                      <th>Kết quả các bài test</th>
+                      <th width="100">Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr th:if="${#maps.isEmpty(groupedResults)}">
+                      <td colspan="5" class="text-center">Không có dữ liệu</td>
+                    </tr>
+                    <tr th:each="don : ${groupedResults}">
+                      <td>
+                          <input type="checkbox" name="selectedDons" 
+                                 th:value="${don.key}"
+                                 th:disabled="${don.value[0].donUngTuyen.trangThai == 'phongvan'}">
+                      </td>
+                      <td th:text="${don.value[0].donUngTuyen.user.hoTen}"></td>
+                      <td>
+                        <div th:each="kq : ${don.value}" class="test-result-item">
+                          <div class="test-header">
+                              <div class="test-left">
+                                  <span class="test-type" th:switch="${kq.baiTest.loai}">
+                                      <span th:case="'ngonngu'" class="badge badge-info">Ngôn ngữ</span>
+                                      <span th:case="'logic'" class="badge badge-warning">Logic</span>
+                                      <span th:case="'chuyenmon'" class="badge badge-success">Chuyên môn</span>
+                                  </span>
+                                  <span class="test-title" th:text="${kq.baiTest.tieuDe}"></span>
+                              </div>
+                              <small class="text-muted test-date" th:text="${#dates.format(kq.ngayLam, 'dd/MM/yyyy')}"></small>
+                          </div>
+                          <div class="test-footer">
+                              <div class="test-score">
+                                  <span class="label score-label" 
+                                        th:classappend="${kq.diem >= 80 ? 'label-success' : 
+                                                      (kq.diem >= 50 ? 'label-warning' : 'label-danger')}"
+                                        th:text="${kq.diem + ' điểm'}">
+                                  </span>
+                              </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                          <div th:each="kq : ${don.value}">
+                              <a th:href="@{/admin/edit-kqbaitest/{id}(id=${kq.id})}" 
+                                 class="btn btn-primary btn-xs" title="Sửa">
+                                  <i class="fa fa-edit"></i>
+                              </a>
+                              <a th:href="@{/admin/delete-kqbaitest/{id}(id=${kq.id})}" 
+                                 class="btn btn-danger btn-xs" title="Xóa"
+                                 onclick="return confirm('Bạn có chắc chắn muốn xóa?')">
+                                  <i class="fa fa-trash"></i>
+                              </a>
+                          </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.box-body -->
+              <div class="box-footer clearfix">
+                <ul class="pagination pagination-sm no-margin pull-right">
+                  <li><a href="#">«</a></li>
+                  <li><a href="#">1</a></li>
+                  <li><a href="#">2</a></li>
+                  <li><a href="#">3</a></li>
+                  <li><a href="#">»</a></li>
+                </ul>
+              </div>
+            </div>
+          </form>
+            <!-- /.box -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  <div th:replace="~{admin/fragments/footer :: footer}">
+
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery 3 -->
+
+<div th:replace="~{admin/fragments/script :: script}"></div>
+</body>
+</html>

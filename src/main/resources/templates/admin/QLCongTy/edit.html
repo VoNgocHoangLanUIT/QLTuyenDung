@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments/head :: head}"></head>
+<body class="hold-transition skin-blue sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+
+<div th:replace="~{admin/fragments/header :: header}"></div>
+  <!-- =============================================== -->
+
+  <!-- Left side column. contains the sidebar -->
+<div th:replace="~{admin/fragments/sidebar :: sidebar}"></div>
+  <!-- =============================================== -->
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Cập nhật thông tin công ty
+      </h1>
+      <ol class="breadcrumb">
+        <li><a th:href="@{/admin}"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a th:href="@{/admin/dscongty}">Danh sách công ty</a></li>
+        <li class="active">Cập nhật công ty</li>
+      </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class = "col-md-6">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                  <h3 class="box-title">Thông tin công ty</h3>
+                </div>
+
+                <div th:if="${error}" class="alert alert-danger" role="alert">
+                  <span th:text="${error}"></span>
+                </div>
+                <!-- /.box-header -->
+                <!-- form start -->
+                <form role="form" method="post" th:action="@{/admin/edit-congty/{id}(id=${congTy.id})}"
+                      th:object="${congTy}">
+                  <input type="hidden" th:field="*{id}">
+                  <div class="box-body">
+                    <div class="form-group">
+                      <label for="tenCongTy">Tên công ty <span class="text-danger">*</span></label>
+                      <input type="text" class="form-control" id="tenCongTy" 
+                             th:field="*{tenCongTy}" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="diaChi">Địa chỉ</label>
+                      <input type="text" class="form-control" id="diaChi" 
+                             th:field="*{diaChi}">
+                    </div>
+                    <div class="form-group">
+                      <label for="linhVuc">Lĩnh vực</label>
+                      <input type="text" class="form-control" id="linhVuc" 
+                             th:field="*{linhVuc}">
+                    </div>
+                    <div class="form-group">
+                      <label for="website">Website</label>
+                      <input type="url" class="form-control" id="website" 
+                             th:field="*{website}">
+                    </div>
+                    <div class="form-group">
+                      <label for="hotLine">Hotline</label>
+                      <input type="tel" class="form-control" id="hotLine" 
+                             th:field="*{hotLine}">
+                    </div>
+                </div>
+                  <!-- /.box-body -->
+    
+                  <div class="box-footer">
+                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                    <a th:href="@{/admin/dscongty}" class="btn btn-default">Hủy</a>
+                  </div>
+                </form>
+              </div>
+        </div>
+      
+
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  <div th:replace="~{admin/fragments/footer :: footer}">
+
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery 3 -->
+
+<div th:replace="~{admin/fragments/script :: script}"></div>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments/head :: head}"></head>
+<body class="hold-transition skin-blue sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+
+<div th:replace="~{admin/fragments/header :: header}"></div>
+  <!-- =============================================== -->
+
+  <!-- Left side column. contains the sidebar -->
+<div th:replace="~{admin/fragments/sidebar :: sidebar}"></div>
+  <!-- =============================================== -->
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Thêm kết quả bài test
+      </h1>
+      <ol class="breadcrumb">
+        <li><a th:href="@{/admin}"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a th:href="@{/admin/dskqbaitest}">Danh sách kết quả bài test</a></li>
+        <li class="active">Thêm kết quả</li>
+      </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class = "col-md-6">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                  <h3 class="box-title">Thông tin kết quả bài test</h3>
+                </div>
+
+                <div th:if="${error}" class="alert alert-danger" role="alert">
+                  <span th:text="${error}"></span>
+                </div>
+                <!-- /.box-header -->
+                <!-- form start -->
+                <form role="form" method="post" th:action="@{/admin/add-kqbaitest}" th:object="${kqBaiTest}">
+                  <div class="box-body">
+                        <div class="form-group">
+                          <label for="donUngTuyen">Ứng viên <span class="text-danger">*</span></label>
+                          <select class="form-control" id="donUngTuyen" th:field="*{donUngTuyen.id}" required>
+                              <option value="">Chọn ứng viên</option>
+                              <option th:each="don : ${dSDonUT}" 
+                                      th:value="${don.id}"
+                                      th:text="${don.user.hoTen + ' - ' + don.tinTuyenDung.viTri + ' (' + don.tinTuyenDung.congty.tenCongTy + ') '}">
+                              </option>
+                          </select>
+                        </div>
+                        <div class="form-group">
+                          <label for="baiTest">Bài test <span class="text-danger">*</span></label>
+                          <select class="form-control" id="baiTest" 
+                                  th:field="*{baiTest.id}" required>
+                              <option value="">Chọn bài test</option>
+                              <option th:each="test : ${dsBaiTest}" 
+                                      th:value="${test.id}"
+                                      th:text="${test.tieuDe + ' - ' + test.loai}">
+                              </option>
+                          </select>
+                        </div>
+                        <div class="form-group">
+                          <label for="diem">Điểm <span class="text-danger">*</span></label>
+                          <input type="number" class="form-control" id="diem" 
+                                 th:field="*{diem}" required
+                                 min="0" max="100" step="1">
+                        </div>
+                        <div class="form-group">
+                          <label for="ngayLam">Ngày làm <span class="text-danger">*</span></label>
+                          <input type="date" class="form-control" id="ngayLam"
+                                 th:field="*{ngayLam}" required>
+                        </div>
+                  </div>
+                  <!-- /.box-body -->
+    
+                  <div class="box-footer">
+                    <button type="submit" class="btn btn-primary">Thêm mới</button>
+                    <a th:href="@{/admin/dskqbaitest}" class="btn btn-default">Hủy</a>
+                  </div>
+                </form>
+              </div>
+        </div>
+      
+
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  <div th:replace="~{admin/fragments/footer :: footer}">
+
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery 3 -->
+
+<div th:replace="~{admin/fragments/script :: script}"></div>
+</body>
+</html>

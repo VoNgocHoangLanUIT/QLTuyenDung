@@ -1,0 +1,96 @@
+<div th:fragment="script">
+<script th:src="@{/assets/js/jquery.min.js}"></script>
+<script th:src="@{/assets/js/jquery-ui.js}"></script>
+<script th:src="@{/assets/js/bootstrap.min.js}"></script>
+<script th:src="@{/assets/js/adminlte.min.js}"></script>
+<script th:src="@{/assets/js/dashboard.js}"></script>
+<script th:src="@{/assets/js/function.js}"></script>
+<!-- Add Select2 JS -->
+<script th:src="@{/assets/js/select2.min.js}"></script>
+    
+    <script>
+        $(document).ready(function() {
+// Initialize any Select2 elements
+        if($.fn.select2) {
+            $('.select2').select2();
+        }
+        
+            // Handle company field visibility based on role
+            function toggleCompanyField() {
+                var selectedRole = $('select[name="roleName"]').val();
+                var isStaffRole = selectedRole === 'HR_STAFF' || selectedRole === 'CV_STAFF';
+                
+                $('#companyGroup').toggle(isStaffRole);
+                $('#companySelect').prop('required', isStaffRole);
+            }
+
+            // Initial check on page load
+            toggleCompanyField();
+
+            // On role change
+            $('select[name="roleName"]').change(function() {
+                toggleCompanyField();
+            });
+           // Handle "Check All" functionality for KQBaiTest approval
+           $('#checkAll').on('change', function() {
+                var checkboxes = $('input[name="selectedDons"]');
+                checkboxes.each(function() {
+                    if (!$(this).prop('disabled')) {
+                        $(this).prop('checked', $('#checkAll').prop('checked'));
+                    }
+                });
+            });
+
+            // Confirm dialog for interview approval
+            $('#approveForm').on('submit', function(e) {
+                if (!confirm('Xác nhận cho phép phỏng vấn các đơn đã chọn?')) {
+                    e.preventDefault();
+                }
+            });
+            // Handle CV file visibility based on role
+            var roleSelect = $('select[name="roleName"]');
+            var cvFileGroup = $('#cvFileGroup');
+            
+            // Show/hide CV on page load
+            if (roleSelect.val() === 'CANDIDATE') {
+                cvFileGroup.show();
+            }
+            
+            // Show/hide CV on role change
+            roleSelect.change(function() {
+                if ($(this).val() === 'CANDIDATE') {
+                    cvFileGroup.show();
+                } else {
+                    cvFileGroup.hide();
+                }
+            });
+
+            // Delete CV file function
+            window.deleteCvFile = function() {
+                if (confirm('Bạn có chắc chắn muốn xóa CV file?')) {
+                    var userId = $('#userId').val();
+                    
+                    fetch(`/admin/delete-cv/${userId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.reload();
+                        } else {
+                            alert('Có lỗi xảy ra khi xóa file CV');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Có lỗi xảy ra khi xóa file CV');
+                    });
+                }
+            }
+            
+            // ...existing delete user confirmation code...
+        });
+    </script>
+</div>

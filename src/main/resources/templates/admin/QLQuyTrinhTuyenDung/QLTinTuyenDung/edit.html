@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments/head :: head}"></head>
+<body class="hold-transition skin-blue sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+
+<div th:replace="~{admin/fragments/header :: header}"></div>
+  <!-- =============================================== -->
+
+  <!-- Left side column. contains the sidebar -->
+<div th:replace="~{admin/fragments/sidebar :: sidebar}"></div>
+  <!-- =============================================== -->
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Blank page
+        <small>it all starts here</small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a th:href="@{/assets/#}"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a th:href="@{/assets/#}">Examples</a></li>
+        <li class="active">Blank page</li>
+      </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class = "col-md-6">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                  <h3 class="box-title">Cập nhật tin tuyển dụng</h3>
+                </div>
+
+                <div th:if="${error}" class="alert alert-danger" role="alert">
+                  <span th:text="${error}"></span>
+                </div>
+                <!-- /.box-header -->
+                <!-- form start -->
+                <form role="form" method="post" th:action="@{/admin/edit-tintd/{id}(id=${tinTuyenDung.id})}"
+                      th:object="${tinTuyenDung}">
+                  <input type="hidden" th:field="*{id}">
+                  <div class="box-body">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="viTri">Vị trí tuyển dụng</label>
+                          <input type="text" class="form-control" id="viTri" placeholder="Vị trí tuyển dụng"
+                                 th:field="*{viTri}" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="congty">Công ty</label>
+                          <select class="form-control" id="congty" th:field="*{congty.id}"
+                                  oninvalid="this.setCustomValidity('Vui lòng chọn công ty')"
+                                  oninput="this.setCustomValidity('')">
+                              <option value="">Chọn công ty</option>
+                              <option th:each="cty : ${dsCongTy}" 
+                                      th:value="${cty.id}" 
+                                      th:text="${cty.tenCongTy}">
+                              </option>
+                          </select>
+                          <div class="text-danger" 
+                                th:if="${#fields.hasErrors('congty')}" 
+                                th:errors="*{congty}">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="hinhThucLV">Hình thức làm việc</label>
+                          <input type="text" class="form-control" id="hinhThucLV" placeholder="Hình thức làm việc"
+                                 th:field="*{hinhThucLV}" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="diaDiemLV">Địa điểm làm việc</label>
+                          <input type="text" class="form-control" id="diaDiemLV" placeholder="Địa điểm làm việc"
+                                 th:field="*{diaDiemLV}" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="mucLuong">Mức Lương</label>
+                          <input type="text" class="form-control" id="mucLuong" placeholder="Mức lương"
+                                 th:field="*{mucLuong}" required>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="hanNop">Hạn nộp hồ sơ</label>
+                          <input type="date" class="form-control" id="hanNop" 
+                                 th:field="*{hanNop}" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="moTa">Mô tả công việc</label>
+                          <textarea class="form-control" id="moTa" rows="3"
+                                    th:field="*{moTaCongViec}" required></textarea>
+                        </div>
+                        <div class="form-group">
+                          <label for="yeuCau">Yêu cầu ứng viên</label>
+                          <textarea class="form-control" id="yeuCau" rows="3" 
+                                    th:field="*{yeuCau}" required></textarea>
+                        </div>
+                        <div class="form-group">
+                          <label>Trạng thái</label>
+                          <div class="radio">
+                              <label>
+                                  <input type="radio" name="trangThai" 
+                                         th:field="*{trangThai}" 
+                                         value="dangtuyen" required>
+                                  Đang tuyển
+                              </label>
+                          </div>
+                          <div class="radio">
+                              <label>
+                                  <input type="radio" name="trangThai" 
+                                         th:field="*{trangThai}" 
+                                         value="dadong">
+                                  Đã đóng
+                              </label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /.box-body -->
+    
+                  <div class="box-footer">
+                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                    <a th:href="@{/admin/dstintd}" class="btn btn-default">Hủy</a>
+                  </div>
+                </form>
+              </div>
+        </div>
+      
+
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  <div th:replace="~{admin/fragments/footer :: footer}">
+
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery 3 -->
+
+<div th:replace="~{admin/fragments/script :: script}"></div>
+</body>
+</html>
