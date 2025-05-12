@@ -3,7 +3,7 @@
 **Duration:** Feb 2025 – Present  
 **Client:** TalentHub – Human Resources Service Provider  
 **Team:** University Capstone Project  
-**Technologies:** Node.js / ReactJS / PostgreSQL / LinkedIn API / SMS Gateway / AI Matching Engine
+**Technologies:** Java, Spring Boot, JDBC, Oracle, LinkedIn API Integration, AI Integration, SMS Notification
 
 ---
 
