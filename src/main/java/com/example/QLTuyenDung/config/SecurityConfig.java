@@ -29,16 +29,26 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((auth)-> auth
-                    .requestMatchers("/*","/fe/**","/register").permitAll()
+                    .requestMatchers("/*","/fe/**","/register", "/dsungvien", "/chitiet-ungvien/**", "/dscongty", "/chitiet-congty/**", "/dstintd/**", "/chitiet-tintd/**").permitAll()
                     .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                    .requestMatchers("/nhatd/**").hasAuthority("RECRUITER")
                     .anyRequest().authenticated())
                 .formLogin(login -> login.loginPage("/login")
                             .loginProcessingUrl("/login")
                             .usernameParameter("email")
                             .passwordParameter("password")
-                            .defaultSuccessUrl("/admin",true)
+                            .successHandler((request, response, authentication) -> {
+                                var authorities = authentication.getAuthorities();
+                                if (authorities.stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
+                                    response.sendRedirect("/admin");
+                                } else if (authorities.stream().anyMatch(a -> a.getAuthority().equals("RECRUITER"))) {
+                                    response.sendRedirect("/nhatd");
+                                } else {
+                                    response.sendRedirect("/");
+                                }
+                            })
                             .failureUrl("/login?error=true"))
-                .logout(logout -> logout.logoutUrl("/admin-logout")
+                .logout(logout -> logout.logoutUrl("/logout")
                             .logoutSuccessUrl("/login?logout=true")
                             .deleteCookies("JSESSIONID")
                             .invalidateHttpSession(true)

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{user/layout/head :: head}"></head>
+
+<body>
+
+  <div class="page-wrapper dashboard ">
+
+    <!-- Preloader -->
+    <div class="preloader"></div>
+
+    <!-- Header Span -->
+    <span class="header-span"></span>
+
+    <!-- Main Header-->
+    <header th:replace="~{user/layout/header :: header}"></header>
+    <!--End Main Header -->
+
+    <!-- Sidebar Backdrop -->
+    <div class="sidebar-backdrop"></div>
+
+    <!-- User Sidebar -->
+    <div th:replace="~{nhatuyendung/layout/sidebar :: sidebar}"></div>
+    <!-- End User Sidebar -->
+
+    <!-- Dashboard -->
+    <section class="user-dashboard">
+      <div class="dashboard-outer">
+        <div class="upper-title-box">
+          <a th:href="@{/nhatd/ds-truycap/{id}(id=${baiTest.id})}" class="btn btn-sm btn-outline-primary mb-3">
+            <i class="la la-arrow-left"></i> Quay lại danh sách truy cập
+          </a>
+          <h3>Thêm quyền truy cập bài test</h3>
+          <div class="text" th:text="'Bài test: ' + ${baiTest.tieuDe}">Tên bài test</div>
+          <div class="text" th:text="'Tin tuyển dụng: ' + ${baiTest.tinTuyenDung.tieuDe}">Tin tuyển dụng</div>
+        </div>
+
+        <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+        <div class="row">
+          <div class="col-lg-12">
+            <!-- Ls widget -->
+            <div class="ls-widget">
+              <div class="tabs-box">
+                <div class="widget-title">
+                  <h4>Danh sách ứng viên đang chờ bài test</h4>
+                </div>
+
+                <div class="widget-content">
+                  <!-- Hiển thị thông báo nếu không có đơn ứng tuyển nào -->
+                  <div th:if="${#lists.isEmpty(dsDonUngTuyen)}" class="message-box info">
+                    <p>Không có ứng viên nào đang chờ bài test thuộc tin tuyển dụng này.</p>
+                  </div>
+
+                  <!-- Form thêm quyền truy cập nếu có đơn ứng tuyển -->
+                  <form th:if="${!#lists.isEmpty(dsDonUngTuyen)}" method="post" 
+                        th:action="@{/nhatd/add-truycap/{id}(id=${baiTest.id})}" class="default-form">
+                    
+                    <div class="form-group">
+                      <div class="search-box mb-4">
+                        <input type="text" id="searchInput" placeholder="Tìm kiếm ứng viên..." class="form-control">
+                      </div>
+                      
+                      <div class="checkbox-outer mb-3">
+                        <div class="checkboxes">
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="selectAll">
+                            <label class="form-check-label" for="selectAll">
+                              <strong>Chọn tất cả</strong>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div class="candidate-list-container" style="max-height: 500px; overflow-y: auto;">
+                        <div th:each="don, iter : ${dsDonUngTuyen}" class="candidate-block-three candidate-item mb-3">
+                          <div class="inner-box">
+                            <div class="content">
+                              <div class="form-check">
+                                <input class="form-check-input candidate-checkbox" type="checkbox" 
+                                       th:id="'don-' + ${don.id}" name="selectedDons" th:value="${don.id}">
+                                <label class="form-check-label" th:for="'don-' + ${don.id}">
+                                  <div class="d-flex align-items-center">
+                                    <figure class="image mr-3">
+                                      <img th:src="${don.user.hinhAnh != null ? don.user.hinhAnh : '/fe/images/resource/candidate-default.png'}" 
+                                           alt="" style="width: 50px; height: 50px; border-radius: 50%;">
+                                    </figure>
+                                    <div>
+                                      <h5 class="candidate-name" th:text="${don.user.hoTen}">Tên ứng viên</h5>
+                                      <p class="mb-0" th:text="${don.user.chuyenNganh}">Chuyên ngành</p>
+                                      <small th:text="'Ngày ứng tuyển: ' + ${#dates.format(don.ngayUngTuyen, 'dd/MM/yyyy')}">Ngày ứng tuyển</small>
+                                    </div>
+                                  </div>
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-group text-right">
+                      <button type="submit" class="theme-btn btn-style-one" id="submitBtn" disabled>
+                        <i class="la la-plus"></i> Thêm ứng viên đã chọn
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Dashboard -->
+
+    <!-- Copyright -->
+    <div th:replace="~{nhatuyendung/layout/footer :: footer}"></div>
+
+  </div><!-- End Page Wrapper -->
+
+  <div th:replace="~{user/layout/script :: script}"></div>
+  
+  <!-- Script cho trang thêm quyền truy cập -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const selectAllCheckbox = document.getElementById('selectAll');
+      const candidateCheckboxes = document.querySelectorAll('.candidate-checkbox');
+      const submitBtn = document.getElementById('submitBtn');
+      const searchInput = document.getElementById('searchInput');
+      
+      // Xử lý chọn tất cả
+      selectAllCheckbox.addEventListener('change', function() {
+        const isChecked = this.checked;
+        
+        // Chọn tất cả các checkbox hiện đang hiển thị
+        document.querySelectorAll('.candidate-item:not([style*="display: none"]) .candidate-checkbox').forEach(checkbox => {
+          checkbox.checked = isChecked;
+        });
+        
+        updateSubmitButton();
+      });
+      
+      // Xử lý khi chọn từng checkbox
+      candidateCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateSubmitButton);
+      });
+      
+      // Hàm cập nhật trạng thái nút Submit
+      function updateSubmitButton() {
+        const checkedCount = document.querySelectorAll('.candidate-checkbox:checked').length;
+        submitBtn.disabled = checkedCount === 0;
+        
+        // Cập nhật nút chọn tất cả
+        const visibleCheckboxes = document.querySelectorAll('.candidate-item:not([style*="display: none"]) .candidate-checkbox');
+        const checkedVisibleCheckboxes = document.querySelectorAll('.candidate-item:not([style*="display: none"]) .candidate-checkbox:checked');
+        
+        if (visibleCheckboxes.length > 0) {
+          selectAllCheckbox.checked = visibleCheckboxes.length === checkedVisibleCheckboxes.length;
+        }
+      }
+      
+      // Tìm kiếm ứng viên
+      searchInput.addEventListener('keyup', function() {
+        const searchTerm = this.value.toLowerCase();
+        const candidateItems = document.querySelectorAll('.candidate-item');
+        
+        candidateItems.forEach(item => {
+          const candidateName = item.querySelector('.candidate-name').textContent.toLowerCase();
+          
+          if (candidateName.includes(searchTerm)) {
+            item.style.display = 'block';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+        
+        updateSubmitButton();
+      });
+    });
+  </script>
+  
+  <style>
+    .candidate-block-three.candidate-item {
+      padding: 10px;
+      border: 1px solid #eee;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+    
+    .candidate-block-three.candidate-item:hover {
+      background-color: #f9f9f9;
+    }
+    
+    .form-check-input.candidate-checkbox {
+      margin-right: 15px;
+    }
+    
+    .message-box {
+      padding: 30px;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .message-box.info {
+      background-color: #f0f8ff;
+      border: 1px solid #cce5ff;
+    }
+    
+    .message-box p {
+      margin-bottom: 20px;
+    }
+  </style>
+</body>
+</html>

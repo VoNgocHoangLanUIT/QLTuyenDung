@@ -5,7 +5,7 @@
    
 
 
-<head th:replace="layout/head :: head"></head>
+<head th:replace="~{user/layout/head :: head}"></head>
 
 <body data-anm=".anm">
 
@@ -16,7 +16,7 @@
     <div class="preloader"></div>
 
     <!-- Main Header-->
-    <header th:replace="layout/header :: header"></header>
+    <header th:replace="~{user/layout/header :: header}"></header>
     <!--End Main Header -->
 
     <!-- Banner Section-->
@@ -26,8 +26,8 @@
           <div class="content-column col-lg-7 col-md-12 col-sm-12">
             <div class="inner-column wow fadeInUp" data-wow-delay="1000ms">
               <div class="title-box">
-                <h3>There Are <span class="colored">93,178</span> Postings Here<br> For you!</h3>
-                <div class="text">Find Jobs, Employment & Career Opportunities</div>
+                <h3>Có <span class="colored">93,178</span> tin tuyển dụng<br> dành cho bạn!</h3>
+                <div class="text">Tìm kiếm việc làm & cơ hội nghề nghiệp </div>
               </div>
 
               <!-- Job Search Form -->
@@ -740,29 +740,12 @@
     <!-- End Call To Action -->
 
     <!-- Main Footer -->
-    <div th:replace="layout/footer :: footer"></div>
+    <div th:replace="~{user/layout/footer :: footer}"></div>
     <!-- End Main Footer -->
 
 
   </div><!-- End Page Wrapper -->
 
-
-  <script th:src="@{fe/js/jquery.js}"></script>
-  <script th:src="@{fe/js/popper.min.js}"></script>
-  <script th:src="@{fe/js/chosen.min.js}"></script>
-  <script th:src="@{fe/js/bootstrap.min.js}"></script>
-  <script th:src="@{fe/js/jquery.fancybox.js}"></script>
-  <script th:src="@{fe/js/jquery.modal.min.js}"></script>
-  <script th:src="@{fe/js/mmenu.polyfills.js}"></script>
-  <script th:src="@{fe/js/mmenu.js}"></script>
-  <script th:src="@{fe/js/appear.js}"></script>
-  <script th:src="@{fe/js/anm.min.js}"></script>
-  <script th:src="@{fe/js/ScrollMagic.min.js}"></script>
-  <script th:src="@{fe/js/rellax.min.js}"></script>
-  <script th:src="@{fe/js/owl.js}"></script>
-  <script th:src="@{fe/js/wow.js}"></script>
-  <script th:src="@{fe/js/script.js}"></script>
-
+  <div th:replace="~{user/layout/script :: script}"></div>
 </body>
-
 </html>

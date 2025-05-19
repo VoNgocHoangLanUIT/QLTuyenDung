@@ -43,8 +43,7 @@
             <thead>
               <tr>
                 <th>Ứng viên</th>
-                <th>Vị trí ứng tuyển</th>
-                <th>Công ty</th>
+                <th>Tin tuyển dụng</th>
                 <th>Trạng thái</th>
                 <th>Nhân viên tuyển dụng</th>
                 <th width="120">Thao tác</th>
@@ -56,8 +55,7 @@
               </tr>
               <tr th:each="don : ${groupedByDon.entrySet()}">
                 <td th:text="${don.value[0].donUngTuyen.user.hoTen}"></td>
-                <td th:text="${don.value[0].donUngTuyen.tinTuyenDung.viTri}"></td>
-                <td th:text="${don.value[0].donUngTuyen.tinTuyenDung.congty.tenCongTy}"></td>
+                <td th:text="${don.value[0].donUngTuyen.tinTuyenDung.tieuDe}"></td>
                 <td>
                   <span th:switch="${don.value[0].donUngTuyen.trangThai}">
                     <span th:case="'phongvan'" class="label label-primary">Phỏng vấn</span>

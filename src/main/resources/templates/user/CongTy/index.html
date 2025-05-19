@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{user/layout/head :: head}"></head>
+
+<body>
+
+  <div class="page-wrapper">
+
+    <!-- Preloader -->
+    <div class="preloader"></div>
+
+    <!-- Header Span -->
+    <span class="header-span"></span>
+
+    <!-- Main Header-->
+    <header th:replace="~{user/layout/header :: header}"></header>
+    <!--End Main Header -->
+
+    <!-- Map -->
+    <div class="listing-maps style-two">
+      <div id="map" data-map-zoom="9" data-map-scroll="true">
+        <!-- map goes here -->
+      </div>
+
+      <div class="form-outer">
+        <div class="auto-container">
+          <!-- Job Search Form -->
+          <div class="job-search-form style-two">
+            <form method="post" action="https://creativelayers.net/themes/superio/job-list-v10.html">
+              <div class="row">
+                <!-- Form Group -->
+                <div class="form-group col-lg-4 col-md-12 col-sm-12">
+                  <span class="icon flaticon-search-1"></span>
+                  <input type="text" name="field_name" placeholder="Job title, keywords, or company">
+                </div>
+
+                <!-- Form Group -->
+                <div class="form-group col-lg-3 col-md-12 col-sm-12 location">
+                  <span class="icon flaticon-map-locator"></span>
+                  <input type="text" name="field_name" placeholder="City or postcode">
+                </div>
+
+                <!-- Form Group -->
+                <div class="form-group col-lg-3 col-md-12 col-sm-12 location">
+                  <span class="icon flaticon-briefcase"></span>
+                  <select class="chosen-select">
+                    <option value="">Tất cả lĩnh vực</option>
+                    <option value="Công nghệ thông tin">Công nghệ thông tin</option>
+                    <option value="Sản xuất - Chế biến">Sản xuất - Chế biến</option>
+                    <option value="Thương mại - Bán lẻ">Thương mại - Bán lẻ</option>
+                    <option value="Tài chính - Ngân hàng">Tài chính - Ngân hàng</option>
+                    <option value="Xây dựng - Bất động sản">Xây dựng - Bất động sản</option>
+                    <option value="Logistics - Vận tải">Logistics - Vận tải</option>
+                    <option value="Y tế - Dược phẩm">Y tế - Dược phẩm</option>
+                    <option value="Giáo dục - Đào tạo">Giáo dục - Đào tạo</option>
+                    <option value="Du lịch - Dịch vụ - Giải trí">Du lịch - Dịch vụ - Giải trí</option>
+                    <option value="Nông - Lâm - Thủy">Nông - Lâm - Thủy</option>
+                    <option value="Khác">Khác</option>
+                  </select>
+                </div>
+
+                <!-- Form Group -->
+                <div class="form-group col-lg-2 col-md-12 col-sm-12 text-right">
+                  <button type="submit" class="theme-btn btn-style-three">Tìm việc</button>
+                </div>
+              </div>
+            </form>
+          </div>
+          <!-- Job Search Form -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Listing Section -->
+    <section class="ls-section">
+      <div class="auto-container">
+        <div class="filters-backdrop"></div>
+
+        <div class="row">
+
+          <!-- Content Column -->
+          <div class="content-column col-lg-12 col-md-12 col-sm-12">
+            <div class="ls-outer">
+              <button type="button" class="theme-btn btn-style-two toggle-filters">Show Filters</button>
+
+              <!-- ls Switcher -->
+              <div class="ls-switcher">
+                <div class="showing-result">
+                  <div class="top-filters">
+                    <div class="form-group">
+                      <select class="chosen-select">
+                        <option>Hình thức</option>
+                        <option>New Jobs</option>
+                        <option>Freelance</option>
+                        <option>Full Time</option>
+                        <option>Internship</option>
+                        <option>Part Time</option>
+                        <option>Temporary</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <select class="chosen-select">
+                        <option>Founded Date</option>
+                        <option>New Jobs</option>
+                        <option>Freelance</option>
+                        <option>Full Time</option>
+                        <option>Internship</option>
+                        <option>Part Time</option>
+                        <option>Temporary</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="sort-by">
+                  <select class="chosen-select">
+                    <option>Most Recent</option>
+                    <option>Freelance</option>
+                    <option>Full Time</option>
+                    <option>Internship</option>
+                    <option>Part Time</option>
+                    <option>Temporary</option>
+                  </select>
+
+                  <select class="chosen-select">
+                    <option>Show 10</option>
+                    <option>Show 20</option>
+                    <option>Show 30</option>
+                    <option>Show 40</option>
+                    <option>Show 50</option>
+                    <option>Show 60</option>
+                  </select>
+                </div>
+              </div>              <div class="row">
+                <!-- Hiển thị thông báo nếu không có công ty nào -->
+                <div class="col-12" th:if="${#lists.isEmpty(dsCongTy)}">
+                  <div class="alert alert-info text-center">
+                    <h4>Không có công ty nào!</h4>
+                  </div>
+                </div>
+                
+                <!-- Block công ty - lặp qua danh sách -->
+                <div class="company-block-three col-xl-6 col-lg-12 col-md-12 col-sm-12" th:each="congTy : ${dsCongTy}">
+                  <div class="inner-box">
+                    <div class="content">
+                      <div class="content-inner">
+                        <span class="company-logo">
+                          <img th:if="${congTy.logo != null}" th:src="@{'/fe/images/resource/company-logo/' + ${congTy.logo}}" alt="Company Logo">
+                          <img th:unless="${congTy.logo != null}" th:src="@{/fe/images/resource/company-logo/default.png}" alt="Default Logo">
+                        </span>
+                        <h4><a th:href="@{'/chitiet-congty/' + ${congTy.id}}" th:text="${congTy.tenCongTy}">Tên Công Ty</a></h4>
+                        <ul class="job-info">
+                          <li><span class="icon flaticon-map-locator"></span> <span th:text="${congTy.diaChi}">Địa Chỉ</span></li>
+                          <li><span class="icon flaticon-briefcase"></span> <span th:text="${congTy.linhVuc}">Lĩnh Vực</span></li>
+                        </ul>
+                      </div>
+
+                      <ul class="job-other-info">
+                        <li class="time" th:if="${congTy.dSTinTD != null}">
+                          <span th:text="'Số tin tuyển dụng – ' + ${congTy.dSTinTD.size()}">Open Jobs – 0</span>
+                        </li>
+                        <li class="time" th:unless="${congTy.dSTinTD != null}">Số tin tuyển dụng – 0</li>
+                      </ul>
+                    </div>
+                    <button class="bookmark-btn"><span class="flaticon-bookmark"></span></button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pagination -->
+              <nav class="ls-pagination">
+                <ul>
+                  <li class="prev"><a href="#"><i class="fa fa-arrow-left"></i></a></li>
+                  <li><a href="#">1</a></li>
+                  <li><a href="#" class="current-page">2</a></li>
+                  <li><a href="#">3</a></li>
+                  <li class="next"><a href="#"><i class="fa fa-arrow-right"></i></a></li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!--End Listing Page Section -->
+
+
+    <!-- Main Footer -->
+    <div th:replace="~{user/layout/footer :: footer}"></div>
+    <!-- End Main Footer -->
+
+
+  </div><!-- End Page Wrapper -->
+
+  <div th:replace="~{user/layout/script :: script}"></div>
+  <!-- Maps -->  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDaaCBm4FEmgKs5cfVrh3JYue3Chj1kJMw"></script>
+  <script th:src="@{/fe/js/infobox.min.js}"></script>
+  <script th:src="@{/fe/js/markerclusterer.js}"></script>
+  <script th:src="@{/fe/js/maps.js}"></script>
+</body>
+</html>

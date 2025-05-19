@@ -7240,6 +7240,16 @@ Job Section
   color: #34A853;
 }
 
+.job-other-info li.closed {
+  background: rgba(221, 75, 57, 0.15);
+  color: #dd4b39;
+}
+
+.job-other-info li.purple {
+  background: rgba(96, 92, 168, 0.15);
+  color: #605ca8;
+}
+
 .job-other-info li.required {
   background: rgba(249, 171, 0, 0.15);
   color: #F9AB00;
@@ -7667,6 +7677,8 @@ Job Section Four
   background-color: #34A853;
   color: #ffffff;
 }
+
+
 
 .job-section-four .btn-box {
   text-align: center;
@@ -10255,8 +10267,18 @@ Registeration Banners
   color: inherit;
 }
 
+.manage-job-table .chuyenmon,
 .manage-job-table .status {
   color: #34A853;
+}
+
+.manage-job-table .logic,
+.manage-job-table .status-closed {
+    color: #ff0000;
+}
+
+.manage-job-table .ngonngu {
+    color: #1967D2;
 }
 
 .aplicants-upper-bar {
@@ -22327,3 +22349,370 @@ Work Section
 .overflow-hidden {
   overflow: hidden;
 }
+
+.date-input {
+  width: 100%;
+  height: 60px;
+  background-color: #f0f5f7;
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+  padding: 10px 20px;
+}
+/* CSS cho nút trạng thái active */
+.active-status {
+  background-color: #1967D2 !important;
+  color: white !important;
+  box-shadow: 0 5px 10px rgba(25, 103, 210, 0.15);
+}
+
+.active-status span {
+  color: white !important;
+}
+
+.info-list {
+    position: relative;
+    margin-bottom: 30px;
+  }
+  
+  .info-list li {
+    position: relative;
+    margin-bottom: 15px;
+    padding-left: 30px;
+    color: #696969;
+  }
+  
+  .info-list li strong {
+    color: #202124;
+    font-weight: 500;
+    margin-right: 5px;
+  }
+  
+  .info-list li .icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: #1967D2;
+    line-height: 24px;
+    font-size: 18px;
+  }
+  
+  .detail-content {
+    background: #F5F7FC;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+  
+  .detail-content h5 {
+    margin-bottom: 15px;
+    color: #202124;
+    font-weight: 500;
+  }
+  
+  .detail-content p {
+    color: #696969;
+    margin-bottom: 15px;
+    white-space: pre-line;
+  }
+  
+  .qr-code {
+    text-align: center;
+    margin: 30px 0;
+  }
+  
+  .qr-code img {
+    max-width: 200px;
+    margin: 0 auto;
+  }
+
+  .ls-widget.mb-4 {
+    margin-bottom: 25px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .widget-title h4 i {
+    margin-right: 10px;
+    color: #1967D2;
+  }
+  
+  .badge.badge-info {
+    background-color: #1967D2;
+    color: white;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 10px;
+  }
+  
+  /* Style cho phần không có dữ liệu */
+  .message-box {
+    padding: 30px;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .message-box.error {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+  }
+  
+  .message-box a {
+    color: #1967D2;
+    font-weight: 600;
+  }
+  /* dòng tổng kết */
+.summary-row {
+    background-color: #f8f9fa;
+    font-weight: 500;
+  }
+  
+  .summary-row td {
+    border-top: 2px solid #e9ecef !important;
+    padding: 12px 20px !important;
+  }
+  
+  .summary-row strong {
+    color: #202124;
+  }
+  
+  .summary-row strong span {
+    color: #1967D2;
+    padding-left: 5px;
+  }
+
+.post-tags li.ngonngu {
+  background-color: #1967D2 !important;
+  color: white !important;
+  order: 1; /* Thứ tự hiển thị */
+}
+
+.post-tags li.logic {
+  background-color: #dc3545 !important;
+  color: white !important;
+  order: 2; /* Thứ tự hiển thị */
+}
+
+.post-tags li.chuyenmon {
+  background-color: #28a745 !important;
+  color: white !important;
+  order: 3; /* Thứ tự hiển thị */
+  /* Tạo cả hàng mới cho chuyên môn */
+  flex-basis: 100%;
+  max-width: 170px;
+  margin: 10px auto 0;
+}
+
+/* Thiết kế card ứng viên */
+.candidate-card {
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+  overflow: hidden;
+  background-color: #fff;
+  transition: transform 0.3s, box-shadow 0.3s;
+  border: 1px solid #f0f0f0;
+}
+
+.candidate-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Thông tin ứng viên */
+.candidate-info-wrapper {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+}
+
+.candidate-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 20px;
+  border: 3px solid #f0f5f7;
+}
+
+.candidate-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.candidate-details {
+  flex: 1;
+}
+
+.candidate-name {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #202124;
+}
+
+.candidate-contact {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.candidate-contact li {
+  margin-right: 20px;
+  font-size: 14px;
+  color: #696969;
+}
+
+/* Thông tin vị trí */
+.position-info {
+  padding: 15px 20px;
+  background-color: #f8f9fb;
+  border-top: 1px solid #eaeaea;
+}
+
+.position-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #202124;
+  margin-bottom: 5px;
+}
+
+.position-location {
+  color: #696969;
+  font-size: 13px;
+}
+
+/* Bảng phỏng vấn */
+.interview-table-wrapper {
+  padding: 0 20px 20px;
+}
+
+.interview-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+
+
+.interview-table th {
+  padding: 12px 8px;
+  text-align: left;
+  background-color: #1967D2;
+  color: #ffffff;
+  font-weight: 500;
+  font-size: 14px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.interview-table td {
+  padding: 12px 8px;
+  border-bottom: 1px solid #eaeaea;
+  font-size: 14px;
+  color: #696969;
+}
+
+/* Status badges */
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.badge-warning {
+  background-color: #fff8e1;
+  color: #ffa000;
+}
+
+.badge-info {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.badge-success {
+  background-color: #e8f5e9;
+  color: #388e3c;
+}
+
+.badge-secondary {
+  background-color: #f5f5f5;
+  color: #757575;
+}
+
+/* Actions */
+.interview-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #f0f5f7;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #696969;
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  background-color: #1967d2;
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: #1967d2;
+}
+
+.rate-btn:hover {
+  background-color: #ffa000;
+}
+
+.delete-btn:hover {
+  background-color: #dc3545;
+}
+
+/* Số lượng phỏng vấn */
+.interview-count {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.interview-counter {
+  background-color: #e3f2fd;
+  color: #1967d2;
+  padding: 5px 15px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: #f8f9fb;
+  border-radius: 10px;
+  margin: 30px 0;
+}
+
+.empty-state h5 {
+  color: #696969;
+  font-weight: 500;
+  margin-top: 15px;
+}
+
+.empty-state .icon {
+  font-size: 48px;
+  color: #bababa;
+  margin-bottom: 20px;
+}
+
+

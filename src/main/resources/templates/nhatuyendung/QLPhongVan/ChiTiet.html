@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{user/layout/head :: head}"></head>
+
+<body>
+  <div class="page-wrapper dashboard">
+    <!-- Header -->
+    <header th:replace="~{user/layout/header :: header}"></header>
+    <!--End Main Header -->
+
+    <!-- Sidebar Backdrop -->
+    <div class="sidebar-backdrop"></div>
+
+    <!-- User Sidebar -->
+    <div th:replace="~{nhatuyendung/layout/sidebar :: sidebar}"></div>
+    <!-- End User Sidebar -->
+
+    <!-- Dashboard -->
+    <section class="user-dashboard">
+      <div class="dashboard-outer">
+        <div class="upper-title-box">
+          <a th:href="@{/nhatd/dsphongvan}" class="btn btn-sm btn-outline-primary mb-3">
+            <i class="la la-arrow-left"></i> Quay lại danh sách phỏng vấn
+          </a>
+          <h3>Chi tiết quá trình phỏng vấn</h3>
+        </div>
+
+        <!-- Thông báo -->
+        <div th:if="${success != null}" class="alert alert-success mt-3" role="alert">
+          <span th:text="${success}"></span>
+        </div>
+        <div th:if="${error != null}" class="alert alert-danger mt-3" role="alert">
+          <span th:text="${error}"></span>
+        </div>
+
+        <div class="row">
+          <!-- Thông tin ứng viên -->
+          <div class="col-lg-12 mb-4">
+            <div class="candidate-block-three">
+              <div class="inner-box">
+                <div class="content">
+                  <figure class="image">
+                    <img th:src="@{/fe/images/resource/candidate-1.png}" alt="Ứng viên">
+                  </figure>
+                  <h4 class="name">
+                    <a th:href="@{'/nhatd/chitiet-ungvien/' + ${ungVien.id}}" th:text="${ungVien.hoTen != null ? ungVien.hoTen : ungVien.username}">Tên ứng viên</a>
+                  </h4>
+                  <div class="candidate-info">
+                    <span class="designation" th:text="${ungVien.chuyenNganh != null ? ungVien.chuyenNganh : 'Chưa cập nhật chuyên ngành'}">Chuyên ngành</span>
+                    <span class="location" th:if="${ungVien.diaChi != null}">
+                      <i class="flaticon-map-locator"></i> <span th:text="${ungVien.diaChi}">Địa chỉ</span>
+                    </span>
+                  </div>
+
+                  <ul class="post-tags">
+                    <li th:if="${ungVien.namKinhNghiem > 0}">
+                      <a href="#" th:text="${ungVien.namKinhNghiem + ' năm kinh nghiệm'}">5 năm kinh nghiệm</a>
+                    </li>
+                    <li th:if="${ungVien.namKinhNghiem == 0 || ungVien.namKinhNghiem == null}">
+                      <a href="#">Mới ra trường</a>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="option-box">
+                  <div class="candidate-action-box">
+                    <a th:href="@{'/nhatd/chitiet-ungvien/' + ${ungVien.id}}" class="candidate-action-btn">
+                      <i class="las la-user"></i> Xem hồ sơ
+                    </a>
+                    <a th:href="@{'/nhatd/add-phongvan/' + ${donUngTuyen.id}}" class="theme-btn btn-style-one ml-3">
+                      <i class="la la-plus-circle"></i> Thêm phỏng vấn
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Timeline phỏng vấn -->
+          <div class="col-lg-12">
+            <div class="ls-widget">
+              <div class="tabs-box">
+                <div class="widget-title">
+                  <h4>Quá trình phỏng vấn</h4>
+                  <h6 class="text-muted" th:text="'Vị trí: ' + ${tinTuyenDung.tieuDe}">Vị trí tuyển dụng</h6>
+                </div>
+
+                <div class="widget-content">
+                  <!-- Hiển thị thông báo nếu không có phỏng vấn nào -->
+                  <div th:if="${#lists.isEmpty(listPhongVan)}" class="alert alert-info">
+                    Chưa có phỏng vấn nào cho đơn ứng tuyển này.
+                  </div>
+                  
+                  <!-- Timeline phỏng vấn -->
+                  <div th:unless="${#lists.isEmpty(listPhongVan)}" class="interview-timeline">
+                    <div class="timeline-container">
+                      <div class="timeline-item" th:each="pv, iterStat : ${listPhongVan}"
+                           th:classappend="${pv.trangThai == 'dapv' ? 'completed' : pv.trangThai == 'xeplich' ? 'scheduled' : 'waiting'}">
+                        
+                        <div class="timeline-marker">
+                          <span class="marker-icon">
+                            <i th:class="${pv.trangThai == 'dapv' ? 'la la-check-circle' : pv.trangThai == 'xeplich' ? 'la la-calendar' : 'la la-hourglass'}"></i>
+                          </span>
+                          <span class="marker-label" th:text="${iterStat.count}">1</span>
+                        </div>
+                        
+                        <div class="timeline-content">
+                          <div class="timeline-header">
+                            <div class="interview-status">
+                              <span class="badge" th:classappend="${
+                                pv.trangThai == 'xeplich' ? 'badge-info' :
+                                pv.trangThai == 'dapv' ? 'badge-success' : 'badge-secondary'
+                              }" th:text="${
+                                pv.trangThai == 'chopv' ? 'Chờ phỏng vấn' :
+                                pv.trangThai == 'xeplich' ? 'Đang xếp lịch' :
+                                pv.trangThai == 'dapv' ? 'Đã phỏng vấn' : 'Không xác định'
+                              }">Trạng thái</span>
+                              
+                              <span class="timeline-date" th:if="${pv.ngayPV != null}" 
+                                    th:text="${#dates.format(pv.ngayPV, 'dd/MM/yyyy HH:mm')}">
+                                01/01/2023 10:00
+                              </span>
+                              <span class="timeline-date" th:unless="${pv.ngayPV != null}">
+                                Chưa xếp lịch
+                              </span>
+                            </div>
+                          </div>
+                          
+                          <div class="timeline-body">
+                            <div class="interview-info">
+                              <div class="interviewer-details" th:if="${pv.nhanVienTD != null}">
+                                <h5><i class="la la-user-tie"></i> Nhân viên phỏng vấn</h5>
+                                <p th:text="${pv.nhanVienTD.hoTen}">Nguyễn Văn A</p>
+                                <p class="text-muted" th:if="${pv.nhanVienTD.email != null}" th:text="${pv.nhanVienTD.email}">email@example.com</p>
+                              </div>
+                              <div class="interviewer-details" th:unless="${pv.nhanVienTD != null}">
+                                <h5><i class="la la-user-tie"></i> Nhân viên phỏng vấn</h5>
+                                <p class="text-muted">Chưa phân công</p>
+                              </div>
+                              
+                              <div class="location-details" th:if="${pv.diaDiem != null && !pv.diaDiem.isEmpty()}">
+                                <h5><i class="la la-map-marker"></i> Địa điểm</h5>
+                                <p th:text="${pv.diaDiem}">Địa điểm phỏng vấn</p>
+                              </div>
+                              <div class="location-details" th:unless="${pv.diaDiem != null && !pv.diaDiem.isEmpty()}">
+                                <h5><i class="la la-map-marker"></i> Địa điểm</h5>
+                                <p class="text-muted">Chưa cập nhật</p>
+                              </div>
+                            </div>
+                            
+                            <!-- Hiển thị đánh giá nếu đã phỏng vấn -->
+                            <div class="interview-evaluation" th:if="${pv.trangThai == 'dapv'}">
+                              <div class="divider"><span>Đánh giá phỏng vấn</span></div>
+                              
+                              <div class="rating-section">
+                                <div class="rating-score">
+                                  <div class="score-display" th:text="${pv.diemDanhGia + '/10'}">8/10</div>
+                                  <div class="rating-bar">
+                                    <div class="rating-progress" th:style="'width: ' + ${pv.diemDanhGia * 10} + '%'"></div>
+                                  </div>
+                                </div>
+                                
+                                <div class="rating-feedback" th:if="${pv.nhanXet != null && !pv.nhanXet.isEmpty()}">
+                                  <h5><i class="la la-comment"></i> Nhận xét</h5>
+                                  <p th:text="${pv.nhanXet}">Nhận xét về buổi phỏng vấn</p>
+                                </div>
+                                <div class="rating-feedback" th:unless="${pv.nhanXet != null && !pv.nhanXet.isEmpty()}">
+                                  <h5><i class="la la-comment"></i> Nhận xét</h5>
+                                  <p class="text-muted">Không có nhận xét</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div class="timeline-footer">
+                            <div class="actions">
+                              <a th:href="@{'/nhatd/edit-phongvan/' + ${pv.id}}" class="action-btn edit-btn" title="Cập nhật">
+                                <i class="la la-pencil"></i> Cập nhật
+                              </a>
+                              <a th:if="${pv.trangThai != 'dapv'}" 
+                                 th:href="@{'/nhatd/delete-phongvan/' + ${pv.id}}" 
+                                 onclick="return confirm('Bạn có chắc chắn muốn xóa phỏng vấn này?');"
+                                 class="action-btn delete-btn" title="Xóa">
+                                <i class="la la-trash"></i> Xóa
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="p-3 text-center">
+                    <div class="btn-group">
+                        <a th:href="@{/nhatd/update-trangthai/{id}/{trangThai}(id=${donUngTuyen.id}, trangThai='datuyen')}" 
+                                      th:class="${donUngTuyen.trangThai == 'datuyen' ? 'active-status' : ''}"
+                                      data-text="Tuyển dụng"
+                                      onclick="return confirm('Bạn có chắc chắn muốn tuyển dụng ứng viên này?');">
+                                      <i class="la la-check"></i> Tuyển dụng
+                        </a>
+                        <a th:href="@{/nhatd/update-trangthai/{id}/{trangThai}(id=${donUngTuyen.id}, trangThai='tuchoi')}" 
+                                      th:class="${donUngTuyen.trangThai == 'tuchoi' ? 'active-status' : ''}"
+                                      data-text="Từ chối"
+                                      onclick="return confirm('Bạn có chắc chắn muốn từ chối ứng viên này?');">
+                                      <i class="la la-times-circle"></i> Từ chối
+                        </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Dashboard -->
+
+    <!-- Copyright -->
+    <div th:replace="~{nhatuyendung/layout/footer :: footer}"></div>
+    <!-- End Copyright -->
+  </div>
+  <!-- End Page Wrapper -->
+
+  <div th:replace="~{user/layout/script :: script}"></div>
+  
+  <style>
+    /* Timeline Style */
+    .interview-timeline {
+      padding: 20px 0;
+    }
+    
+    .timeline-container {
+      position: relative;
+      padding-left: 40px;
+    }
+    
+    .timeline-container:before {
+      content: '';
+      position: absolute;
+      left: 20px;
+      top: 0;
+      height: 100%;
+      width: 2px;
+      background: #e9ecef;
+    }
+    
+    .timeline-item {
+      position: relative;
+      padding-bottom: 40px;
+    }
+    
+    .timeline-item:last-child {
+      padding-bottom: 0;
+    }
+    
+    .timeline-marker {
+      position: absolute;
+      left: -40px;
+      top: 0;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .marker-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #f5f7fa;
+      border: 2px solid #e9ecef;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #777;
+      font-size: 18px;
+      position: absolute;
+    }
+    
+    .timeline-item.completed .marker-icon {
+      background: #38b653;
+      border-color: #38b653;
+      color: #fff;
+    }
+    
+    .timeline-item.scheduled .marker-icon {
+      background: #14a5e1;
+      border-color: #14a5e1;
+      color: #fff;
+    }
+    
+    .timeline-item.waiting .marker-icon {
+      background: #6c757d;
+      border-color: #6c757d;
+      color: #fff;
+    }
+    
+    .marker-label {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2px solid #e9ecef;
+      color: #777;
+      font-size: 12px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .timeline-content {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    
+    .timeline-header {
+      padding: 15px;
+      background: #f5f7fa;
+      border-bottom: 1px solid #e9ecef;
+    }
+    
+    .interview-status {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .timeline-date {
+      font-weight: 500;
+      color: #777;
+    }
+    
+    .timeline-body {
+      padding: 20px;
+    }
+    
+    .interview-info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      margin-bottom: 20px;
+    }
+    
+    .interviewer-details, .location-details {
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    .interviewer-details h5, .location-details h5 {
+      font-size: 16px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .interviewer-details p, .location-details p {
+      margin-bottom: 5px;
+    }
+    
+    .divider {
+      position: relative;
+      text-align: center;
+      margin: 20px 0;
+    }
+    
+    .divider:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 100%;
+      height: 1px;
+      background: #e9ecef;
+    }
+    
+    .divider span {
+      position: relative;
+      background: #fff;
+      padding: 0 15px;
+      color: #777;
+      font-weight: 500;
+    }
+    
+    .rating-section {
+      padding: 15px 0;
+    }
+    
+    .rating-score {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .score-display {
+      font-size: 24px;
+      font-weight: bold;
+      color: #1967D2;
+      margin-right: 15px;
+      width: 70px;
+      text-align: center;
+    }
+    
+    .rating-bar {
+      flex: 1;
+      height: 10px;
+      background: #e9ecef;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    
+    .rating-progress {
+      height: 100%;
+      background: #1967D2;
+      border-radius: 5px;
+    }
+    
+    .rating-feedback h5 {
+      font-size: 16px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .rating-feedback p {
+      background: #f5f7fa;
+      padding: 15px;
+      border-radius: 8px;
+      color: #555;
+    }
+    
+    .timeline-footer {
+      padding: 15px;
+      border-top: 1px solid #e9ecef;
+      display: flex;
+      justify-content: flex-end;
+    }
+    
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .action-btn {
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.3s ease;
+    }
+    
+    .action-btn.edit-btn {
+      background: #f5f7fa;
+      color: #1967D2;
+      border: 1px solid #e9ecef;
+    }
+    
+    .action-btn.edit-btn:hover {
+      background: #e9ecef;
+    }
+    
+    .action-btn.delete-btn {
+      background: #f5f7fa;
+      color: #dc3545;
+      border: 1px solid #e9ecef;
+    }
+    
+    .action-btn.delete-btn:hover {
+      background: #fff0f1;
+    }
+  </style>
+</body>
+</html>

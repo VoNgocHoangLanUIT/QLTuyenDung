@@ -25,7 +25,6 @@ public class CustomUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        System.out.println("Attempting to authenticate with email: " + email);
     
         if (email == null || email.trim().isEmpty()) {
             System.out.println("Email is empty or null");
@@ -37,18 +36,33 @@ public class CustomUserDetailService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found with email: " + email);
         }
 
-        System.out.println("Found user: " + user.getEmail());
-        System.out.println("User password hash: " + user.getPassword());
         Collection<GrantedAuthority> grantedAuthoritySet = new HashSet<>();
         Set<UserRole> roles = user.getUserRoles();
-        UserRole adminRole = roles.stream()
-            .filter(role -> "ADMIN".equals(role.getRole().getName()))
-            .findFirst()
-            .orElse(roles.iterator().next());
+        UserRole primaryRole = null;
+        
+        for (UserRole role : roles) {
+            if ("ADMIN".equals(role.getRole().getName())) {
+                primaryRole = role;
+                break;
+            }
+        }
+        
+        if (primaryRole == null) {
+            for (UserRole role : roles) {
+                if ("RECRUITER".equals(role.getRole().getName())) {
+                    primaryRole = role;
+                    break;
+                }
+            }
+        }
+        
+        if (primaryRole == null && !roles.isEmpty()) {
+            primaryRole = roles.iterator().next();
+        }
         for (UserRole userRole : roles) {
             grantedAuthoritySet.add(new SimpleGrantedAuthority(userRole.getRole().getName()));
         }
-        return new CustomUserDetail(user, grantedAuthoritySet, adminRole);
+        return new CustomUserDetail(user, grantedAuthoritySet, primaryRole);
     }
 
     

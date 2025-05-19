@@ -1,4 +1,4 @@
-package com.example.QLTuyenDung.controller.admin;
+package com.example.QLTuyenDung.controller;
 
 import org.springframework.ui.Model;
 
@@ -24,6 +24,9 @@ import com.example.QLTuyenDung.model.User;
 import com.example.QLTuyenDung.model.UserRole;
 import com.example.QLTuyenDung.service.CongTyService;
 import com.example.QLTuyenDung.service.FileStorageService;
+import com.example.QLTuyenDung.service.HocVanService;
+import com.example.QLTuyenDung.service.KinhNghiemLamViecService;
+import com.example.QLTuyenDung.service.ThanhTuuService;
 import com.example.QLTuyenDung.service.UserRoleService;
 import com.example.QLTuyenDung.service.UserService;
 
@@ -36,21 +39,32 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/admin")
+
 public class QLyUserController {
     private final UserService userService;
     private final UserRoleService userRoleService;
     private final CongTyService congTyService;
     private final FileStorageService fileStorageService;
-    @GetMapping("/users")
-    public String showUser(Model model) {
+    private final KinhNghiemLamViecService kinhNghiemLamViecService;
+    private final HocVanService hocVanService;
+    private final ThanhTuuService thanhTuuService;
+    
+    @GetMapping("/dsungvien")
+    public String showDSUngVien(Model model) {
+        List<User> dSUngVien = userService.getAllCandidates();
+        model.addAttribute("dSUngVien", dSUngVien);
+        return "user/UngVien/index";
+    }
+    
+    @GetMapping("/admin/users")
+    public String adminShowUser(Model model) {
         List<UserRoleDTO> userRoles = userService.getAllUsersWithRoles();
         model.addAttribute("userRoles", userRoles);
         return "admin/QLUser/index";
     }
 
-    @GetMapping("/add-user")
-    public String add(Model model) {
+    @GetMapping("/admin/add-user")
+    public String adminAddUser(Model model) {
         User user = new User();
         user.setEnabled(true);
         List<CongTy> dSCongTy = congTyService.getAllCongTy();
@@ -59,8 +73,8 @@ public class QLyUserController {
         return "admin/QLUser/add";
     }
     
-    @PostMapping("/add-user")
-    public String addUser(@ModelAttribute User user,
+    @PostMapping("/admin/add-user")
+    public String adminAddUser(@ModelAttribute User user,
                         @RequestParam String roleName,
                         @RequestParam(required = false) Long companyId,
                         @RequestParam(required = false) MultipartFile cvMultipartFile,
@@ -93,8 +107,8 @@ public class QLyUserController {
         }
     }
 
-    @GetMapping("/edit-user/{id}")
-    public String updateUser(@PathVariable Long id, @RequestParam Long roleId, Model model) {
+    @GetMapping("/admin/edit-user/{id}")
+    public String adminUpdateUser(@PathVariable Long id, @RequestParam Long roleId, Model model) {
         try {
             User user = userService.getUserById(id);
             UserRole userRole = userRoleService.getUserRoleByUserIdAndRoleId(user.getId(), roleId); 
@@ -109,8 +123,8 @@ public class QLyUserController {
         }
     }
 
-    @PostMapping("/edit-user/{id}")
-    public String updateUser(@PathVariable Long id,
+    @PostMapping("/admin/edit-user/{id}")
+    public String adminUpdateUser(@PathVariable Long id,
                            @ModelAttribute User user,
                            @RequestParam String roleName,
                            @RequestParam Long oldRoleId,
@@ -163,8 +177,8 @@ public class QLyUserController {
         }
     }
 
-    @PostMapping("/delete-cv/{id}")
-    public ResponseEntity<?> deleteCvFile(@PathVariable Long id) {
+    @PostMapping("/admin/delete-cv/{id}")
+    public ResponseEntity<?> adminDeleteCvFile(@PathVariable Long id) {
         try {
             User user = userService.getUserById(id);
             if (user.getCvFile() != null) {
@@ -185,8 +199,8 @@ public class QLyUserController {
         }
     }
 
-    @GetMapping("/delete-user/{id}/{roleId}")
-    public String deleteUser(@PathVariable Long id, 
+    @GetMapping("/admin/delete-user/{id}/{roleId}")
+    public String adminDeleteUser(@PathVariable Long id, 
                            @PathVariable Long roleId,
                            RedirectAttributes redirectAttributes) {
         try {
@@ -198,5 +212,36 @@ public class QLyUserController {
         return "redirect:/admin/users";
     }
 
+    @GetMapping("/chitiet-ungvien/{id}")
+    public String showChiTietUngVien(@PathVariable Long id, Model model) {
+        try {
+            User ungVien = userService.getUserById(id);
+            model.addAttribute("ungVien", ungVien);
+            model.addAttribute("dSHocVan", hocVanService.getHocVanByUserId(id));
+            model.addAttribute("dSKinhNghiem", kinhNghiemLamViecService.getKinhNghiemLamViecByUserId(id));
+            model.addAttribute("dSThanhTuu", thanhTuuService.getThanhTuuByUserId(id));
+            return "user/UngVien/ChiTiet";
+        } catch (RuntimeException e) {
+            return "redirect:/dsungvien";
+        }
+    }
 
+    @GetMapping("/download-cv/{id}")
+    public ResponseEntity<?> downloadCV(@PathVariable Long id) {
+        try {
+            User ungVien = userService.getUserById(id);
+            if (ungVien != null && ungVien.getCvFile() != null) {
+                Path cvPath = Paths.get(fileStorageService.getUploadDir() + File.separator + ungVien.getCvFile());
+                if (Files.exists(cvPath)) {
+                    byte[] data = Files.readAllBytes(cvPath);
+                    return ResponseEntity.ok()
+                        .header("Content-Disposition", "attachment; filename=\"" + ungVien.getCvFile() + "\"")
+                        .body(data);
+                }
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error downloading file");
+        }
+    }
 }

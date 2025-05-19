@@ -1,7 +1,11 @@
 package com.example.QLTuyenDung.model;
 
+import java.util.Date;
 import java.util.Set;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -26,11 +30,15 @@ public class BaiTest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String tieuDe;
+    @Column(length = 4000)
     private String moTa;
     private String loai;
     private String linkGGForm;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date ngayTao;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date ngayDong;
 
-    @NotNull(message = "Tin tuyển dụng không được để trống")
     @ManyToOne
     @JoinColumn (name = "tintd_id", referencedColumnName = "id")
     private TinTuyenDung tinTuyenDung;

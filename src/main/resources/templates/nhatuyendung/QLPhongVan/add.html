@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{user/layout/head :: head}"></head>
+
+<body>
+  <div class="page-wrapper dashboard">
+    <!-- Preloader -->
+    <div class="preloader"></div>
+
+    <!-- Header Span -->
+    <span class="header-span"></span>
+
+    <!-- Main Header-->
+    <header th:replace="~{user/layout/header :: header}"></header>
+    <!--End Main Header -->
+
+    <!-- Sidebar Backdrop -->
+    <div class="sidebar-backdrop"></div>
+
+    <!-- User Sidebar -->
+    <div th:replace="~{nhatuyendung/layout/sidebar :: sidebar}"></div>
+    <!-- End User Sidebar -->
+
+    <!-- Dashboard -->
+    <section class="user-dashboard">
+      <div class="dashboard-outer">
+        <div class="upper-title-box">
+          <a th:href="@{/nhatd/dsphongvan}" class="btn btn-sm btn-outline-primary mb-3">
+            <i class="la la-arrow-left"></i> Quay lại danh sách phỏng vấn
+          </a>
+          <h3>Phân công phỏng vấn</h3>
+          <div class="text" th:text="'Ứng viên: ' + ${donUngTuyen.user.hoTen}">Tên ứng viên</div>
+          <div class="text" th:text="'Vị trí ứng tuyển: ' + ${donUngTuyen.tinTuyenDung.tieuDe}">Vị trí</div>
+        </div>
+
+        <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="ls-widget">
+              <div class="tabs-box">
+                <div class="widget-title">
+                  <h4>Thông tin phỏng vấn</h4>
+                </div>
+
+                <div class="widget-content">
+                  <!-- Phần thông tin phỏng vấn -->
+                  <form method="post" th:action="@{/nhatd/add-phongvan}" class="default-form">
+                    <input type="hidden" name="donUngTuyenId" th:value="${donUngTuyen.id}">
+                    
+                    <!-- Thông tin thời gian và địa điểm -->
+                    <div class="row">
+                      <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                        <label>Ngày phỏng vấn <span class="required">*</span></label>
+                        <input type="datetime-local" name="ngayPV" class="form-control" required>
+                      </div>
+                      
+                      <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                        <label>Địa điểm phỏng vấn <span class="required">*</span></label>
+                        <input type="text" name="diaDiem" class="form-control" placeholder="Nhập địa điểm phỏng vấn" required>
+                        <small class="text-muted">Ví dụ: Văn phòng công ty, Phòng họp A, Online - Google Meet...</small>
+                      </div>
+                    </div>
+                    
+                    <!-- Chọn nhân viên phỏng vấn -->
+                    <div class="form-group">
+                      <label>Chọn nhân viên phỏng vấn <span class="required">*</span></label>
+                      
+                      <div th:if="${#lists.isEmpty(danhSachNhanVien)}" class="alert alert-info">
+                        Công ty không còn nhân viên tuyển dụng cho ứng viên này.
+                      </div>
+                      
+                      <div th:unless="${#lists.isEmpty(danhSachNhanVien)}" class="staff-selection">
+                        <div class="row">
+                          <!-- Hiển thị danh sách nhân viên -->
+                          <div th:each="nv : ${danhSachNhanVien}" class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                            <div class="staff-card">
+                              <div class="form-check">
+                                <input class="form-check-input staff-checkbox" type="checkbox" 
+                                       th:id="'staff-' + ${nv.id}" name="selectedStaff" th:value="${nv.id}">
+                                <label class="form-check-label" th:for="'staff-' + ${nv.id}">
+                                  <div class="d-flex align-items-center">
+                                    <figure class="avatar mr-3">
+                                      <img th:if="${nv.hinhAnh != null}" th:src="${'/fe/images/resource/' + nv.hinhAnh}" alt="">
+                                      <img th:unless="${nv.hinhAnh != null}" th:src="@{/fe/images/resource/candidate-1.png}" alt="">
+                                    </figure>
+                                    <div>
+                                      <h5 class="staff-name" th:text="${nv.hoTen}">Tên nhân viên</h5>
+                                      <p class="mb-0" th:text="${nv.email}">Email</p>
+                                    </div>
+                                  </div>
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="form-group text-right">
+                      <button type="submit" class="theme-btn btn-style-one" id="submitBtn">
+                        <i class="la la-save"></i> Lưu phân công phỏng vấn
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Dashboard -->
+
+    <!-- Copyright -->
+    <div th:replace="~{nhatuyendung/layout/footer :: footer}"></div>
+
+  </div><!-- End Page Wrapper -->
+
+  <div th:replace="~{user/layout/script :: script}"></div>
+
+  <style>
+    .staff-card {
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      padding: 15px;
+      transition: all 0.3s ease;
+      height: 100%;
+      border: 1px solid #eee;
+    }
+    
+    .staff-card:hover {
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+      border-color: #1967D2;
+    }
+    
+    .staff-card .form-check {
+      padding: 0;
+    }
+    
+    .staff-card .form-check-label {
+      width: 100%;
+      cursor: pointer;
+      padding-left: 30px;
+      position: relative;
+    }
+    
+    .staff-card .form-check-input {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    
+    .staff-card .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-bottom: 0;
+    }
+    
+    .staff-card .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .staff-card.selected {
+      background-color: #e3f2fd;
+      border-color: #1967D2;
+    }
+    
+    .required {
+      color: #dc3545;
+    }
+  </style>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Highlight selected staff cards
+      document.querySelectorAll('.staff-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+          const staffCard = this.closest('.staff-card');
+          if (this.checked) {
+            staffCard.classList.add('selected');
+          } else {
+            staffCard.classList.remove('selected');
+          }
+        });
+      });
+      
+      // Set minimum date for datetime-local to today
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      const todayStr = `${yyyy}-${mm}-${dd}T00:00`;
+      
+      document.querySelector('input[name="ngayPV"]').min = todayStr;
+      
+      // Set default date to tomorrow
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowYYYY = tomorrow.getFullYear();
+      const tomorrowMM = String(tomorrow.getMonth() + 1).padStart(2, '0');
+      const tomorrowDD = String(tomorrow.getDate()).padStart(2, '0');
+      const tomorrowHH = String(tomorrow.getHours()).padStart(2, '0');
+      const tomorrowMins = String(tomorrow.getMinutes()).padStart(2, '0');
+      const tomorrowStr = `${tomorrowYYYY}-${tomorrowMM}-${tomorrowDD}T${tomorrowHH}:${tomorrowMins}`;
+      
+      document.querySelector('input[name="ngayPV"]').value = tomorrowStr;
+    });
+  </script>
+</body>
+</html>

@@ -48,9 +48,9 @@
                     <div class="row">
                       <div class="col-md-6">
                         <div class="form-group">
-                          <label for="viTri">Vị trí tuyển dụng</label>
-                          <input type="text" class="form-control" id="viTri" placeholder="Vị trí tuyển dụng"
-                                 th:field="*{viTri}" required>
+                          <label for="tieuDe">Tiêu đề tuyển dụng</label>
+                          <input type="text" class="form-control" id="tieuDe" placeholder="Tiêu đề tuyển dụng"
+                                 th:field="*{tieuDe}" required>
                         </div>
                         <div class="form-group">
                           <label for="congty">Công ty</label>
@@ -70,8 +70,13 @@
                         </div>
                         <div class="form-group">
                           <label for="hinhThucLV">Hình thức làm việc</label>
-                          <input type="text" class="form-control" id="hinhThucLV" placeholder="Hình thức làm việc"
-                                 th:field="*{hinhThucLV}" required>
+                          <select class="form-control" id="hinhThucLV" th:field="*{hinhThucLV}" required>
+                              <option value="">Chọn hình thức làm việc</option>
+                              <option value="Full-time">Full-time</option>
+                              <option value="Part-time">Part-time</option>
+                              <option value="Freelance">Freelance</option>
+                              <option value="HopDong">Hợp đồng ngắn hạn</option>
+                          </select>
                         </div>
                         <div class="form-group">
                           <label for="diaDiemLV">Địa điểm làm việc</label>
@@ -85,6 +90,21 @@
                         </div>
                       </div>
                       <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="linhVuc">Lĩnh Vực công việc</label>
+                          <select class="form-control" id="linhVuc" th:field="*{linhVuc}" required>
+                              <option value="">Chọn lĩnh vực công việc</option>
+                              <option value="Ketoan-Taichinh">Kế toán - Tài chính</option>
+                              <option value="It">Công nghệ</option>
+                              <option value="Dichvu">Dịch vụ</option>
+                              <option value="Marketing">Marketing</option>
+                              <option value="Nhansu">Nhân sự</option>
+                              <option value="Chamsocsuckhoe">Chăm sóc sức khoẻ</option>
+                              <option value="Thietke">Thiết kế</option>
+                              <option value="Qlyduan">Quản lý dự án</option>
+                              <option value="Oto">Công nghiệp ô tô</option>
+                          </select>
+                        </div>
                         <div class="form-group">
                           <label for="hanNop">Hạn nộp hồ sơ</label>
                           <input type="date" class="form-control" id="hanNop" 

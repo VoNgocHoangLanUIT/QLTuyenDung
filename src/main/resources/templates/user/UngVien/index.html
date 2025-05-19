@@ -1,0 +1,244 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{user/layout/head :: head}"></head>
+
+<body>
+
+  <div class="page-wrapper">
+
+    <!-- Preloader -->
+    <div class="preloader"></div>
+
+    <!-- Header Span -->
+    <span class="header-span"></span>
+
+    <!-- Main Header-->
+    <header th:replace="~{user/layout/header :: header}"></header>
+    <!--End Main Header -->
+
+    <!--Page Title-->
+    <section class="page-title">
+      <div class="auto-container">
+        <div class="title-outer">
+          <h1>Danh sách ứng viên</h1>
+          <ul class="page-breadcrumb">
+            <li><a th:href="@{/}">Trang chủ</a></li>
+            <li>Danh sách ứng viên</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    <!--End Page Title-->
+
+    <!-- Listing Section -->
+    <section class="ls-section">
+      <div class="auto-container">
+        <div class="filters-backdrop"></div>
+
+        <div class="row">
+
+          <!-- Filters Column -->
+          <div class="filters-column col-lg-4 col-md-12 col-sm-12">
+            <div class="inner-column">
+              <div class="filters-outer">
+                <button type="button" class="theme-btn close-filters">X</button>
+
+                <!-- Filter Block -->
+                <div class="filter-block">
+                  <h4>Tìm kiếm theo từ khoá</h4>
+                  <div class="form-group">
+                    <input type="text" name="listing-search" placeholder="Ứng viên">
+                    <span class="icon flaticon-search-3"></span>
+                  </div>
+                </div>
+
+                <!-- Filter Block -->
+                <div class="filter-block">
+                  <h4>Địa điểm</h4>
+                  <div class="form-group">
+                    <input type="text" name="listing-search" placeholder="Thành phố hoặc vị trí">
+                    <span class="icon flaticon-map-locator"></span>
+                  </div>
+                  <p>Bán kính xung quanh địa điểm</p>
+                  <div class="range-slider-one">
+                    <div class="area-range-slider"></div>
+                    <div class="input-outer">
+                      <div class="amount-outer"><span class="area-amount"></span>km</div>
+                    </div>
+                  </div>
+                </div>
+
+                
+
+                <!-- Filter Block -->
+                <div class="filter-block">
+                  <h4>Giới tính</h4>
+                  <div class="form-group">
+                    <select class="chosen-select">
+                      <option>Nam</option>
+                      <option>Nữ</option>
+                      <option>Khác</option>
+                    </select>
+                    <span class="icon flaticon-heart-1"></span>
+                  </div>
+                </div>
+
+                <!-- Checkboxes Ouer -->
+                <div class="checkbox-outer">
+                  <h4>Ngày tạo</h4>
+                  <ul class="checkboxes">
+                    <li>
+                      <input id="check-1" type="checkbox" name="check">
+                      <label for="check-1">Tất cả</label>
+                    </li>
+                    <li>
+                      <input id="check-a" type="checkbox" name="check">
+                      <label for="check-a">1 giờ trước</label>
+                    </li>
+                    <li>
+                      <input id="check-b" type="checkbox" name="check">
+                      <label for="check-b">24 giờ trước</label>
+                    </li>
+                    <li>
+                      <input id="check-c" type="checkbox" name="check">
+                      <label for="check-c">7 ngày trước</label>
+                    </li>
+                    <li>
+                      <input id="check-d" type="checkbox" name="check">
+                      <label for="check-d">14 ngày trước</label>
+                    </li>
+                    <li>
+                      <input id="check-e" type="checkbox" name="check">
+                      <label for="check-e">30 ngày trước</label>
+                    </li>
+                  </ul>
+                </div>
+
+                <!-- Checkboxes Ouer -->
+                <div class="checkbox-outer">
+                  <h4>Kinh nghiệm</h4>
+                  <ul class="checkboxes">
+                    <li>
+                      <input id="check-f" type="checkbox" name="check">
+                      <label for="check-f">0-2 Năm</label>
+                    </li>
+                    <li>
+                      <input id="check-g" type="checkbox" name="check">
+                      <label for="check-g">10-12 Năm</label>
+                    </li>
+                    <li>
+                      <input id="check-h" type="checkbox" name="check">
+                      <label for="check-h">12-16 Năm</label>
+                    </li>
+                    <li>
+                      <input id="check-i" type="checkbox" name="check">
+                      <label for="check-i">16-20 Năm</label>
+                    </li>
+                    <li>
+                      <input id="check-j" type="checkbox" name="check">
+                      <label for="check-j">20-25 Năm</label>
+                    </li>
+                    <li>
+                      <button class="view-more"><span class="icon flaticon-plus"></span> Xem thêm</button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- Content Column -->
+          <div class="content-column col-lg-8 col-md-12 col-sm-12">
+            <div class="ls-outer">
+              <button type="button" class="theme-btn btn-style-two toggle-filters">Show Filters</button>
+
+              <!-- ls Switcher -->
+              <div class="ls-switcher">
+                <div class="showing-result">
+                  <div class="text" th:if="${dSUngVien != null && !dSUngVien.isEmpty()}">
+                    Đang hiện <strong th:text="${dSUngVien.size()}">0</strong> ứng viên
+                  </div>
+                </div>
+                <div class="sort-by">
+                  <select class="chosen-select">
+                    <option>Mới nhất</option>
+                    <option>Phổ biến nhất</option>
+                  </select>
+
+                  <select class="chosen-select">
+                    <option>Hiện 10</option>
+                    <option>Hiện 20</option>
+                    <option>Hiện 30</option>
+                    <option>Hiện 40</option>
+                    <option>Hiện 50</option>
+                    <option>Hiện 60</option>
+                  </select>
+                </div>
+              </div>              <div class="row">
+                <!-- Hiển thị thông báo nếu không có ứng viên -->
+                <div class="col-12" th:if="${#lists.isEmpty(dSUngVien)}">
+                  <div class="alert alert-info text-center">
+                    <h4>Không có ứng viên nào!</h4>
+                  </div>
+                </div>
+                
+                <div class="candidate-block-four col-lg-6 col-md-6 col-sm-12" th:each="ungVien : ${dSUngVien}">
+                  <div class="inner-box">
+                    <ul class="job-other-info">
+                      <li class="green" th:if="${ungVien.namKinhNghiem > 0}" 
+                          th:text="${ungVien.namKinhNghiem} + ' năm KN'">Kinh nghiệm</li>
+                      <li class="purple" th:if="${ungVien.namKinhNghiem == 0 || ungVien.namKinhNghiem == null}">Mới ra trường</li>
+                    </ul>
+                    <span class="thumb"><img th:src="@{/fe/images/resource/candidate-1.png}" alt=""></span>                    <h3 class="name">
+                      <a th:href="@{'/chitiet-ungvien/' + ${ungVien.id}}" th:text="${ungVien.hoTen != null ? ungVien.hoTen : ungVien.username}">Tên ứng viên</a>
+                    </h3>
+                    <span class="cat" th:text="${ungVien.chuyenNganh != null ? ungVien.chuyenNganh : 'Chưa cập nhật'}">Chuyên ngành</span>
+                    <ul class="job-info">
+                      <li th:if="${ungVien.diaChi != null}">
+                        <span class="icon flaticon-map-locator"></span>
+                        <span th:text="${ungVien.diaChi}">Địa chỉ</span>
+                      </li>
+                      <li th:if="${ungVien.luongMongMuon > 0}">
+                        <span class="icon flaticon-money"></span>
+                        <span th:text="${ungVien.luongMongMuon} + ' triệu VNĐ'">Lương mong muốn</span>
+                      </li>
+                    </ul>
+                    <ul class="post-tags" th:if="${ungVien.chungChi != null}">
+                      <li><a href="#" th:text="${ungVien.chungChi}">Chứng chỉ</a></li>
+                    </ul>
+                    <a th:href="@{'/chitiet-ungvien/' + ${ungVien.id}}" class="theme-btn btn-style-three">Xem hồ sơ</a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pagination -->
+              <nav class="ls-pagination">
+                <ul>
+                  <li class="prev"><a href="#"><i class="fa fa-arrow-left"></i></a></li>
+                  <li><a href="#">1</a></li>
+                  <li><a href="#" class="current-page">2</a></li>
+                  <li><a href="#">3</a></li>
+                  <li class="next"><a href="#"><i class="fa fa-arrow-right"></i></a></li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!--End Listing Page Section -->
+    <!-- Main Footer -->
+    <div th:replace="~{user/layout/footer :: footer}"></div>
+  <!-- End Main Footer -->
+
+
+  </div><!-- End Page Wrapper -->
+
+  <div th:replace="~{user/layout/script :: script}"></div>
+
+</body>
+
+</html>

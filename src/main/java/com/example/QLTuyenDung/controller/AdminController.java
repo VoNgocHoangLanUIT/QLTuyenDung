@@ -1,4 +1,4 @@
-package com.example.QLTuyenDung.controller.admin;
+package com.example.QLTuyenDung.controller;
 
 
 import org.springframework.stereotype.Controller;

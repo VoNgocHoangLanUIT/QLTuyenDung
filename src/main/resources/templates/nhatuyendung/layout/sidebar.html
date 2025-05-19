@@ -1,0 +1,40 @@
+<div class="user-sidebar" th:fragment="sidebar">
+    <div class="sidebar-inner">
+        <ul class="navigation">
+          <li class="nav-item" data-urls="/nhatd">
+            <a th:href="@{/nhatd}"> <i class="la la-home"></i> Dashboard</a>
+          </li>
+          <li class="nav-item" data-urls="/nhatd/edit-congty">
+            <a th:href="@{/nhatd/edit-congty}"><i class="la la-user-tie"></i>Thông tin công ty</a>
+          </li>
+          <li class="nav-item" data-urls="/nhatd/add-tintd">
+            <a th:href="@{/nhatd/add-tintd}"><i class="la la-paper-plane"></i>Đăng tin tuyển dụng</a>
+          </li>
+          <li class="nav-item" data-urls="/nhatd/dstintd,/nhatd/edit-tintd,/nhatd/dsdonut">
+            <a th:href="@{/nhatd/dstintd}"><i class="la la-briefcase"></i>QL tin tuyển dụng</a>
+          </li>          
+          <li class="nav-item" data-urls="/nhatd/dsbaitest,/nhatd/add-baitest,/nhatd/ds-truycap,/nhatd/add-truycap,/nhatd/edit-baitest,/nhatd/dskqbaitest">
+            <a th:href="@{/nhatd/dsbaitest}"><i class="la la-file-invoice"></i>QL bài test</a>
+          </li>
+          <li class="nav-item" data-urls="/nhatd/dsphongvan,/nhatd/chitiet-phongvan,/nhatd/add-phongvan,/nhatd/edit-phongvan">
+            <a th:href="@{/nhatd/dsphongvan}"><i class="la la-box"></i>QL phỏng vấn</a>
+          </li>
+          <li>
+            <a th:href="@{dashboard-resumes.html}"><i class="la la-bookmark-o"></i>Ứng viên yêu thích</a>
+          </li>
+          <li >
+            <a th:href="@{dashboard-company-profile.html}"><i class="la la-user-alt"></i>Thông tin cá nhân</a>
+          </li>
+          <li >
+            <a th:href="@{dashboard-change-password.html}"><i class="la la-lock"></i>Thay đổi mật khẩu</a>
+          </li>
+          
+          <li>
+            <a onclick="confirmLogout()"><i class="la la-sign-out"></i>Đăng xuất</a>
+          </li>
+          <li>
+            <a th:href="@{index.html}"><i class="la la-trash"></i>Xoá tài khoản</a>
+          </li>
+        </ul>
+    </div>
+</div>

@@ -58,7 +58,7 @@
                               <option value="">Chọn tin tuyển dụng</option>
                               <option th:each="tin : ${dsTinTD}" 
                                       th:value="${tin.id}"
-                                      th:text="${tin.viTri + ' - ' + tin.congty.tenCongTy}">
+                                      th:text="${tin.tieuDe}">
                               </option>
                           </select>
                         </div>

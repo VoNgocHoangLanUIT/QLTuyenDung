@@ -1,0 +1,56 @@
+<div th:fragment="script">
+    <script th:src="@{/fe/js/jquery.js}"></script>
+    <script th:src="@{/fe/js/jquery-ui.min.js}"></script>
+    <script th:src="@{/fe/js/popper.min.js}"></script>
+    <script th:src="@{/fe/js/chosen.min.js}"></script>
+    <script th:src="@{/fe/js/bootstrap.min.js}"></script>
+    <script th:src="@{/fe/js/jquery.fancybox.js}"></script>
+    <script th:src="@{/fe/js/jquery.modal.min.js}"></script>
+    <script th:src="@{/fe/js/mmenu.polyfills.js}"></script>
+    <script th:src="@{/fe/js/mmenu.js}"></script>
+    <script th:src="@{/fe/js/appear.js}"></script>
+    <script th:src="@{/fe/js/anm.min.js}"></script>
+    <script th:src="@{/fe/js/ScrollMagic.min.js}"></script>
+    <script th:src="@{/fe/js/rellax.min.js}"></script>
+    <script th:src="@{/fe/js/owl.js}"></script>
+    <script th:src="@{/fe/js/wow.js}"></script>
+    <script th:src="@{/fe/js/script.js}"></script>
+    <script>
+  // Đảm bảo script chạy sau khi DOM đã được tải
+  window.addEventListener('DOMContentLoaded', function () {
+  try {
+    const currentPath = window.location.pathname;
+    const menuItems = document.querySelectorAll('.nav-item');
+
+    menuItems.forEach(function (item) {
+      const urlsAttr = item.getAttribute('data-urls');
+      const urls = urlsAttr ? urlsAttr.split(',') : [];
+
+      const isActive = urls.some(url => {
+        // Nếu url là chính xác thì so sánh đúng
+        if (currentPath === url || currentPath === url + '/') return true;
+
+        // Nếu url dài hơn (có dạng /nhatd/edit-tintd) thì mới dùng startsWith
+        return url.length > 6 && currentPath.startsWith(url);
+      });
+
+      if (isActive) {
+        item.classList.add('active');
+      }
+    });
+  } catch (e) {
+    console.error("Error in menu activation script:", e);
+  }
+});
+  
+  function confirmLogout() {
+    if (confirm('Bạn có chắc chắn muốn đăng xuất không?')) {
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = '/logout';
+      document.body.appendChild(form);
+      form.submit();
+    }
+  }
+</script>
+</div>

@@ -28,12 +28,18 @@ public class FileStorageService {
     public void init() {
         try {
             Files.createDirectories(Paths.get(uploadDir));
+            Files.createDirectories(Paths.get(uploadDir + File.separator + "logos"));
+            Files.createDirectories(Paths.get(uploadDir + File.separator + "cvs"));
         } catch (IOException e) {
             throw new RuntimeException("Không thể tạo thư mục upload!", e);
         }
     }
 
     public String storeFile(MultipartFile file) {
+        return storeFile(file, "");
+    }
+    
+    public String storeFile(MultipartFile file, String subfolder) {
         try {
             if (file.isEmpty()) {
                 throw new RuntimeException("File trống, không thể lưu!");
@@ -44,12 +50,30 @@ public class FileStorageService {
             if (fileName.contains("..")) {
                 throw new RuntimeException("Tên file không hợp lệ: " + fileName);
             }
+            
             String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
-            Path targetLocation = Paths.get(uploadDir + File.separator + uniqueFileName);
+            String targetPath = uploadDir;
+            if (subfolder != null && !subfolder.isEmpty()) {
+                targetPath = targetPath + File.separator + subfolder;
+                // Đảm bảo thư mục tồn tại
+                Files.createDirectories(Paths.get(targetPath));
+            }
+            
+            Path targetLocation = Paths.get(targetPath + File.separator + uniqueFileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-            return uniqueFileName;
+            
+            // Trả về đường dẫn tương đối đến file 
+            return (subfolder != null && !subfolder.isEmpty() ? subfolder + "/" : "") + uniqueFileName;
         } catch (IOException ex) {
             throw new RuntimeException("Không thể lưu trữ file. Vui lòng thử lại!", ex);
         }
+    }
+    
+    public String storeCompanyLogo(MultipartFile file) {
+        return storeFile(file, "logos");
+    }
+    
+    public String storeCV(MultipartFile file) {
+        return storeFile(file, "cvs");
     }
 }

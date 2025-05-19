@@ -1,7 +1,11 @@
 package com.example.QLTuyenDung.model;
 
+import java.util.Date;
 import java.util.Set;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -25,16 +29,23 @@ public class TinTuyenDung {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String viTri;
+    private String tieuDe;
+    @Column(length = 4000)
     private String moTaCongViec;
+    private String linhVuc;
     private String hinhThucLV;
+    private String thanhPhoLV;
+    private String quocGiaLV;
     private String diaDiemLV;
     private int mucLuong;
-    private String hanNop;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date hanNop;
+    @Column(length = 4000)
     private String yeuCau;
     private String trangThai;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date ngayDang;
 
-    @NotNull(message = "Vui lòng chọn công ty")
     @ManyToOne
     @JoinColumn (name = "congty_id", referencedColumnName = "id")
     private CongTy congty;

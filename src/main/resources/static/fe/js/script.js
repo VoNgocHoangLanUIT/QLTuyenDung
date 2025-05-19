@@ -11,8 +11,8 @@
 
 
 	function rellaxInit() {
-		const target = document.querySelectorAll('.js-rellax')
-		if (!target) return;
+		const target = document.querySelectorAll('.js-rellax');
+		if (!target || target.length === 0) return;
 	
 		var rellax = new Rellax('.js-rellax', {
 			breakpoints: [576, 768, 1025]

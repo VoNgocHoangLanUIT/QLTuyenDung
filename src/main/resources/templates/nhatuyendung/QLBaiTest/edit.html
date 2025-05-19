@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{user/layout/head :: head}"></head>
+
+<body>
+
+  <div class="page-wrapper dashboard">
+
+    <!-- Preloader -->
+    <div class="preloader"></div>
+
+    <!-- Header Span -->
+    <span class="header-span"></span>
+
+    <!-- Main Header-->
+    <header th:replace="~{user/layout/header :: header}"></header>
+    <!--End Main Header -->
+
+    <!-- Sidebar Backdrop -->
+    <div class="sidebar-backdrop"></div>
+
+    <!-- User Sidebar -->
+    <div th:replace="~{nhatuyendung/layout/sidebar :: sidebar}"></div>
+    <!-- End User Sidebar -->
+
+    <!-- Dashboard -->
+    <section class="user-dashboard">
+      <div class="dashboard-outer">
+        <div class="upper-title-box">
+          <a th:href="@{/nhatd/dsbaitest}" class="btn btn-sm btn-outline-primary mb-3">
+            <i class="la la-arrow-left"></i> Quay lại chi tiết
+          </a>
+          <h3>Chỉnh sửa bài test</h3>
+          <div class="text">Cập nhật thông tin bài test</div>
+        </div>
+
+        <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+        <div class="row">
+          <div class="col-lg-12">
+            <!-- Ls widget -->
+            <div class="ls-widget">
+              <div class="tabs-box">
+                <div class="widget-title">
+                  <h4>Thông tin bài test</h4>
+                </div>
+
+                <div class="widget-content">
+                  <form class="default-form" method="post" th:action="@{/nhatd/edit-baitest/{id}(id=${baiTest.id})}" th:object="${baiTest}">
+                    <!-- ID ẩn để đảm bảo cập nhật đúng bài test -->
+                    <input type="hidden" th:field="*{id}" />
+                    
+                    <div class="row">
+                      <!-- Tiêu đề bài test -->
+                      <div class="form-group col-lg-12 col-md-12">
+                        <label>Tiêu đề bài test <span class="required">*</span></label>
+                        <input type="text" th:field="*{tieuDe}" required placeholder="Ví dụ: Bài test Javascript cơ bản">
+                        <div class="text-danger" th:if="${#fields.hasErrors('tieuDe')}" th:errors="*{tieuDe}"></div>
+                      </div>
+
+                      <!-- Mô tả bài test -->
+                      <div class="form-group col-lg-12 col-md-12">
+                        <label>Mô tả bài test <span class="required">*</span></label>
+                        <textarea th:field="*{moTa}" required placeholder="Mô tả chi tiết về bài test, thời gian làm bài, yêu cầu kiến thức..."></textarea>
+                        <div class="text-danger" th:if="${#fields.hasErrors('moTa')}" th:errors="*{moTa}"></div>
+                      </div>
+
+                      <!-- Loại bài test -->
+                      <div class="form-group col-lg-6 col-md-12">
+                        <label>Loại bài test <span class="required">*</span></label>
+                        <div class="chosen-outer" style="width: 100%;">
+                          <select class="chosen-select" th:field="*{loai}" style="width: 100%;" required>
+                            <option value="">-- Chọn loại bài test --</option>
+                            <option value="ngonngu">Ngôn ngữ</option>
+                            <option value="logic">Logic</option>
+                            <option value="chuyenmon">Chuyên môn</option>
+                          </select>
+                        </div>
+                        <div class="text-danger" th:if="${#fields.hasErrors('loai')}" th:errors="*{loai}"></div>
+                      </div>
+                      
+                      <!-- Link Google Form -->
+                      <div class="form-group col-lg-6 col-md-12">
+                        <label>Link bài test (Google Form) <span class="required">*</span></label>
+                        <input type="text" th:field="*{linkGGForm}" required placeholder="Ví dụ: https://forms.gle/abcxyz123">
+                        <div class="text-danger" th:if="${#fields.hasErrors('linkGGForm')}" th:errors="*{linkGGForm}"></div>
+                      </div>
+
+                      <!-- Tin tuyển dụng -->
+                      <div class="form-group col-lg-12 col-md-12">
+                        <label>Tin tuyển dụng áp dụng <span class="required">*</span></label>
+                        <div class="chosen-outer" style="width: 100%;">
+                          <select class="chosen-select" th:field="*{tinTuyenDung.id}" style="width: 100%;" required>
+                            <option value="">-- Chọn tin tuyển dụng --</option>
+                            <option th:each="tin : ${dsTinTD}" 
+                                    th:value="${tin.id}" 
+                                    th:text="${tin.tieuDe}"
+                                    th:selected="${tin.id == baiTest.tinTuyenDung.id}">
+                                    Tiêu đề tin tuyển dụng
+                            </option>
+                          </select>
+                        </div>
+                        <div class="text-danger" th:if="${#fields.hasErrors('tinTuyenDung')}" th:errors="*{tinTuyenDung}"></div>
+                      </div>
+
+                      <!-- Ngày đóng -->
+                      <div class="form-group col-lg-6 col-md-12">
+                        <label>Ngày hết hạn <span class="required">*</span></label>
+                        <input type="date" th:field="*{ngayDong}" required>
+                        <div class="text-danger" th:if="${#fields.hasErrors('ngayDong')}" th:errors="*{ngayDong}"></div>
+                      </div>
+
+                      <!-- Nút cập nhật bài test -->
+                      <div class="form-group col-lg-12 col-md-12 text-right">
+                        <button type="submit" class="theme-btn btn-style-one">Lưu thay đổi</button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Dashboard -->
+
+    <!-- Copyright -->
+    <div th:replace="~{nhatuyendung/layout/footer :: footer}"></div>
+
+  </div><!-- End Page Wrapper -->
+
+  <div th:replace="~{user/layout/script :: script}"></div>
+
+  <style>
+    input[type="date"] {
+      background-color: #F0F5F7 !important;
+      border: 1px solid #F0F5F7 !important;
+      border-radius: 8px !important;
+      height: 60px !important;
+      width: 100% !important;
+      padding: 15px 20px !important;
+      color: #696969 !important;
+      box-sizing: border-box !important;
+      font-size: 15px !important;
+      line-height: 30px !important;
+    }
+
+    input[type="date"]:focus {
+      border-color: #1967D2 !important;
+      background: #ffffff !important;
+    }
+  </style>
+</body>
+</html>

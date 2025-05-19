@@ -1,7 +1,9 @@
 package com.example.QLTuyenDung.model;
 
+import java.util.Date;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -51,6 +53,8 @@ public class User {
     private String faceBook;
     private String linkedIn;
     private String diaChi;
+    private String hinhAnh;
+    private Date ngayTao;
     @Column(name = "cv_file")
     private String cvFile;
 
@@ -66,4 +70,13 @@ public class User {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cong_ty_id", referencedColumnName = "id")
     private CongTy congTy;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<HocVan> dSHocVan;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<KinhNghiemLamViec> dSKinhNghiemLamViec;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<ThanhTuu> dSThanhTuu;
 }

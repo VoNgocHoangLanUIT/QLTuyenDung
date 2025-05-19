@@ -2,6 +2,7 @@ package com.example.QLTuyenDung.model;
 
 import java.util.Date;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,6 +27,7 @@ public class PhongVan {
     private String diaDiem;
     private String trangThai;
     private int diemDanhGia;
+    @Column(length = 4000)
     private String nhanXet;
 
     @ManyToOne

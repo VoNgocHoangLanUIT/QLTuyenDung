@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{user/layout/head :: head}"></head>
+
+<body>
+
+  <div class="page-wrapper">
+
+    <!-- Preloader -->
+    <div class="preloader"></div>
+
+    <!-- Header Span -->
+    <span class="header-span"></span>
+
+    <!-- Main Header-->
+    <header th:replace="~{user/layout/header :: header}"></header>
+    <!--End Main Header -->
+
+    <!-- Job Detail Section -->
+    <section class="job-detail-section">      <!-- Upper Box -->
+      <div class="upper-box">
+        <div class="auto-container">
+          <!-- Job Block -->
+          <div class="job-block-seven">
+            <div class="inner-box">
+              <div class="content">
+                <span class="company-logo" th:if="${tinTuyenDung.congty != null && tinTuyenDung.congty.logo != null}">
+                  <img th:src="@{/fe/images/resource/company-logo/5-1.png}" alt="Company Logo">
+                </span>
+                <span class="company-logo" th:unless="${tinTuyenDung.congty != null && tinTuyenDung.congty.logo != null}">
+                  <img th:src="@{/fe/images/resource/company-logo/5-1.png}" alt="Logo">
+                </span>
+                <h4><a th:href="@{'/chitiet-tintd/' + ${tinTuyenDung.id}}" th:text="${tinTuyenDung.tieuDe} + ' - ' + ${tinTuyenDung.congty != null ? tinTuyenDung.congty.tenCongTy : 'Không xác định'}">Product Designer / UI Designer</a></h4>
+                <ul class="job-info">
+                  <li><span class="icon flaticon-briefcase"></span> <span th:text="${tinTuyenDung.congty != null ? tinTuyenDung.congty.tenCongTy : 'Không xác định'}">Segment</span></li>
+                  <li><span class="icon flaticon-map-locator"></span> <span th:text="${tinTuyenDung.diaDiemLV != null ? tinTuyenDung.diaDiemLV : 'Không xác định'}">London, UK</span></li>
+                  <li><span class="icon flaticon-clock-3"></span> <span th:text="${tinTuyenDung.hanNop != null ? 'Hạn: ' + tinTuyenDung.hanNop : 'Không thời hạn'}">11 hours ago</span></li>
+                  <li><span class="icon flaticon-money"></span> <span th:text="${tinTuyenDung.mucLuong > 0 ? tinTuyenDung.mucLuong + ' triệu VND' : 'Thỏa thuận'}">$35k - $45k</span></li>
+                </ul>
+                <ul class="job-other-info">
+                  <li class="time" th:text="${tinTuyenDung.hinhThucLV != null ? tinTuyenDung.hinhThucLV : 'Full Time'}">Full Time</li>
+                  <li class="green" th:if="${tinTuyenDung.trangThai == 'dangtuyen'}">Đang tuyển</li>
+                  <li class="closed" th:if="${tinTuyenDung.trangThai == 'dadong'}">Đã đóng</li>
+                  <li class="required" th:if="${tinTuyenDung.linhVuc != null}" th:text="${tinTuyenDung.linhVuc}">Urgent</li>
+                </ul>
+              </div>              <div class="btn-box">
+                <a href="#" class="theme-btn btn-style-one" th:if="${tinTuyenDung.trangThai == 'dangtuyen'}">Ứng tuyển ngay</a>
+                <button class="bookmark-btn"><i class="flaticon-bookmark"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="job-detail-outer">
+        <div class="auto-container">
+          <div class="row">
+            <div class="content-column col-lg-8 col-md-12 col-sm-12">
+              <div class="job-detail">
+                <h4>Mô tả công việc</h4>
+                <p th:text="${tinTuyenDung.moTaCongViec != null ? tinTuyenDung.moTaCongViec : 'Chưa có mô tả chi tiết.'}">Mô tả công việc</p>
+                
+                <div th:if="${tinTuyenDung.yeuCau != null && !tinTuyenDung.yeuCau.isEmpty()}">
+                  <h4>Yêu cầu</h4>
+                  <div th:utext="${tinTuyenDung.yeuCau}"></div>
+                </div>
+                
+                <h4>Thông tin khác</h4>
+                <ul class="list-style-three">
+                  <li th:if="${tinTuyenDung.hinhThucLV != null}">Hình thức làm việc: <span th:text="${tinTuyenDung.hinhThucLV}">Full Time</span></li>
+                  <li th:if="${tinTuyenDung.diaDiemLV != null}">Địa điểm làm việc: <span th:text="${tinTuyenDung.diaDiemLV}">Location</span></li>
+                  <li th:if="${tinTuyenDung.mucLuong > 0}">Mức lương: <span th:text="${tinTuyenDung.mucLuong + ' triệu VND'}">Salary</span></li>
+                  <li th:if="${tinTuyenDung.hanNop != null}">Hạn nộp hồ sơ: <span th:text="${tinTuyenDung.hanNop}">Deadline</span></li>
+                </ul>
+              </div>
+
+              <!-- Other Options -->
+              <div class="other-options">
+                <div class="social-share">
+                  <h5>Chia sẻ tin tuyển dụng</h5>
+                  <a href="#" class="facebook"><i class="fab fa-facebook-f"></i> Facebook</a>
+                  <a href="#" class="twitter"><i class="fab fa-twitter"></i> Twitter</a>
+                  <a href="#" class="google"><i class="fab fa-google"></i> Google+</a>
+                </div>
+              </div>
+
+              <!-- Related Jobs -->
+              <div class="related-jobs">
+                <div class="title-box">
+                  <h3>Việc làm liên quan</h3>
+                  <div class="text" th:if="${tinTuyenDung.congty != null && tinTuyenDung.congty.dSTinTD != null}">
+                    <span th:text="${tinTuyenDung.congty.dSTinTD.size() + ' việc làm khác'}"></span>
+                  </div>
+                </div>
+
+                <!-- Job Block -->
+                <div class="job-block" th:each="tin : ${tinTuyenDung.congty != null ? tinTuyenDung.congty.dSTinTD : null}" 
+                     th:if="${tin != null && tin.id != tinTuyenDung.id && tin.trangThai == 'dangtuyen'}">
+                  <div class="inner-box">
+                    <div class="content">
+                      <span class="company-logo"><img th:src="@{/fe/images/resource/company-logo/1-1.png}" alt=""></span>
+                      <h4><a th:href="@{'/chitiet-tintd/' + ${tin.id}}" th:text="${tin.tieuDe} + ' - ' + ${tin.congty != null ? tin.congty.tenCongTy : 'Không xác định'}">Software Engineer (Android), Libraries</a></h4>
+                      <ul class="job-info">
+                        <li><span class="icon flaticon-briefcase"></span> <span th:text="${tin.congty != null ? tin.congty.tenCongTy : 'Không xác định'}">Segment</span></li>
+                        <li><span class="icon flaticon-map-locator"></span> <span th:text="${tin.diaDiemLV != null ? tin.diaDiemLV : 'Không xác định'}">London, UK</span></li>
+                        <li><span class="icon flaticon-clock-3"></span> <span th:text="${tin.hanNop != null ? 'Hạn: ' + tin.hanNop : 'Không thời hạn'}">11 hours ago</span></li>
+                        <li><span class="icon flaticon-money"></span> <span th:text="${tin.mucLuong > 0 ? tin.mucLuong + ' triệu VND' : 'Thỏa thuận'}">$35k - $45k</span></li>
+                      </ul>
+                      <ul class="job-other-info">
+                        <li class="time" th:text="${tin.hinhThucLV != null ? tin.hinhThucLV : 'Full Time'}">Full Time</li>
+                        <li class="green" th:if="${tin.trangThai == 'dangtuyen'}">Đang tuyển</li>
+                        <li class="closed" th:if="${tin.trangThai == 'dadong'}">Đã đóng</li>
+                        <li class="required" th:if="${tin.linhVuc != null}" th:text="${tin.linhVuc}">Urgent</li>
+                      </ul>
+                      <button class="bookmark-btn"><span class="flaticon-bookmark"></span></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="sidebar-column col-lg-4 col-md-12 col-sm-12">
+              <aside class="sidebar">
+                <div class="sidebar-widget">
+                  <!-- Job Overview -->
+                  <h4 class="widget-title">Tổng quan về việc làm</h4>
+                  <div class="widget-content">
+                    <ul class="job-overview">
+                      <li th:if="${tinTuyenDung.ngayDang != null}">
+                        <i class="icon icon-calendar"></i>
+                        <h5>Ngày đăng:</h5>
+                        <span th:text="${#dates.format(tinTuyenDung.ngayDang, 'dd/MM/yyyy')}">Posted 1 hours ago</span>
+                      </li>
+                      <li th:if="${tinTuyenDung.hanNop != null}">
+                        <i class="icon icon-expiry"></i>
+                        <h5>Hạn nộp:</h5>
+                        <span th:text="${#dates.format(tinTuyenDung.hanNop, 'dd/MM/yyyy')}">April 06, 2021</span>
+                      </li>
+                      <li th:if="${tinTuyenDung.diaDiemLV != null}">
+                        <i class="icon icon-location"></i>
+                        <h5>Địa điểm:</h5>
+                        <span th:text="${tinTuyenDung.diaDiemLV}">London, UK</span>
+                      </li>
+                      <li th:if="${tinTuyenDung.hinhThucLV != null}">
+                        <i class="icon icon-clock"></i>
+                        <h5>Hình thức làm việc:</h5>
+                        <span th:text="${tinTuyenDung.hinhThucLV}">50h / week</span>
+                      </li>
+                      <li th:if="${tinTuyenDung.mucLuong > 0}">
+                        <i class="icon icon-salary"></i>
+                        <h5>Mức lương:</h5>
+                        <span th:text="${tinTuyenDung.mucLuong + ' triệu VND'}">$35k - $45k</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <!-- Map Widget -->
+                  <h4 class="widget-title" th:if="${tinTuyenDung.diaDiemLV != null}">Địa điểm làm việc</h4>
+                  <div class="widget-content">
+                    <div class="map-outer" th:if="${tinTuyenDung.diaDiemLV != null}">
+                      <div class="map-canvas" data-zoom="12" data-lat="-37.817085" data-lng="144.955631" data-type="roadmap" data-hue="#ffc400" data-title="Office" data-icon-path="/fe/images/resource/map-marker.png" th:attr="data-content=${tinTuyenDung.diaDiemLV}">
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Job Skills -->
+                  <h4 class="widget-title" th:if="${tinTuyenDung.linhVuc != null}">Lĩnh vực</h4>
+                  <div class="widget-content" th:if="${tinTuyenDung.linhVuc != null}">
+                    <ul class="job-skills">
+                      <li><a href="#" th:text="${tinTuyenDung.linhVuc}">app</a></li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="sidebar-widget company-widget" th:if="${tinTuyenDung.congty != null}">
+                  <div class="widget-content">
+                    <div class="company-title">
+                      <div class="company-logo"><img th:src="${tinTuyenDung.congty.logo != null} ? ${tinTuyenDung.congty.logo} : @{/fe/images/resource/company-7.png}" alt=""></div>
+                      <h5 class="company-name" th:text="${tinTuyenDung.congty.tenCongTy}">InVision</h5>
+                      <a th:href="@{'/chitiet-congty/' + ${tinTuyenDung.congty.id}}" class="profile-link">Xem hồ sơ công ty</a>
+                    </div>
+
+                    <ul class="company-info">
+                      <li th:if="${tinTuyenDung.congty.linhVuc != null}">Lĩnh vực: <span th:text="${tinTuyenDung.congty.linhVuc}">Software</span></li>
+                      <li th:if="${tinTuyenDung.congty.hotLine != null}">Điện thoại: <span th:text="${tinTuyenDung.congty.hotLine}">123 456 7890</span></li>
+                      <li th:if="${tinTuyenDung.congty.email != null}">Email: <span th:text="${tinTuyenDung.congty.email}">info@joio.com</span></li>
+                      <li th:if="${tinTuyenDung.congty.diaChi != null}">Địa chỉ: <span th:text="${tinTuyenDung.congty.diaChi}">London, UK</span></li>
+                    </ul>
+
+                    <div class="btn-box" th:if="${tinTuyenDung.congty.website != null}">
+                      <a th:href="${tinTuyenDung.congty.website}" class="theme-btn btn-style-three" th:text="${tinTuyenDung.congty.website}">www.invisionapp.com</a>
+                    </div>
+                  </div>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Job Detail Section -->
+
+
+    <!-- Main Footer -->
+    <div th:replace="~{user/layout/footer :: footer}"></div>
+    <!-- End Main Footer -->
+
+
+  </div><!-- End Page Wrapper -->
+
+
+  <div th:replace="~{user/layout/script :: script}"></div>
+  <!--Google Map APi Key-->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDaaCBm4FEmgKs5cfVrh3JYue3Chj1kJMw"></script>
+  <script th:src="@{/fe/js/map-script.js}"></script>
+  <!--End Google Map APi-->
+</body>
+
+
+<!-- Mirrored from creativelayers.net/themes/superio/job-single.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 21 Apr 2025 13:59:23 GMT -->
+</html>

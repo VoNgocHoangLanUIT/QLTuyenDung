@@ -1,6 +1,8 @@
 package com.example.QLTuyenDung.service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -91,5 +93,115 @@ public class PhongVanService {
 
     public PhongVan save(PhongVan phongVan) {
         return phongVanRepository.save(phongVan);
+    }
+
+    @Transactional
+    public PhongVan checkAndCreatePhongVan(DonUngTuyen donUngTuyen) {
+        // Kiểm tra xem đã tồn tại phỏng vấn nào cho đơn ứng tuyển này chưa
+        List<PhongVan> existingInterviews = phongVanRepository.findByDonUngTuyen(donUngTuyen);
+        
+        // Nếu không tìm thấy phỏng vấn nào, tạo phỏng vấn mới
+        if (existingInterviews.isEmpty()) {
+            PhongVan phongVan = new PhongVan();
+            phongVan.setDonUngTuyen(donUngTuyen);
+            phongVan.setTrangThai("chopv"); // Trạng thái chờ phỏng vấn
+            
+            // Tạo ngày phỏng vấn mặc định là 7 ngày sau ngày hiện tại
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.DATE, 7);
+            phongVan.setNgayPV(calendar.getTime());
+            
+            // Lưu và trả về đối tượng phỏng vấn mới
+            return phongVanRepository.save(phongVan);
+        }
+        
+        // Nếu đã có phỏng vấn, trả về null
+        return null;
+    }
+
+    @Transactional
+    public List<PhongVan> nhaTDPhanCongPhongVan(Long donUngTuyenId, List<Long> nhanVienIds, 
+                                            Date ngayPV, String diaDiem) {
+        // Lấy đơn ứng tuyển
+        DonUngTuyen donUngTuyen = donUngTuyenRepository.findById(donUngTuyenId)
+            .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn ứng tuyển!"));
+        
+        List<PhongVan> danhSachPhongVan = new ArrayList<>();
+
+        // Tạo phỏng vấn cho từng nhân viên được chọn
+        for (Long nhanVienId : nhanVienIds) {
+            User nhanVien = userRepository.findById(nhanVienId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên với ID: " + nhanVienId));
+
+            // Kiểm tra quyền của nhân viên
+            if (!nhanVien.getCongTy().getId().equals(donUngTuyen.getTinTuyenDung().getCongty().getId())) {
+                throw new RuntimeException("Nhân viên không thuộc công ty của bạn!");
+            }
+
+            // Tạo phỏng vấn mới
+            PhongVan phongVan = new PhongVan();
+            phongVan.setDonUngTuyen(donUngTuyen);
+            phongVan.setNgayPV(ngayPV);
+            phongVan.setDiaDiem(diaDiem);
+            phongVan.setTrangThai("chopv"); // Trạng thái đã xếp lịch
+            phongVan.setNhanVienTD(nhanVien);
+            
+            // Lưu vào danh sách
+            danhSachPhongVan.add(phongVanRepository.save(phongVan));
+        }
+
+        return danhSachPhongVan;
+    }
+
+    @Transactional
+    public PhongVan capNhatPhongVan(Long phongVanId, Date ngayPV, String diaDiem, 
+                                String trangThai, Long nhanVienId, Integer diemDanhGia, String nhanXet) {
+        // Lấy phỏng vấn từ database
+        PhongVan phongVan = phongVanRepository.findById(phongVanId)
+            .orElseThrow(() -> new RuntimeException("Không tìm thấy phỏng vấn với ID: " + phongVanId));
+        
+        // Cập nhật các trường có thay đổi
+        if (ngayPV != null) phongVan.setNgayPV(ngayPV);
+        if (diaDiem != null) phongVan.setDiaDiem(diaDiem);
+        if (trangThai != null) phongVan.setTrangThai(trangThai);
+        
+        // Cập nhật nhân viên phỏng vấn nếu có thay đổi
+        if (nhanVienId != null) {
+            User nhanVien = userRepository.findById(nhanVienId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên với ID: " + nhanVienId));
+            
+            // Kiểm tra nhân viên thuộc công ty phù hợp
+            if (!nhanVien.getCongTy().getId().equals(phongVan.getDonUngTuyen().getTinTuyenDung().getCongty().getId())) {
+                throw new RuntimeException("Nhân viên không thuộc công ty quản lý đơn ứng tuyển này!");
+            }
+            
+            phongVan.setNhanVienTD(nhanVien);
+        }
+        
+        if (diemDanhGia != null) phongVan.setDiemDanhGia(diemDanhGia);
+        if (nhanXet != null) phongVan.setNhanXet(nhanXet);
+        // Lưu và trả về phỏng vấn đã cập nhật
+        return phongVanRepository.save(phongVan);
+    }
+
+    // Phương thức kiểm tra nhân viên đã được phân công cho đơn ứng tuyển cụ thể chưa
+    public boolean isNhanVienDaPhanCong(Long nhanVienId, Long donUngTuyenId) {
+        DonUngTuyen donUngTuyen = donUngTuyenRepository.findById(donUngTuyenId)
+            .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn ứng tuyển!"));
+        
+        List<PhongVan> phongVans = phongVanRepository.findByDonUngTuyen(donUngTuyen);
+        
+        // Kiểm tra xem nhân viên đã được phân công cho đơn ứng tuyển này chưa
+        return phongVans.stream()
+            .anyMatch(pv -> pv.getNhanVienTD() != null && pv.getNhanVienTD().getId().equals(nhanVienId));
+    }
+
+    @Transactional
+    public void deletePhongVan(Long id) {
+        PhongVan phongVan = phongVanRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Không tìm thấy phỏng vấn với ID: " + id));
+        
+        // Xóa phỏng vấn
+        phongVanRepository.delete(phongVan);
     }
 }

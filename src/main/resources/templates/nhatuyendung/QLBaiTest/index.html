@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{user/layout/head :: head}"></head>
+
+
+<body>
+
+  <div class="page-wrapper dashboard ">
+
+    <!-- Preloader -->
+    <div class="preloader"></div>
+
+    <!-- Header Span -->
+    <span class="header-span"></span>
+
+    <!-- Main Header-->
+    <header th:replace="~{user/layout/header :: header}"></header>
+    <!--End Main Header -->
+
+    <!-- Sidebar Backdrop -->
+    <div class="sidebar-backdrop"></div>
+
+    <!-- User Sidebar -->
+    <div th:replace="~{nhatuyendung/layout/sidebar :: sidebar}"></div>
+    <!-- End User Sidebar -->
+
+    <!-- Dashboard -->
+    <section class="user-dashboard">
+      <div class="dashboard-outer">
+        <div class="upper-title-box">
+          <h3>Quản lý bài test</h3>
+          <div class="text">Xem và cập nhật các bài test của bạn</div>
+        </div>
+
+        <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+        <div class="row">
+          <div class="col-lg-12">
+            <!-- Ls widget -->
+            <div class="ls-widget">
+              <div class="tabs-box">
+                <div class="widget-title">
+                  <h4>Danh sách bài test</h4>
+
+                  <div class="chosen-outer">
+                    <a th:href="@{/nhatd/add-baitest}" class="theme-btn btn-style-one">Thêm bài test</a>
+                  </div>
+                </div>
+
+                <div class="widget-content">
+                  <div class="tabs-box">
+                    <div class="aplicants-upper-bar">
+                      <h6></h6>
+                      <ul class="aplicantion-status tab-buttons clearfix">
+                        <li class="tab-btn active-btn totals" data-tab="#totals">
+                          Tổng: <span th:text="${totalCount}">0</span>
+                        </li>
+                        <li class="tab-btn" data-tab="#ngonngu">
+                          Ngôn ngữ: <span th:text="${ngonNguCount}">0</span>
+                        </li>
+                        <li class="tab-btn" data-tab="#logic">
+                          Logic: <span th:text="${logicCount}">0</span>
+                        </li>
+                        <li class="tab-btn" data-tab="#chuyenmon">
+                          Chuyên môn: <span th:text="${chuyenMonCount}">0</span>
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div class="tabs-content">
+                      <!-- Tab: Tất cả bài test -->
+                      <div class="tab active-tab" id="totals">
+                        <div class="row">
+                          <div class="col-lg-12">
+                            <!-- Nếu không có bài test nào -->
+                            <div th:if="${#lists.isEmpty(dsBaiTest)}" class="message-box error">
+                              <p>Chưa có bài test nào. Vui lòng <a th:href="@{/nhatd/add-baitest}">thêm bài test mới</a>.</p>
+                            </div>
+                            
+                            <!-- Hiển thị bài test theo nhóm tin tuyển dụng -->
+                            <div th:if="${!#lists.isEmpty(dsBaiTest)}">
+                              <div th:each="entry : ${groupedTests}" class="ls-widget mb-4">
+                                <div class="widget-title">
+                                  <h4>
+                                    <i class="la la-briefcase"></i>
+                                    <span th:text="${entry.key.tieuDe}">Tiêu đề tin tuyển dụng</span>
+                                    <span class="badge badge-info ml-2" th:text="${entry.value.size()}">0</span>
+                                  </h4>
+                                </div>
+                                
+                                <div class="widget-content">
+                                  <div class="table-outer">
+                                    <table class="default-table manage-job-table">
+                                      <thead>
+                                        <tr>
+                                          <th>Tiêu đề bài test</th>
+                                          <th>Số ứng viên</th>
+                                          <th>Ngày đăng & Hạn nộp</th>
+                                          <th>Loại</th>
+                                          <th>Thao tác</th>
+                                        </tr>
+                                      </thead>
+
+                                      <tbody>
+                                        <!-- Các hàng bài test hiện tại -->
+                                        <tr th:each="baiTest : ${entry.value}">
+                                          <td>
+                                            <h6 th:text="${baiTest.tieuDe}">Tiêu đề bài test</h6>
+                                          </td>
+                                          
+                                          <td class="applied">
+                                            <a th:href="@{/nhatd/ds-truycap/{id}(id=${baiTest.id})}" 
+                                                th:text="${baiTest.dSKQBaiTest != null ? baiTest.dSKQBaiTest.size() + ' ứng viên' : '0 ứng viên'}">
+                                              Số ứng viên
+                                            </a>
+                                          </td>
+                                          
+                                          <td>
+                                            <span th:text="${#dates.format(baiTest.ngayTao, 'dd/MM/yyyy')}">Ngày đăng</span><br>
+                                            <span th:text="${#dates.format(baiTest.ngayDong, 'dd/MM/yyyy')}">Hạn nộp</span>
+                                          </td>
+                                          
+                                          <td>
+                                            <span th:class="${baiTest.loai == 'ngonngu' ? 'ngonngu' : 
+                                                      baiTest.loai == 'logic' ? 'logic' : 'chuyenmon'}"
+                                                  th:text="${baiTest.loai == 'ngonngu' ? 'Ngôn ngữ' : 
+                                                    baiTest.loai == 'logic' ? 'Logic' : 'Chuyên môn'}">
+                                              Loại bài test
+                                            </span>
+                                          </td>
+                                          
+                                          <td>
+                                            <div class="option-box">
+                                              <ul class="option-list">
+                                                <li><a th:href="@{/nhatd/chitiet-baitest/{id}(id=${baiTest.id})}" data-text="Xem chi tiết"><span class="la la-eye"></span></a></li>
+                                                <li><a th:href="@{/nhatd/edit-baitest/{id}(id=${baiTest.id})}" data-text="Chỉnh sửa"><span class="la la-pencil"></span></a></li>
+                                                <li><a th:href="@{/nhatd/delete-baitest/{id}(id=${baiTest.id})}" 
+                                                      data-text="Xóa" 
+                                                      onclick="return confirm('Bạn có chắc chắn muốn xóa bài test này?')">
+                                                      <span class="la la-trash"></span>
+                                                    </a>
+                                                </li>
+                                              </ul>
+                                            </div>
+                                          </td>
+                                        </tr>
+                                        
+                                        <!-- Dòng tổng kết với đếm ứng viên không trùng lặp -->
+                                        <tr class="summary-row">
+                                          <td colspan="2">
+                                            <strong>Tất cả bài test: <span th:text="${entry.value.size()}">0</span> bài test</strong>
+                                          </td>
+                                          <td colspan="3">
+                                            <strong>
+                                              <a th:href="@{/nhatd/dskqbaitest/{id}(id=${entry.key.id})}" class="view-results-link">
+                                                Tổng số ứng viên: 
+                                                <span th:text="${uniqueUngVienCounts.get(entry.key)}">0</span> ứng viên
+                                                <i class="la la-external-link-alt ml-1"></i>
+                                              </a>
+                                            </strong>
+                                          </td>
+                                        </tr>
+                                        <!-- Kết thúc dòng tổng kết -->
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Tab: Ngôn ngữ -->
+                      <div class="tab" id="ngonngu">
+                        <div class="row">
+                          <div class="col-lg-12">
+                            <div class="table-outer">
+                              <table class="default-table manage-job-table">
+                                <thead>
+                                  <tr>
+                                    <th>Tiêu đề bài test</th>
+                                    <th>Tin tuyển dụng</th>
+                                    <th>Số kết quả</th>
+                                    <th>Ngày đăng & Hạn nộp</th>
+                                    <th>Thao tác</th>
+                                  </tr>
+                                </thead>
+
+                                <tbody>
+                                  <tr th:if="${ngonNguCount == 0}">
+                                    <td colspan="5" class="text-center">Chưa có bài test ngôn ngữ nào</td>
+                                  </tr>
+                                  
+                                  <tr th:each="baiTest : ${dsBaiTest}" th:if="${baiTest.loai == 'ngonngu'}">
+                                    <td>
+                                      <h6 th:text="${baiTest.tieuDe}">Tiêu đề bài test</h6>
+                                    </td>
+                                    
+                                    <td>
+                                      <span th:text="${baiTest.tinTuyenDung != null ? baiTest.tinTuyenDung.tieuDe : 'N/A'}">Tin tuyển dụng</span>
+                                    </td>
+                                    
+                                    <td class="applied">
+                                      <span th:text="${baiTest.dSKQBaiTest != null ? baiTest.dSKQBaiTest.size() + ' kết quả' : '0 kết quả'}">
+                                        Số kết quả
+                                      </span>
+                                    </td>
+                                    
+                                    <td>
+                                      <span th:text="${#dates.format(baiTest.ngayTao, 'dd/MM/yyyy')}">Ngày đăng</span><br>
+                                      <span th:text="${#dates.format(baiTest.ngayDong, 'dd/MM/yyyy')}">Hạn nộp</span>
+                                    </td>
+                                    
+                                    <td>
+                                      <div class="option-box">
+                                        <ul class="option-list">
+                                          <li><a th:href="@{/nhatd/kqbaitest/{id}(id=${baiTest.id})}" data-text="Xem kết quả"><span class="la la-eye"></span></a></li>
+                                          <li><a th:href="@{/nhatd/edit-baitest/{id}(id=${baiTest.id})}" data-text="Chỉnh sửa"><span class="la la-pencil"></span></a></li>
+                                          <li><a th:href="@{/nhatd/delete-baitest/{id}(id=${baiTest.id})}" 
+                                                data-text="Xóa" 
+                                                onclick="return confirm('Bạn có chắc chắn muốn xóa bài test này?')">
+                                                <span class="la la-trash"></span>
+                                              </a>
+                                          </li>
+                                        </ul>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Tab: Logic (tương tự như tab Ngôn ngữ) -->
+                      <div class="tab" id="logic">
+                        <!-- Nội dung tương tự như tab Ngôn ngữ, nhưng với điều kiện th:if="${baiTest.loai == 'logic'}" -->
+                      </div>
+
+                      <!-- Tab: Chuyên môn (tương tự như tab Ngôn ngữ) -->
+                      <div class="tab" id="chuyenmon">
+                        <!-- Nội dung tương tự như tab Ngôn ngữ, nhưng với điều kiện th:if="${baiTest.loai == 'chuyenmon'}" -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Dashboard -->
+
+    <!-- Copyright -->
+    <div th:replace="~{nhatuyendung/layout/footer :: footer}"></div>
+
+  </div><!-- End Page Wrapper -->
+
+  <div th:replace="~{user/layout/script :: script}"></div>
+</body>
+</html>

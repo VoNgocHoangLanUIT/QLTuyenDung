@@ -28,6 +28,7 @@ public class DonUngTuyen {
     private Long id;
     private Date ngayUngTuyen;
     private String trangThai;
+    private boolean quyenTest;
 
     @NotNull(message = "CV không được để trống")
     @ManyToOne

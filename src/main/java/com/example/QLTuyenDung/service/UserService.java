@@ -7,11 +7,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.QLTuyenDung.dto.UserRoleDTO;
+import com.example.QLTuyenDung.model.DonUngTuyen;
+import com.example.QLTuyenDung.model.PhongVan;
 import com.example.QLTuyenDung.model.Role;
 import com.example.QLTuyenDung.model.TinTuyenDung;
 import com.example.QLTuyenDung.model.User;
@@ -30,6 +33,8 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
     private final TinTuyenDungRepository tinTuyenDungRepository;
+    private final DonUngTuyenService donUngTuyenService;
+    private final PhongVanService phongVanService;
     private final FileStorageService fileStorageService;
     private final BCryptPasswordEncoder passwordEncoder;
     public User getUserByUserName(String userName){
@@ -243,10 +248,10 @@ public class UserService {
         }
     }
 
-    public List<User> getNhanVienTuyenDungByCongTy(Long tinTuyenDungId) {
+    public List<User> getNhanVienTuyenDungByCongTyId(Long tinTuyenDungId) {
         TinTuyenDung tin = tinTuyenDungRepository.findById(tinTuyenDungId)
             .orElseThrow(() -> new RuntimeException("Không tìm thấy tin tuyển dụng"));
-        System.out.println("TinTuyenDung: " + tin.getId() + ", CongTy: " + tin.getCongty().getId());
+
 
         return userRepository.findByCongTy(tin.getCongty()).stream()
             .filter(user -> user.getUserRoles().stream()
@@ -254,4 +259,34 @@ public class UserService {
                     || userRole.getRole().getName().equals("CV_STAFF")))
             .toList();
     }
+
+    // Thêm phương thức để lấy danh sách nhân viên chưa được phân công phỏng vấn
+    public List<User> getNhanVienChuaPhanCongPhongVan(Long donUngTuyenId, Long congtyId) {
+        // Lấy đơn ứng tuyển
+        DonUngTuyen donUngTuyen = donUngTuyenService.getDonUngTuyenById(donUngTuyenId);
+        
+        // Lấy danh sách nhân viên đã được phân công phỏng vấn
+        List<PhongVan> dsPhongVan = phongVanService.getPhongVanByDonUngTuyen(donUngTuyen);
+        List<Long> nhanVienDaPhanCongIds = dsPhongVan.stream()
+            .filter(pv -> pv.getNhanVienTD() != null)
+            .map(pv -> pv.getNhanVienTD().getId())
+            .distinct()
+            .collect(Collectors.toList());
+        
+        // Lấy tất cả nhân viên tuyển dụng của công ty
+        List<User> allStaff = getNhanVienTuyenDungByCongTyId(congtyId);
+        // Lọc ra những nhân viên chưa được phân công
+        return allStaff.stream()
+            .filter(staff -> !nhanVienDaPhanCongIds.contains(staff.getId()))
+            .collect(Collectors.toList());
+    }
+
+    public User updateUser(User user) {
+        if (!userRepository.existsById(user.getId())) {
+            throw new RuntimeException("Không tìm thấy người dùng!");
+        }
+        return userRepository.save(user);
+    }
+
+    
 }

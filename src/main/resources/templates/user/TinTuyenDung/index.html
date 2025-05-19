@@ -1,0 +1,329 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{user/layout/head :: head}"></head>
+
+<body>
+
+  <div class="page-wrapper">
+
+    <!-- Preloader -->
+    <div class="preloader"></div>
+
+    <!-- Header Span -->
+    <span class="header-span"></span>
+
+    <!-- Main Header-->
+    <header th:replace="~{user/layout/header :: header}"></header>
+    <!--End Main Header -->
+
+    <!--Page Title-->
+    <section class="page-title">
+      <div class="auto-container">
+        <div class="title-outer">
+          <h1>Tìm việc</h1>
+          <ul class="page-breadcrumb">
+            <li><a th:href="@{/}">Trang chủ</a></li>
+            <li>Danh sách công việc</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    <!--End Page Title-->
+
+    <!-- Listing Section -->
+    <section class="ls-section">
+      <div class="auto-container">
+        <div class="filters-backdrop"></div>
+
+        <div class="row">
+          <!-- Filters Column -->
+          <div class="filters-column hide-left">
+            <div class="inner-column">
+              <div class="filters-outer">
+                <button type="button" class="theme-btn close-filters">X</button>
+
+                <!-- Filter Block -->
+                <div class="filter-block">
+                  <h4>Tìm kiếm theo từ khoá</h4>
+                  <div class="form-group">
+                    <input type="text" name="listing-search" placeholder="Tiêu đề công việc, từ khoá hoặc công ty">
+                    <span class="icon flaticon-search-3"></span>
+                  </div>
+                </div>
+
+                <!-- Filter Block -->
+                <div class="filter-block">
+                  <h4>Địa điểm</h4>
+                  <div class="form-group">
+                    <input type="text" name="listing-search" placeholder="Thành phố hoặc vị trí">
+                    <span class="icon flaticon-map-locator"></span>
+                  </div>
+                  <p>Bán kính xung quanh khu vực tìm kiếm</p>
+                  <div class="range-slider-one">
+                    <div class="area-range-slider"></div>
+                    <div class="input-outer">
+                      <div class="amount-outer"><span class="area-amount"></span>km</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Filter Block -->
+                <div class="filter-block">
+                  <h4>Lĩnh vực công việc</h4>
+                  <div class="form-group">
+                    <select class="chosen-select">
+                      <option>Chọn lĩnh vực công việc</option>
+                      <option>Kế toán - Tài chính</option>
+                      <option>Công nghệ thông tin</option>
+                      <option>Dịch vụ</option>
+                      <option>Marketing</option>
+                      <option>Nhân sự</option>
+                      <option>Chăm sóc sức khoẻ</option>
+                      <option>Thiết kế</option>
+                      <option>Quản lý dự án</option>
+                      <option>Công nghiệp ô tô</option>
+                    </select>
+                    <span class="icon flaticon-briefcase"></span>
+                  </div>
+                </div>
+
+                <!-- Switchbox Outer -->
+                <div class="switchbox-outer">
+                  <h4>Hình thức làm việc</h4>
+                  <ul class="switchbox">
+                    <li>
+                      <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider round"></span>
+                        <span class="title">Freelance</span>
+                      </label>
+                    </li>
+                    <li>
+                      <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider round"></span>
+                        <span class="title">Full Time</span>
+                      </label>
+                    </li>
+                    <li>
+                      <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider round"></span>
+                        <span class="title">Internship</span>
+                      </label>
+                    </li>
+                    <li>
+                      <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider round"></span>
+                        <span class="title">Part Time</span>
+                      </label>
+                    </li>
+                    <li>
+                      <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider round"></span>
+                        <span class="title">Temporary</span>
+                      </label>
+                    </li>
+                  </ul>
+                </div>
+
+                <!-- Checkboxes Ouer -->
+                <div class="checkbox-outer">
+                  <h4>Ngày đăng</h4>
+                  <ul class="checkboxes">
+                    <li>
+                      <input id="check-f" type="checkbox" name="check">
+                      <label for="check-f">Tất cả</label>
+                    </li>
+                    <li>
+                      <input id="check-a" type="checkbox" name="check">
+                      <label for="check-a">1 giờ trước</label>
+                    </li>
+                    <li>
+                      <input id="check-b" type="checkbox" name="check">
+                      <label for="check-b">24 giờ trước</label>
+                    </li>
+                    <li>
+                      <input id="check-c" type="checkbox" name="check">
+                      <label for="check-c">7 ngày trước</label>
+                    </li>
+                    <li>
+                      <input id="check-d" type="checkbox" name="check">
+                      <label for="check-d">14 ngày trước</label>
+                    </li>
+                    <li>
+                      <input id="check-e" type="checkbox" name="check">
+                      <label for="check-e">30 ngày trước</label>
+                    </li>
+                  </ul>
+                </div>
+
+                <!-- Checkboxes Ouer -->
+                <div class="checkbox-outer">
+                  <h4>Experience Level</h4>
+                  <ul class="checkboxes square">
+                    <li>
+                      <input id="check-ba" type="checkbox" name="check">
+                      <label for="check-ba">All</label>
+                    </li>
+                    <li>
+                      <input id="check-bb" type="checkbox" name="check">
+                      <label for="check-bb">Internship</label>
+                    </li>
+                    <li>
+                      <input id="check-bc" type="checkbox" name="check">
+                      <label for="check-bc">Entry level</label>
+                    </li>
+                    <li>
+                      <input id="check-bd" type="checkbox" name="check">
+                      <label for="check-bd">Associate</label>
+                    </li>
+                    <li>
+                      <input id="check-be" type="checkbox" name="check">
+                      <label for="check-be">Mid-Senior level4</label>
+                    </li>
+                    <li>
+                      <button class="view-more"><span class="icon flaticon-plus"></span> View More</button>
+                    </li>
+                  </ul>
+                </div>
+
+                <!-- Filter Block -->
+                <div class="filter-block">
+                  <h4>Mức lương</h4>
+
+                  <div class="range-slider-one salary-range">
+                    <div class="salary-range-slider"></div>
+                    <div class="input-outer">
+                      <div class="amount-outer">
+                        <span class="amount salary-amount">
+                          $<span class="min">0</span>
+                          $<span class="max">0</span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Filter Block -->
+                <div class="filter-block">
+                  <h4>Tags</h4>
+                  <ul class="tags-style-one">
+                    <li><a href="#">app</a></li>
+                    <li><a href="#">administrative</a></li>
+                    <li><a href="#">android</a></li>
+                    <li><a href="#">wordpress</a></li>
+                    <li><a href="#">design</a></li>
+                    <li><a href="#">react</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Content Column -->
+          <div class="content-column col-lg-12">
+            <div class="ls-outer">
+              <!-- ls Switcher -->
+              <div class="ls-switcher">
+                <div class="showing-result show-filters">
+                  <button type="button" class="theme-btn toggle-filters"><span class="icon icon-filter"></span> Filter</button>
+                  <div class="text" th:if="${dSTinTD != null && !dSTinTD.isEmpty()}">
+                    Đang hiện <strong th:text="${dSTinTD.size()}">0</strong> tin tuyển dụng
+                  </div>
+                  <div class="text" th:unless="${dSTinTD != null && !dSTinTD.isEmpty()}">
+                    Không tìm thấy tin tuyển dụng nào
+                  </div>
+                </div>
+                <div class="sort-by">
+                  <select class="chosen-select">
+                    <option>Việc mới</option>
+                    <option>Freelance</option>
+                    <option>Full Time</option>
+                    <option>Internship</option>
+                    <option>Part Time</option>
+                    <option>Temporary</option>
+                  </select>
+
+                  <select class="chosen-select">
+                    <option>Hiện 10</option>
+                    <option>Hiện 20</option>
+                    <option>Hiện 30</option>
+                    <option>Hiện 40</option>
+                    <option>Hiện 50</option>
+                    <option>Hiện 60</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row">
+                <!-- Job Block -->
+                <div class="job-block col-lg-6 col-md-12 col-sm-12" th:each="tin : ${dSTinTD}">
+                  <div class="inner-box">
+                    <div class="content">
+                      <span class="company-logo">                        <img th:if="${tin.congty != null && tin.congty.logo != null}" 
+                            th:src="@{'/fe/images/resource/company-logo/' + ${tin.congty.logo}}" 
+                            th:alt="${tin.congty.tenCongTy}">
+                        <img th:unless="${tin.congty != null && tin.congty.logo != null}" 
+                            th:src="@{/fe/images/resource/company-logo/default.png}" alt="Logo">
+                      </span>
+                      <h4><a th:href="@{'/chitiet-tintd/' + ${tin.id}}" th:text="${tin.tieuDe} + ' - ' + ${tin.congty != null ? tin.congty.tenCongTy : 'Không xác định'}">Tên công việc</a></h4>
+                      <ul class="job-info">
+                        <li><span class="icon flaticon-briefcase"></span><span th:text="${tin.congty != null ? tin.congty.tenCongTy : 'Không xác định'}"></span></li>
+                        <li><span class="icon flaticon-map-locator"></span> <span th:text="${tin.diaDiemLV}">Địa điểm</span></li>
+                        <li><span class="icon flaticon-clock-3"></span> <span th:text="${tin.ngayDang != null ? #dates.format(tin.ngayDang, 'dd/MM/yyyy') : 'Chưa xác định'}">Ngày đăng</span></li>
+                        <li><span class="icon flaticon-money"></span> <span th:text="${tin.mucLuong != null ? tin.mucLuong : 'Thương lượng'}">Mức lương</span></li>
+                      </ul>                      <ul class="job-other-info">
+                        <li class="time" th:text="${tin.hinhThucLV}">Full Time</li>
+                        <li class="green" th:if="${tin.trangThai == 'dangtuyen'}">Đang tuyển</li>
+                        <li class="closed" th:if="${tin.trangThai == 'dadong'}">Đã đóng</li>
+                        <li class="required" th:text="${tin.linhVuc != null ? tin.linhVuc : 'Khác'}">Hot</li>
+                      </ul>
+                      <button class="bookmark-btn"><span class="flaticon-bookmark"></span></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Pagination -->
+              <nav class="ls-pagination mb-5">
+                <ul>
+                  <li class="prev"><a href="#"><i class="fa fa-arrow-left"></i></a></li>
+                  <li><a href="#">1</a></li>
+                  <li><a href="#" class="current-page">2</a></li>
+                  <li><a href="#">3</a></li>
+                  <li class="next"><a href="#"><i class="fa fa-arrow-right"></i></a></li>
+                </ul>
+              </nav>
+
+              <!-- Call To Action -->
+              <div class="call-to-action-four style-two">
+                <h5>Recruiting?</h5>
+                <p>Advertise your jobs to millions of monthly users and search 15.8 million <br>CVs in our database.</p>
+                <a href="#" class="theme-btn btn-style-one bg-blue"><span class="btn-title">Start Recruiting Now</span></a>
+                <div class="image" th:style="'background-image: url(' + @{/fe/images/resource/ads-bg-4.png} + ');'"></div>
+              </div>
+              <!-- End Call To Action -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!--End Listing Page Section -->
+
+
+    <!-- Main Footer -->
+    <div th:replace="~{user/layout/footer :: footer}"></div>
+    <!-- End Main Footer -->
+
+
+  </div><!-- End Page Wrapper -->
+
+
+  <div th:replace="~{user/layout/script :: script}"></div>
+
+</body>
+</html>

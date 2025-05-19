@@ -2,6 +2,7 @@ package com.example.QLTuyenDung.model;
 
 import java.util.Set;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -26,7 +27,15 @@ public class CongTy {
     private String diaChi;
     private String linhVuc;
     private String website;
+    private String email;
     private String hotLine;
+    private String logo;
+    private String quyMo;
+    private String namThanhLap;
+    @Column(length = 4000)
+    private String moTa;
+    private String facebook;
+    private String linkedIn;
 
     @OneToMany(mappedBy = "congty", fetch = FetchType.EAGER)
     private Set<TinTuyenDung> dSTinTD;

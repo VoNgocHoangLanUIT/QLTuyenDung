@@ -51,7 +51,7 @@
                   <thead>
                     <tr>
                       <th style="width: 10px">ID</th>
-                      <th>Vị trí</th>
+                      <th>Tiêu đề tuyển dụng</th>
                       <th>Công ty</th>
                       <th>Hình thức</th>
                       <th>Địa điểm</th>
@@ -65,7 +65,7 @@
                     </tr>
                     <tr th:each="tin : ${dSTinTD}">
                         <td th:text="${tin.id}"></td>
-                        <td th:text="${tin.viTri}"></td>
+                        <td th:text="${tin.tieuDe}"></td>
                         <td th:text="${tin.congty.tenCongTy}"></td>
                         <td th:text="${tin.hinhThucLV}"></td>
                         <td th:text="${tin.diaDiemLV}"></td>

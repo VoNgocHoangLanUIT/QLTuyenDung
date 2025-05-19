@@ -149,7 +149,7 @@
                   if (confirm('Bạn có chắc chắn muốn đăng xuất không?')) {
                     const form = document.createElement('form');
                     form.method = 'POST';
-                    form.action = '/admin-logout';
+                    form.action = '/logout';
                     document.body.appendChild(form);
                     form.submit();
                   }

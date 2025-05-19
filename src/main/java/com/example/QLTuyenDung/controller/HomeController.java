@@ -1,4 +1,4 @@
-package com.example.QLTuyenDung.controller.user;
+package com.example.QLTuyenDung.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +18,7 @@ public class HomeController {
     private final UserService userService;
     @GetMapping("")
     public String user(){
-        return "index";
+        return "user/index";
     }
 
     @GetMapping("/login")

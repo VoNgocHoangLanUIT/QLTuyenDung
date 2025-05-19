@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{user/layout/head :: head}"></head>
+
+<body>
+
+  <div class="page-wrapper dashboard ">
+
+    <!-- Preloader -->
+    <div class="preloader"></div>
+
+    <!-- Header Span -->
+    <span class="header-span"></span>
+
+    <!-- Main Header-->
+    <header th:replace="~{user/layout/header :: header}"></header>
+    <!--End Main Header -->
+
+    <!-- Sidebar Backdrop -->
+    <div class="sidebar-backdrop"></div>
+
+    <!-- User Sidebar -->
+    <div th:replace="~{nhatuyendung/layout/sidebar :: sidebar}"></div>
+    <!-- End User Sidebar -->
+
+    <!-- Dashboard -->
+    <section class="user-dashboard">
+      <div class="dashboard-outer">
+        <div class="upper-title-box">
+          <a th:href="@{/nhatd/dsbaitest}" class="btn btn-sm btn-outline-primary mb-3">
+            <i class="la la-arrow-left"></i> Quay lại danh sách bài test
+          </a>
+          <h3 th:text="'Quyền truy cập ' + ${baiTest.tieuDe}">Quyền truy cập bài test</h3>
+          <div class="text" th:text="'Tin tuyển dụng: ' + ${baiTest.tinTuyenDung.tieuDe}">Tin tuyển dụng</div>
+        </div>
+
+        <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+        
+
+        <div class="row">
+          <div class="col-lg-12">
+            <!-- Ls widget -->
+            <div class="ls-widget">
+              <div class="tabs-box">
+                <div class="widget-title d-flex justify-content-between align-items-center">
+                    <h4>Danh sách ứng viên được phép bài test</h4>
+
+                    <div class="actions">
+                        <a th:href="@{/nhatd/add-truycap/{id}(id=${baiTest.id})}" class="theme-btn btn-style-one">
+                        <i class="la la-plus"></i> Thêm ứng viên
+                        </a>
+                    </div>
+                </div>
+
+                <div class="widget-content">
+                  <div class="tabs-box">
+                    <div class="tabs-content">
+                      <!--Tab: Tất cả kết quả-->
+                      <div class="tab active-tab" id="totals">
+                        <div class="row">
+                          <!-- Hiển thị thông báo nếu không có kết quả bài test -->
+                          <div th:if="${#lists.isEmpty(dsTruyCap)}" class="col-12 text-center p-5">
+                            <h5>Chưa cấp phép cho bất kì ứng viên nào</h5>
+                          </div>
+                          
+                          <!-- Hiển thị danh sách kết quả bài test -->
+                          <div th:each="tc : ${dsTruyCap}" class="candidate-block-three col-lg-6 col-md-12 col-sm-12 kq-item">
+                            <div class="inner-box">
+                              <ul class="job-other-info">
+                                <li th:class="${tc.donUngTuyen.trangThai == 'datuyen' ? 'green' : 
+                                           tc.donUngTuyen.trangThai == 'dangduyet' ? 'purple' : 
+                                           tc.donUngTuyen.trangThai == 'chotest' ? 'required' : 
+                                           tc.donUngTuyen.trangThai == 'phongvan' ? 'time' : 'closed'}"
+                                    th:text="${tc.donUngTuyen.trangThai == 'datuyen' ? 'Đã tuyển' : 
+                                           tc.donUngTuyen.trangThai == 'dangduyet' ? 'Đang duyệt hồ sơ' : 
+                                           tc.donUngTuyen.trangThai == 'chotest' ? 'Chờ bài test' :
+                                           tc.donUngTuyen.trangThai == 'phongvan' ? 'Phỏng vấn' : 'Từ chối'}">
+                                </li>
+                              </ul>
+                              <div class="content">
+                                <figure class="image">
+                                  <img th:src="${tc.donUngTuyen.user.hinhAnh != null ? tc.donUngTuyen.user.hinhAnh : '/fe/images/resource/candidate-default.png'}" alt="">
+                                </figure>
+                                <h4 class="name">
+                                  <a th:href="@{/chitiet-ungvien/{id}(id=${tc.donUngTuyen.user.id})}" 
+                                     th:text="${tc.donUngTuyen.user.hoTen}">Tên ứng viên</a>
+                                </h4>
+                                <ul class="candidate-info">
+                                  <li class="designation" th:text="${tc.donUngTuyen.user.chuyenNganh}">Chuyên ngành</li>
+                                  <li>
+                                    <span class="icon flaticon-map-locator"></span> 
+                                    <span th:text="${tc.donUngTuyen.user.diaChi}">Địa chỉ</span>
+                                  </li>
+                                  <li>
+                                    <span class="icon flaticon-money"></span>
+                                    <span th:text="${tc.donUngTuyen.user.luongMongMuon}">Mức lương</span>
+                                  </li>
+                                </ul>
+                                <ul class="post-tags">
+                                  <li th:text="'Ngày ứng tuyển: ' + ${#dates.format(tc.donUngTuyen.ngayUngTuyen, 'dd/MM/yyyy')}">Ngày ứng tuyển</li>
+                                </ul>
+                              </div>
+                              <div class="option-box">
+                                <ul class="option-list">
+                                  <li>
+                                    <a th:href="@{/chitiet-ungvien/{id}(id=${tc.donUngTuyen.user.id})}" data-text="Xem CV">
+                                      <span class="la la-eye"></span>
+                                    </a>
+                                  </li>
+                                  <li>
+                                    <a th:href="@{/nhatd/update-trangthai/{id}/{trangThai}(id=${tc.donUngTuyen.id}, trangThai='dangduyet')}"
+                                      th:class="${tc.donUngTuyen.trangThai == 'dangduyet' ? 'active-status' : ''}"
+                                      data-text="Duyệt hồ sơ">
+                                      <span class="la la-file-alt"></span>
+                                    </a>
+                                  </li>
+                                  <li>
+                                    <a th:href="@{/nhatd/update-trangthai/{id}/{trangThai}(id=${tc.donUngTuyen.id}, trangThai='chotest')}" 
+                                      th:class="${tc.donUngTuyen.trangThai == 'chotest' ? 'active-status' : ''}"
+                                      data-text="Chờ bài test">
+                                      <span class="la la-edit"></span>
+                                    </a>
+                                  </li>
+                                  <li>
+                                    <a th:href="@{/nhatd/update-trangthai/{id}/{trangThai}(id=${tc.donUngTuyen.id}, trangThai='phongvan')}" 
+                                      th:class="${tc.donUngTuyen.trangThai == 'phongvan' ? 'active-status' : ''}"
+                                      data-text="Phỏng vấn">
+                                      <span class="la la-user-tie"></span>
+                                    </a>
+                                  </li>
+                                  <li>
+                                    <a th:href="@{/nhatd/update-trangthai/{id}/{trangThai}(id=${tc.donUngTuyen.id}, trangThai='datuyen')}" 
+                                      th:class="${tc.donUngTuyen.trangThai == 'datuyen' ? 'active-status' : ''}"
+                                      data-text="Tuyển dụng"
+                                      onclick="return confirm('Bạn có chắc chắn muốn tuyển dụng ứng viên này?');">
+                                      <span class="la la-check"></span>
+                                    </a>
+                                  </li>
+                                  <li>
+                                    <a th:href="@{/nhatd/update-trangthai/{id}/{trangThai}(id=${tc.donUngTuyen.id}, trangThai='tuchoi')}" 
+                                      th:class="${tc.donUngTuyen.trangThai == 'tuchoi' ? 'active-status' : ''}"
+                                      data-text="Từ chối"
+                                      onclick="return confirm('Bạn có chắc chắn muốn từ chối ứng viên này?');">
+                                      <span class="la la-times-circle"></span>
+                                    </a>
+                                  </li>
+                                  <li>
+                                    <a th:href="@{/nhatd/delete-kqbaitest/{kqId}(kqId=${tc.id})}" 
+                                      data-text="Xóa quyền truy cập"
+                                      onclick="return confirm('Bạn có chắc chắn muốn xóa quyền truy cập bài test cho ứng viên này?');">
+                                      <span class="la la-trash"></span>
+                                    </a>
+                                  </li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Dashboard -->
+
+    <!-- Copyright -->
+    <div th:replace="~{nhatuyendung/layout/footer :: footer}"></div>
+
+  </div><!-- End Page Wrapper -->
+
+  <div th:replace="~{user/layout/script :: script}"></div>
+  
+  
+  
+  
+</body>
+</html>
