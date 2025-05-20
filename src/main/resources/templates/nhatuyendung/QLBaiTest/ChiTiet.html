@@ -123,53 +123,6 @@
           </div>
 
           <div class="col-lg-4">
-            <!-- Thống kê kết quả bài test -->
-            <div class="ls-widget">
-              <div class="tabs-box">
-                <div class="widget-title">
-                  <h4>Thống kê kết quả</h4>
-                </div>
-
-                <div class="widget-content">
-                  <div class="text-center py-5" th:if="${baiTest.dSKQBaiTest == null || baiTest.dSKQBaiTest.isEmpty()}">
-                    <div class="icon-box">
-                      <i class="la la-clipboard-list" style="font-size: 48px; color: #ddd;"></i>
-                    </div>
-                    <h5 class="mt-3">Chưa có kết quả bài test</h5>
-                    <p>Các ứng viên chưa thực hiện bài test này.</p>
-                  </div>
-                  
-                  <div th:if="${baiTest.dSKQBaiTest != null && !baiTest.dSKQBaiTest.isEmpty()}">
-                    <div class="summary-card mb-3">
-                      <div class="summary-box">
-                        <div class="summary-count" th:text="${baiTest.dSKQBaiTest.size()}">0</div>
-                        <div class="summary-label">Tổng số kết quả</div>
-                      </div>
-                    </div>
-                    
-                    <ul class="list-group mb-4">
-                      <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Đạt yêu cầu
-                        <span class="badge badge-success badge-pill" 
-                              th:text="${soLuongDat}">0</span>
-                      </li>
-                      <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Không đạt yêu cầu
-                        <span class="badge badge-danger badge-pill" 
-                              th:text="${soLuongKhongDat}">0</span>
-                      </li>
-                    </ul>
-                    
-                    <div class="recruit-btn">
-                      <a th:href="@{/nhatd/ds-truycap/{id}(id=${baiTest.id})}" class="theme-btn btn-style-four">
-                        Xem ứng viên được quyền truy cập
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
             <!-- Quản lý bài test -->
             <div class="ls-widget">
               <div class="tabs-box">

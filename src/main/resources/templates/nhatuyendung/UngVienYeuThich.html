@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{user/layout/head :: head}"></head>
+
+<body>
+
+  <div class="page-wrapper dashboard">
+
+    <!-- Preloader -->
+    <div class="preloader"></div>
+
+    <!-- Header Span -->
+    <span class="header-span"></span>
+
+    <!-- Main Header-->
+    <header th:replace="~{user/layout/header :: header}"></header>
+    <!--End Main Header -->
+
+    <!-- Sidebar Backdrop -->
+    <div class="sidebar-backdrop"></div>
+
+    <!-- User Sidebar -->
+    <div th:replace="~{nhatuyendung/layout/sidebar :: sidebar}"></div>
+    <!-- End User Sidebar -->
+
+    <!-- Dashboard -->
+    <section class="user-dashboard">
+      <div class="dashboard-outer">
+        <div class="upper-title-box">
+          <h3>Ứng viên yêu thích</h3>
+          <div class="text">Danh sách các ứng viên bạn đã đánh dấu yêu thích</div>
+        </div>
+        
+        <!-- Thông báo thành công/lỗi -->
+        <div class="alert alert-success" th:if="${success}" role="alert">
+          <i class="la la-check-circle"></i> <span th:text="${success}">Thành công!</span>
+        </div>
+        <div class="alert alert-danger" th:if="${error}" role="alert">
+          <i class="la la-times-circle"></i> <span th:text="${error}">Lỗi!</span>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-12">
+            <!-- Ứng viên widget -->
+            <div class="applicants-widget ls-widget">
+              <div class="widget-title">
+                <h4>Ứng viên yêu thích</h4>
+
+                <div class="chosen-outer">
+                  <!--search box-->
+                  <div class="search-box-one">
+                    <form method="post" action="#">
+                      <div class="form-group">
+                        <span class="icon flaticon-search-1"></span>
+                        <input type="search" name="search-field" value="" placeholder="Tìm kiếm" required="">
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+              <div class="widget-content">
+                <!-- Hiển thị thông báo nếu không có ứng viên yêu thích -->
+                <div th:if="${#lists.isEmpty(danhSachYeuThich)}" class="alert alert-info text-center py-5">
+                  <div class="icon-box">
+                    <i class="la la-heart-o" style="font-size: 48px; color: #ddd;"></i>
+                  </div>
+                  <h5 class="mt-3">Chưa có ứng viên yêu thích nào</h5>
+                  <p>Bạn chưa đánh dấu ứng viên nào vào danh sách yêu thích.</p>
+                  <a th:href="@{/dsungvien}" class="theme-btn btn-style-one mt-3">
+                    <i class="la la-search"></i> Tìm kiếm ứng viên
+                  </a>
+                </div>
+
+                <!-- Danh sách ứng viên yêu thích -->
+                <div th:unless="${#lists.isEmpty(danhSachYeuThich)}">
+                  <!-- Candidate block three -->
+                  <div class="candidate-block-three" th:each="item : ${danhSachYeuThich}">
+                    <div class="inner-box">
+                      <div class="content">
+                        <figure class="image">
+                          <img th:src="@{/fe/images/resource/candidate-1.png}" alt="">
+                        </figure>
+                        <h4 class="name">
+                          <a th:href="@{'/nhatd/chitiet-ungvien/' + ${item.ungVien.id}}" 
+                             th:text="${item.ungVien.hoTen != null ? item.ungVien.hoTen : item.ungVien.username}">
+                            Nguyễn Văn A
+                          </a>
+                        </h4>
+                        <ul class="candidate-info">
+                          <li class="designation" th:text="${item.ungVien.chuyenNganh != null ? item.ungVien.chuyenNganh : 'Chưa cập nhật chuyên ngành'}">
+                            UI Designer
+                          </li>
+                          <li th:if="${item.ungVien.diaChi != null}">
+                            <span class="icon flaticon-map-locator"></span>
+                            <span th:text="${item.ungVien.diaChi}">Hà Nội</span>
+                          </li>
+                          <li th:if="${item.ungVien.luongMongMuon > 0}">
+                            <span class="icon flaticon-money"></span>
+                            <span th:text="${item.ungVien.luongMongMuon + ' triệu VND'}">15 triệu VND</span>
+                          </li>
+                        </ul>
+                        <ul class="post-tags">
+                          <li th:if="${item.ungVien.namKinhNghiem > 0}">
+                            <a href="javascript:void(0);" th:text="${item.ungVien.namKinhNghiem + ' năm kinh nghiệm'}">
+                              5 năm kinh nghiệm
+                            </a>
+                          </li>
+                          <li th:if="${item.ungVien.namKinhNghiem == 0}">
+                            <a href="javascript:void(0);">Mới ra trường</a>
+                          </li>
+                        </ul>
+                      </div>
+                      <div class="option-box">
+                        <!-- Dashboard Option -->
+                        <a th:href="@{'/nhatd/chitiet-ungvien/' + ${item.ungVien.id}}" class="theme-btn btn-style-three mr-2">
+                          <span class="la la-eye"></span> Xem hồ sơ
+                        </a>
+                        <a th:href="@{'/nhatd/xoa-ungvien-yeuthich/' + ${item.id}}"
+                           onclick="return confirm('Bạn có chắc chắn muốn xóa ứng viên này khỏi danh sách yêu thích?');"
+                           class="delete-btn theme-btn btn-style-four" data-text="Xóa">
+                          <span class="la la-trash"></span> Xóa
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Dashboard -->
+
+    <!-- Copyright -->
+    <div th:replace="~{nhatuyendung/layout/footer :: footer}"></div>
+  </div><!-- End Page Wrapper -->
+
+  <div th:replace="~{user/layout/script :: script}"></div>
+
+</body>
+</html>

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -287,6 +288,21 @@ public class UserService {
         }
         return userRepository.save(user);
     }
-
     
+    public boolean changePassword(Long userId, String oldPassword, String newPassword) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người dùng với ID: " + userId));
+        
+        // Kiểm tra mật khẩu cũ có chính xác không
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            return false; // Mật khẩu cũ không chính xác
+        }
+        
+        // Mã hóa mật khẩu mới và cập nhật
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        user.setPassword(encodedPassword);
+        userRepository.save(user);
+        
+        return true; // Đổi mật khẩu thành công
+    }
 }

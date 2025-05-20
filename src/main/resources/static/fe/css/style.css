@@ -22715,4 +22715,9 @@ Work Section
   margin-bottom: 20px;
 }
 
+.bookmark-btn:hover i,
+  .bookmark-btn.active i {
+    color: #e9c058;
+  }
+
 

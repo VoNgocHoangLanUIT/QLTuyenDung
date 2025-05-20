@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,10 +14,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.QLTuyenDung.dto.ScoreDTO;
 import com.example.QLTuyenDung.model.BaiTest;
 import com.example.QLTuyenDung.model.CustomUserDetail;
 import com.example.QLTuyenDung.model.DonUngTuyen;
@@ -24,19 +27,23 @@ import com.example.QLTuyenDung.model.KQBaiTest;
 import com.example.QLTuyenDung.model.TinTuyenDung;
 import com.example.QLTuyenDung.model.User;
 import com.example.QLTuyenDung.service.BaiTestService;
+import com.example.QLTuyenDung.service.DiemService;
 import com.example.QLTuyenDung.service.DonUngTuyenService;
 import com.example.QLTuyenDung.service.KQBaiTestService;
 import com.example.QLTuyenDung.service.TinTuyenDungService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class QLyKQTestController {
     private final KQBaiTestService kqBaiTestService;
     private final DonUngTuyenService donUngTuyenService;
     private final BaiTestService baiTestService;
     private final TinTuyenDungService tinTuyenDungService;
+    private final DiemService diemService;
 
     @GetMapping("/admin/dskqbaitest")
     public String adminShowDSKQBaiTest(
@@ -359,6 +366,23 @@ public class QLyKQTestController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi: " + e.getMessage());
             return "redirect:/nhatd/dsbaitest";
+        }
+    }
+
+    @PostMapping("/api/receive-score")
+    public ResponseEntity<String> receiveScore(@RequestBody ScoreDTO score) {
+        log.info("Nhận kết quả bài test: {}", score);
+        
+        try {
+            boolean success = diemService.save(score);
+            if (success) {
+                return ResponseEntity.ok("Đã cập nhật điểm thành công");
+            } else {
+                return ResponseEntity.badRequest().body("Không thể cập nhật điểm");
+            }
+        } catch (Exception e) {
+            log.error("Lỗi khi xử lý kết quả bài test", e);
+            return ResponseEntity.badRequest().body("Lỗi: " + e.getMessage());
         }
     }
 }

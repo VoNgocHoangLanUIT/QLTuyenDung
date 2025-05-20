@@ -8,4 +8,5 @@ import com.example.QLTuyenDung.model.BaiTest;
 
 public interface BaiTestRepository extends JpaRepository<BaiTest, Long> {
     List<BaiTest> findByTinTuyenDungId(Long tinTuyenDungId);
+    BaiTest findByTieuDe(String tieuDe);
 }

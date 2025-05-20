@@ -36,7 +36,13 @@
                       <li><span class="fas fa-star review-color"></span> 4.5 (8 Reviews)</li>
                     </ul>
                   </div>
-                  <button class="bookmark-btn"><i class="flaticon-bookmark"></i></button>
+                  <button sec:authorize="hasAuthority('RECRUITER')" 
+                          th:class="${isBookmarked != null && isBookmarked ? 'bookmark-btn active' : 'bookmark-btn'}" 
+                          id="bookmarkButton"
+                          th:data-id="${ungVien.id}"
+                          onclick="toggleBookmark(this)">
+                    <i class="flaticon-bookmark"></i>
+                  </button>
                 </div>
                 <ul class="post-tags at-sv5 mt20">
                   <li class="mb-2 mb-sm-0" th:if="${ungVien.namKinhNghiem > 0}"><a href="#" th:text="${ungVien.namKinhNghiem + ' năm kinh nghiệm'}">5 năm kinh nghiệm</a></li>
@@ -278,5 +284,96 @@
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDaaCBm4FEmgKs5cfVrh3JYue3Chj1kJMw"></script>
   <script th:src="@{/fe/js/map-script.js}"></script>
   <!--End Google Map APi-->
+  <script>
+function toggleBookmark(button) {
+  const ungVienId = button.getAttribute("data-id");
+  
+  // Thay đổi trạng thái nút trước để người dùng thấy phản hồi ngay lập tức
+  const isCurrentlyActive = button.classList.contains('active');
+  if (isCurrentlyActive) {
+    button.classList.remove('active');
+  } else {
+    button.classList.add('active');
+  }
+  
+  fetch(`/nhatd/toggle-bookmark/${ungVienId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      if (data.bookmarked) {
+        button.classList.add('active');
+        showNotification('Đã thêm vào danh sách yêu thích');
+      } else {
+        button.classList.remove('active');
+        showNotification('Đã xóa khỏi danh sách yêu thích');
+      }
+    } else {
+      // Khôi phục trạng thái ban đầu nếu có lỗi
+      if (isCurrentlyActive) {
+        button.classList.add('active');
+      } else {
+        button.classList.remove('active');
+      }
+      showNotification('Có lỗi xảy ra: ' + data.message, 'error');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    // Khôi phục trạng thái ban đầu nếu có lỗi
+    if (isCurrentlyActive) {
+      button.classList.add('active');
+    } else {
+      button.classList.remove('active');
+    }
+    showNotification('Có lỗi xảy ra khi xử lý yêu cầu', 'error');
+  });
+}
+
+function showNotification(message, type = 'success') {
+  // Kiểm tra nếu đã có thông báo trước đó, xóa đi
+  const existingAlert = document.querySelector('.bookmark-alert');
+  if (existingAlert) {
+    existingAlert.remove();
+  }
+  
+  // Tạo thông báo mới
+  const alertDiv = document.createElement('div');
+  alertDiv.className = `bookmark-alert alert ${type === 'success' ? 'alert-success' : 'alert-danger'}`;
+  alertDiv.style.position = 'fixed';
+  alertDiv.style.top = '20px';
+  alertDiv.style.right = '20px';
+  alertDiv.style.zIndex = '9999';
+  alertDiv.style.padding = '15px 25px';
+  alertDiv.style.borderRadius = '5px';
+  alertDiv.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+  alertDiv.style.opacity = '0';
+  alertDiv.style.transition = 'opacity 0.3s ease';
+  
+  alertDiv.innerHTML = `
+    <i class="${type === 'success' ? 'la la-check-circle' : 'la la-times-circle'}"></i>
+    <span>${message}</span>
+  `;
+  
+  document.body.appendChild(alertDiv);
+  
+  // Hiển thị thông báo
+  setTimeout(() => {
+    alertDiv.style.opacity = '1';
+  }, 10);
+  
+  // Tự động ẩn thông báo sau 3 giây
+  setTimeout(() => {
+    alertDiv.style.opacity = '0';
+    setTimeout(() => {
+      alertDiv.remove();
+    }, 300);
+  }, 3000);
+}
+</script>
 </body>
 </html>

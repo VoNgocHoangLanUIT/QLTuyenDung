@@ -79,4 +79,10 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<ThanhTuu> dSThanhTuu;
+
+    @OneToMany(mappedBy = "ungVien", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<UngVienYeuThich> dSUngVienYeuThich;
+
+    @OneToMany(mappedBy = "nhaTuyenDung", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<UngVienYeuThich> dSNhaTDYeuThich;
 }
