@@ -3,6 +3,9 @@ package com.example.QLTuyenDung.model;
 import java.util.Date;
 import java.util.Set;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -26,11 +29,14 @@ public class DonUngTuyen {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date ngayUngTuyen;
     private String trangThai;
     private boolean quyenTest;
-
     @NotNull(message = "CV không được để trống")
+    @Column(name = "cv_file")
+    private String cvFile;
+
     @ManyToOne
     @JoinColumn (name = "user_id", referencedColumnName = "id")
     private User user;

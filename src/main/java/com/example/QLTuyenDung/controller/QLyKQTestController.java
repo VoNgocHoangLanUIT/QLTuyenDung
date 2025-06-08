@@ -328,6 +328,127 @@ public class QLyKQTestController {
             return "redirect:/nhatd/dstintd";
         }
     }
+    
+    @GetMapping("/nhatd/edit-kqtest/{donId}")
+    public String showCapNhatDiemForm(@PathVariable Long donId, Model model, Authentication authentication) {
+        try {
+            // Lấy thông tin người dùng hiện tại
+            CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+            User userHienTai = userDetails.getUser();
+            
+            // Kiểm tra xem user đã có công ty chưa
+            if (userHienTai.getCongTy() == null) {
+                model.addAttribute("error", "Bạn cần cập nhật thông tin công ty trước!");
+                return "redirect:/nhatd";
+            }
+            
+            // Lấy đơn ứng tuyển
+            DonUngTuyen don = donUngTuyenService.getDonUngTuyenById(donId);
+            
+            // Kiểm tra xem đơn ứng tuyển có thuộc tin tuyển dụng của công ty không
+            if (don == null || don.getTinTuyenDung().getCongty().getId() != userHienTai.getCongTy().getId()) {
+                model.addAttribute("error", "Bạn không có quyền truy cập đơn ứng tuyển này!");
+                return "redirect:/nhatd/dstintuyendung";
+            }
+            
+            // Lấy tin tuyển dụng
+            TinTuyenDung tinTuyenDung = don.getTinTuyenDung();
+            
+            // Lấy danh sách kết quả bài test của đơn ứng tuyển này
+            Map<Long, KQBaiTest> ketQuaTests = new HashMap<>();
+            List<KQBaiTest> dsKQBaiTest = kqBaiTestService.getKQBaiTestsByDonUngTuyenId(donId);
+            
+            for (KQBaiTest kq : dsKQBaiTest) {
+                ketQuaTests.put(kq.getId(), kq);
+            }
+            
+            // Truyền dữ liệu cho view
+            model.addAttribute("don", don);
+            model.addAttribute("tinTuyenDung", tinTuyenDung);
+            model.addAttribute("ketQuaTests", ketQuaTests);
+            
+            return "nhatuyendung/QLKQBaiTest/CapNhatDiem";
+        } catch (Exception e) {
+            model.addAttribute("error", "Đã xảy ra lỗi: " + e.getMessage());
+            return "redirect:/nhatd/dstintuyendung";
+        }
+    }
+
+@PostMapping("/nhatd/edit-kqtest/{donId}")
+public String saveCapNhatDiem(@PathVariable Long donId, 
+                             @RequestParam Map<String, String> allParams,
+                             Model model, Authentication authentication,
+                             RedirectAttributes redirectAttributes) {
+        // Lấy đơn ứng tuyển
+        DonUngTuyen don = donUngTuyenService.getDonUngTuyenById(donId);
+    try {
+        // Lấy thông tin người dùng hiện tại
+        CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+        User userHienTai = userDetails.getUser();
+        
+        // Kiểm tra xem user đã có công ty chưa
+        if (userHienTai.getCongTy() == null) {
+            redirectAttributes.addFlashAttribute("error", "Bạn cần cập nhật thông tin công ty trước!");
+            return "redirect:/nhatd";
+        }
+        
+        
+        // Kiểm tra xem đơn ứng tuyển có thuộc tin tuyển dụng của công ty không
+        if (don == null || don.getTinTuyenDung().getCongty().getId() != userHienTai.getCongTy().getId()) {
+            redirectAttributes.addFlashAttribute("error", "Bạn không có quyền truy cập đơn ứng tuyển này!");
+            return "redirect:/nhatd/dstintuyendung";
+        }
+        
+        // Xử lý cập nhật điểm từ form
+        Map<String, String> diemMap = new HashMap<>();
+        
+        // Tách các tham số thành map điểm
+        for (Map.Entry<String, String> entry : allParams.entrySet()) {
+            if (entry.getKey().startsWith("diem[") && entry.getKey().endsWith("]")) {
+                String kqId = entry.getKey().substring(5, entry.getKey().length() - 1);
+                diemMap.put(kqId, entry.getValue());
+            }
+        }
+        
+        // Cập nhật từng kết quả bài test
+        for (Map.Entry<String, String> entry : diemMap.entrySet()) {
+            Long kqId = Long.parseLong(entry.getKey());
+            int diem = Integer.parseInt(entry.getValue());
+            
+            // Kiểm tra điểm hợp lệ
+            if (diem < 0 || diem > 100) {
+                redirectAttributes.addFlashAttribute("error", "Điểm phải từ 0 đến 100!");
+                return "redirect:/nhatd/capnhat-diem/" + donId;
+            }
+            
+            // Lấy và cập nhật kết quả bài test
+            KQBaiTest kqBaiTest = kqBaiTestService.getKQBaiTestById(kqId);
+            
+            // Kiểm tra kết quả bài test có tồn tại không
+            if (kqBaiTest == null) {
+                continue;
+            }
+            
+            // Kiểm tra kết quả bài test có thuộc đơn ứng tuyển không
+            if (!kqBaiTest.getDonUngTuyen().getId().equals(donId)) {
+                redirectAttributes.addFlashAttribute("error", "Bạn không có quyền cập nhật kết quả bài test này!");
+                return "redirect:/nhatd/kqbaitest/" + don.getTinTuyenDung().getId();
+            }
+            
+            // Cập nhật điểm
+            kqBaiTest.setDiem(diem);
+            
+            // Lưu thay đổi
+            kqBaiTestService.updateKQBaiTest(kqBaiTest);
+        }
+        
+        redirectAttributes.addFlashAttribute("success", "Cập nhật điểm thành công!");
+        return "redirect:/nhatd/dskqbaitest/" + don.getTinTuyenDung().getId();
+    } catch (Exception e) {
+        redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi: " + e.getMessage());
+        return "redirect:/nhatd/dskqbaitest/" + don.getTinTuyenDung().getId();
+    }
+}
 
     @GetMapping("/nhatd/delete-kqbaitest/{kqId}")
     public String nhaTDDeleteKQBaiTest(@PathVariable Long kqId,
@@ -383,6 +504,62 @@ public class QLyKQTestController {
         } catch (Exception e) {
             log.error("Lỗi khi xử lý kết quả bài test", e);
             return ResponseEntity.badRequest().body("Lỗi: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/nvhs/dskqbaitest/{tinTuyenDungId}")
+    public String nVHSShowDSKetQuaBaiTest(@PathVariable Long tinTuyenDungId, Model model, Authentication authentication) {
+        try {
+            // Lấy thông tin người dùng hiện tại
+            CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+            User userHienTai = userDetails.getUser();
+            
+            // Kiểm tra xem user đã có công ty chưa
+            if (userHienTai.getCongTy() == null) {
+                return "redirect:/nvhs";
+            }
+            
+            // Lấy thông tin tin tuyển dụng
+            TinTuyenDung tinTuyenDung = tinTuyenDungService.getTinTuyenDungById(tinTuyenDungId);
+            
+            // Kiểm tra tin tuyển dụng có thuộc công ty của user không
+            if (!tinTuyenDung.getCongty().getId().equals(userHienTai.getCongTy().getId())) {
+                return "redirect:/nvhs/dstintd";
+            }
+            
+            List<DonUngTuyen> dsDonCoQuyenTest = donUngTuyenService.getDonUngTuyenByQuyenTestVaTinTD(true, tinTuyenDungId);
+            
+            // Lấy tất cả bài test thuộc tin tuyển dụng này
+            List<BaiTest> dsBaiTest = baiTestService.getBaiTestByTinTuyenDungId(tinTuyenDungId);
+            
+            // Tạo map lưu kết quả bài test theo loại bài test cho mỗi đơn ứng tuyển
+            Map<Long, Map<String, KQBaiTest>> ketQuaByDonIdAndLoai = new HashMap<>();
+            
+            // Duyệt qua từng đơn ứng tuyển
+            for (DonUngTuyen don : dsDonCoQuyenTest) {
+                Map<String, KQBaiTest> ketQuaByLoai = new HashMap<>();
+                
+                // Duyệt qua danh sách kết quả của đơn ứng tuyển
+                if (don.getDSKQBaiTest() != null && !don.getDSKQBaiTest().isEmpty()) {
+                    for (KQBaiTest kq : don.getDSKQBaiTest()) {
+                        // Lưu kết quả bài test theo loại
+                        ketQuaByLoai.put(kq.getBaiTest().getLoai(), kq);
+                    }
+                }
+                
+                // Lưu kết quả cho đơn ứng tuyển hiện tại
+                ketQuaByDonIdAndLoai.put(don.getId(), ketQuaByLoai);
+            }
+            
+            
+            // Thêm dữ liệu vào model
+            model.addAttribute("tinTuyenDung", tinTuyenDung);
+            model.addAttribute("dsDonCoQuyenTest", dsDonCoQuyenTest);
+            model.addAttribute("dsBaiTest", dsBaiTest);
+            model.addAttribute("ketQuaByDonIdAndLoai", ketQuaByDonIdAndLoai);
+            return "nvhs/QLKQBaiTest/index";
+        } catch (Exception e) {
+            return "redirect:/nvhs/dstintd";
         }
     }
 }

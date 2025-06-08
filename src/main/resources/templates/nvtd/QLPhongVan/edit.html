@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{user/layout/head :: head}"></head>
+
+<body>
+  <div class="page-wrapper dashboard">
+    <!-- Preloader -->
+    <div class="preloader"></div>
+
+    <!-- Header Span -->
+    <span class="header-span"></span>
+
+    <!-- Main Header-->
+    <header th:replace="~{user/layout/header :: header}"></header>
+    <!--End Main Header -->
+
+    <!-- Sidebar Backdrop -->
+    <div class="sidebar-backdrop"></div>
+
+    <!-- User Sidebar -->
+    <div th:replace="~{nvtd/layout/sidebar :: sidebar}"></div>
+    <!-- End User Sidebar -->
+
+    <!-- Dashboard -->
+    <section class="user-dashboard">
+      <div class="dashboard-outer">
+        <div class="upper-title-box">
+          <a th:href="@{/nvtd/dsphongvan}" class="btn btn-sm btn-outline-primary mb-3">
+            <i class="la la-arrow-left"></i> Quay lại danh sách phỏng vấn
+          </a>
+          <h3>Cập nhật đánh giá phỏng vấn</h3>
+          <div class="text">Đánh giá kết quả phỏng vấn của ứng viên</div>
+        </div>
+
+        <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+        <div class="row">
+          <div class="col-lg-12">
+            <!-- Ls widget -->
+            <div class="ls-widget">
+              <div class="tabs-box">
+                <div class="widget-title">
+                  <h4><i class="la la-edit"></i> Thông tin phỏng vấn</h4>
+                </div>
+
+                <div class="widget-content">
+                  <!-- Thông tin cơ bản về phỏng vấn -->
+                  <div class="interview-info mb-4">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="info-item">
+                          <h5>Ứng viên:</h5>
+                          <p th:text="${donUngTuyen.user.hoTen}">Tên ứng viên</p>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="info-item">
+                          <h5>Vị trí ứng tuyển:</h5>
+                          <p th:text="${donUngTuyen.tinTuyenDung.tieuDe}">Tên vị trí</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row mt-3">
+                      <div class="col-md-6">
+                        <div class="info-item">
+                          <h5>Thời gian phỏng vấn:</h5>
+                          <p th:text="${phongVan.ngayPV != null ? #dates.format(phongVan.ngayPV, 'dd/MM/yyyy HH:mm') : 'Chưa đặt lịch'}">Thời gian</p>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="info-item">
+                          <h5>Địa điểm:</h5>
+                          <p th:text="${phongVan.diaDiem != null && !phongVan.diaDiem.isEmpty() ? phongVan.diaDiem : 'Chưa có'}">Địa điểm</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Form đánh giá phỏng vấn -->
+                  <form class="default-form" th:action="@{/nvtd/update-phongvan}" method="post">
+                    <input type="hidden" name="phongVanId" th:value="${phongVan.id}" />
+                    
+                    <div class="row">
+                      <!-- Trạng thái phỏng vấn -->
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label>Trạng thái phỏng vấn <span class="required">*</span></label>
+                          <select class="chosen-select" name="trangThai" required>
+                            <option value="">Chọn trạng thái</option>
+                            <option value="chopv" th:selected="${phongVan.trangThai == 'chopv'}">Chờ phỏng vấn</option>
+                            <option value="dapv" th:selected="${phongVan.trangThai == 'dapv'}">Đã phỏng vấn</option>
+                          </select>
+                        </div>
+                      </div>
+                      
+                      <!-- Điểm đánh giá -->
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="diemDanhGia"><strong>Điểm đánh giá (0-10):</strong></label>
+                          <div class="rating-input-wrapper">
+                            <input type="range" id="diemDanhGia" name="diemDanhGia" min="0" max="10" step="1" 
+                                  class="form-control-range" style="width: 100%;"
+                                  th:value="${phongVan.diemDanhGia != null ? phongVan.diemDanhGia : 0}">
+                            <div class="rating-value-display">
+                              <span id="ratingValue" th:text="${phongVan.diemDanhGia != null ? phongVan.diemDanhGia : 0}">0</span>/10
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <!-- Nhận xét -->
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label for="nhanXet"><strong>Nhận xét:</strong></label>
+                          <textarea id="nhanXet" name="nhanXet" class="form-control" rows="4" 
+                                    placeholder="Nhập nhận xét về buổi phỏng vấn và ứng viên..."
+                                    th:text="${phongVan.nhanXet}"></textarea>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Các nút thao tác -->
+                    <div class="form-group text-right mt-4">
+                      <button type="submit" class="theme-btn btn-style-one"><span class="icon-text"><span class="la la-save"></span> Cập nhật đánh giá</span></button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Dashboard -->
+
+    <!-- Copyright -->
+    <div th:replace="~{nhatuyendung/layout/footer :: footer}"></div>
+
+  </div><!-- End Page Wrapper -->
+
+  <div th:replace="~{user/layout/script :: script}"></div>
+
+<style>
+  /* Thêm CSS để giảm padding trong card-body */
+.card-body.pt-3.pb-3 {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+/* Loại bỏ margin bottom của form-group cuối cùng */
+.form-group.mb-0 {
+  margin-bottom: 0;
+}
+
+/* Thêm viền nhẹ thay vì background màu xám */
+.card.border-light {
+  border: 1px solid #e9ecef;
+  box-shadow: none;
+}
+  .rating-input-wrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  
+  .rating-value-display {
+    margin-left: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #1967D2;
+    min-width: 60px;
+    text-align: center;
+  }
+  
+  /* Thanh trượt cơ bản */
+  input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 10px;
+  border-radius: 10px;
+  background: linear-gradient(to right, #1967D2 0%, #1967D2 0%, #FFFFFF 0%, #FFFFFF 100%); /* Bắt đầu với 0% màu xanh */
+  outline: none;
+  margin-right: 15px;
+  position: relative;
+  border: 1px solid #E0E0E0;  /* Thêm border để nhìn rõ hơn */
+}
+  
+  /* Phần track - thanh nền màu trắng */
+  input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: none;       /* Bỏ border, vì đã thêm ở element cha */
+  background: none;   /* Bỏ background vì dùng gradient ở element cha */
+  box-shadow: none;   /* Bỏ shadow */
+}
+
+input[type=range]::-moz-range-track {
+  width: 100%;
+  height: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  box-shadow: none;
+}
+  
+  /* Phần đã kéo - màu xanh */
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #1967D2;
+    cursor: pointer;
+    border: 3px solid white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    margin-top: -6px;
+    transition: transform 0.15s ease;
+    position: relative;
+    z-index: 2;
+  }
+  
+  /* Hiệu ứng hover cho núm kéo */
+  input[type=range]::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    background: #0D4DA1;
+  }
+  
+  /* Phần đã kéo - màu xanh (Firefox) */
+  input[type=range]::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #1967D2;
+    cursor: pointer;
+    border: 3px solid white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    transition: transform 0.15s ease;
+    position: relative;
+    z-index: 2;
+  }
+  
+  input[type=range]::-moz-range-thumb:hover {
+    transform: scale(1.1);
+    background: #0D4DA1;
+  }
+  
+  /* Hiệu ứng thanh màu xanh ở phần đã kéo */
+  input[type=range]::-moz-range-progress {
+    height: 10px;
+    background-color: #1967D2;
+    border-radius: 10px 0 0 10px;
+  }
+  
+  /* Đánh dấu điểm 0 và 10 */
+  .rating-input-wrapper::before {
+    content: "0";
+    position: absolute;
+    left: 0;
+    bottom: -20px;
+    font-size: 12px;
+    color: #707070;
+  }
+  
+  .rating-input-wrapper::after {
+    content: "10";
+    position: absolute;
+    right: 65px;
+    bottom: -20px;
+    font-size: 12px;
+    color: #707070;
+  }
+</style>
+  
+<script th:inline="javascript">
+  $(document).ready(function() {
+    // Phần code hiện tại giữ nguyên
+    const ratingSlider = document.getElementById('diemDanhGia');
+    const ratingValue = document.getElementById('ratingValue');
+    
+    // Thêm hàm cập nhật màu nền cho thanh trượt
+    function updateSliderProgress(slider) {
+      if (!slider) return;
+      
+      const value = slider.value;
+      const max = slider.max || 10;
+      const percent = (value / max) * 100;
+      
+      // Tạo gradient để hiển thị màu xanh cho phần đã kéo
+      slider.style.background = 
+        `linear-gradient(to right, #1967D2 0%, #1967D2 ${percent}%, #FFFFFF ${percent}%, #FFFFFF 100%)`;
+    }
+    
+    // Đảm bảo hiển thị giá trị ban đầu chính xác
+    if (ratingSlider && ratingValue) {
+      ratingValue.textContent = ratingSlider.value;
+      
+      // Cập nhật màu nền ban đầu
+      updateSliderProgress(ratingSlider);
+      
+      // Sử dụng sự kiện input thay vì change để cập nhật liên tục khi kéo
+      $(ratingSlider).on('input', function() {
+        // Cập nhật giá trị hiển thị
+        ratingValue.textContent = this.value;
+        
+        // Cập nhật màu nền khi kéo
+        updateSliderProgress(this);
+        
+        // Nếu điểm > 0, tự động chọn trạng thái "Đã phỏng vấn"
+        if (parseInt(this.value) > 0) {
+          const statusSelect = document.querySelector('select[name="trangThai"]');
+          if (statusSelect) {
+            statusSelect.value = 'dapv';
+          }
+        }
+      });
+    }
+    
+    // Đặt ngày giờ phỏng vấn
+    // Lấy giá trị ngày giờ từ server và định dạng cho input
+    const phongVanDate = /*[[${phongVan.ngayPV}]]*/ null;
+    if (phongVanDate) {
+      try {
+        const pvDate = new Date(phongVanDate);
+        const pvYear = pvDate.getFullYear();
+        const pvMonth = String(pvDate.getMonth() + 1).padStart(2, '0');
+        const pvDay = String(pvDate.getDate()).padStart(2, '0');
+        const pvHour = String(pvDate.getHours()).padStart(2, '0');
+        const pvMinute = String(pvDate.getMinutes()).padStart(2, '0');
+        
+        $('#ngayPVInput').val(`${pvYear}-${pvMonth}-${pvDay}T${pvHour}:${pvMinute}`);
+      } catch (e) {
+        console.error("Error setting date value:", e);
+      }
+    }
+    
+    // Đặt ngày tối thiểu là ngày hiện tại
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}T00:00`;
+    
+    $('input[name="ngayPV"]').attr('min', todayStr);
+  });
+</script>
+</body>
+</html>

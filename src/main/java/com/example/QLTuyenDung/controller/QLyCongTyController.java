@@ -2,6 +2,7 @@ package com.example.QLTuyenDung.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,9 +39,31 @@ public class QLyCongTyController {
     }
 
     @GetMapping("/dscongty")
-    public String showDSCongTy(Model model) {
-        List<CongTy> dsCongTy = congTyService.getAllCongTy();
+    public String showDSCongTy(
+            Model model,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "tenCongTy") String sort,
+            @RequestParam(defaultValue = "asc") String direction) {
+        
+        Page<CongTy> pageCongTy = congTyService.getAllCongTyPaginated(page, size, sort, direction);
+        List<CongTy> dsCongTy = pageCongTy.getContent();
+        
         model.addAttribute("dsCongTy", dsCongTy);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", pageCongTy.getTotalPages());
+        model.addAttribute("totalItems", pageCongTy.getTotalElements());
+        model.addAttribute("size", size);
+        model.addAttribute("sort", sort);
+        model.addAttribute("direction", direction);
+        model.addAttribute("reverseSortDir", direction.equals("asc") ? "desc" : "asc");
+        
+        // Thông tin cho phân trang
+        int startPage = Math.max(0, page - 2);
+        int endPage = Math.min(pageCongTy.getTotalPages() - 1, page + 2);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+        
         return "user/CongTy/index";
     }
 

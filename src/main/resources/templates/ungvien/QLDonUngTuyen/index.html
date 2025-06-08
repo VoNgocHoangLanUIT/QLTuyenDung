@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{user/layout/head :: head}"></head>
+
+<body>
+
+  <div class="page-wrapper dashboard">
+
+    <!-- Preloader -->
+    <div class="preloader"></div>
+
+    <!-- Header Span -->
+    <span class="header-span"></span>
+
+    <!-- Main Header-->
+    <header th:replace="~{user/layout/header :: header}"></header>
+    <!--End Main Header -->
+
+    <!-- Sidebar Backdrop -->
+    <div class="sidebar-backdrop"></div>
+
+    <!-- User Sidebar -->
+    <div th:replace="~{ungvien/layout/sidebar :: sidebar}"></div>
+    <!-- End User Sidebar -->
+
+    <!-- Dashboard -->
+    <section class="user-dashboard">
+      <div class="dashboard-outer">
+        <div class="upper-title-box">
+          <h3>Danh sách tin tuyển dụng bạn đã ứng tuyển</h3>
+          <div class="text">Bạn đã sẵn sàng tìm kiếm thử thách mới chưa?</div>
+        </div>
+
+        <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+        <div class="row">
+          <div class="col-lg-12">
+            <!-- Ls widget -->
+            <div class="ls-widget">
+              <div class="tabs-box">
+                <div class="widget-title">
+                  <h4>Danh sách đơn ứng tuyển của bạn</h4>
+                </div>
+
+                <div class="widget-content">
+                  <div class="table-outer">
+                    <table class="default-table manage-job-table">
+                      <thead>
+                        <tr>
+                          <th>Tin tuyển dụng</th>
+                          <th>Ngày ứng tuyển</th>
+                          <th>Trạng thái</th>
+                          <th>Thao tác</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <!-- Message when no applications -->
+                        <tr th:if="${#lists.isEmpty(dsDonUT)}">
+                          <td colspan="4" class="text-center">Bạn chưa ứng tuyển vào vị trí nào. Hãy bắt đầu <a th:href="@{/dstintd}">tìm kiếm công việc ngay!</a></td>
+                        </tr>
+                        
+                        <!-- Application list -->
+                        <tr th:each="don : ${dsDonUT}">
+                          <td>
+                            <!-- Job Block -->
+                            <div class="job-block">
+                              <div class="inner-box">
+                                <div class="content">
+                                  <span class="company-logo" th:if="${don.tinTuyenDung.congty != null && don.tinTuyenDung.congty.logo != null}">
+                                    <img th:src="@{'/fe/images/resource/company-logo/' + ${don.tinTuyenDung.congty.logo}}" alt="Company Logo">
+                                  </span>
+                                  <span class="company-logo" th:unless="${don.tinTuyenDung.congty != null && don.tinTuyenDung.congty.logo != null}">
+                                    <img th:src="@{/fe/images/resource/company-logo/default.jpg}" alt="Default Logo">
+                                  </span>
+                                  <h4><a th:href="@{/hosoungtuyen/{id}(id=${don.id})}" th:text="${don.tinTuyenDung.tieuDe}">Job Title</a></h4>
+                                  <ul class="job-info">
+                                    <li><span class="icon flaticon-briefcase"></span> <span th:text="${don.tinTuyenDung.congty != null ? don.tinTuyenDung.congty.tenCongTy : 'N/A'}">Company Name</span></li>
+                                    <li><span class="icon flaticon-map-locator"></span> <span th:text="${don.tinTuyenDung.diaDiemLV != null ? don.tinTuyenDung.diaDiemLV : 'N/A'}">Location</span></li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td th:text="${#dates.format(don.ngayUngTuyen, 'dd/MM/yyyy')}">Application Date</td>
+                          <td class="status">
+                            <span th:text="${statusConverter.getStatusMessage(don.trangThai)}">Status</span>
+                          </td>
+                          <td>
+                            <div class="option-box">
+                              <ul class="option-list">
+                                <li><a th:href="@{/hosoungtuyen/{id}(id=${don.id})}" data-text="Xem tin tuyển dụng"><span class="la la-eye"></span></a></li>
+                                 <li><a th:href="@{/ungvien/delete-donut/{id}(id=${don.id})}" 
+                                       data-text="Xóa" 
+                                       onclick="return confirm('Bạn có chắc chắn muốn xóa đơn ứng tuyển này?')">
+                                       <span class="la la-trash"></span>
+                                    </a>
+                                </li>
+                              </ul>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Dashboard -->
+
+    <!-- Copyright -->
+    <div th:replace="~{nhatuyendung/layout/footer :: footer}"></div>
+
+  </div><!-- End Page Wrapper -->
+
+  <div th:replace="~{user/layout/script :: script}"></div>
+</body>
+</html>

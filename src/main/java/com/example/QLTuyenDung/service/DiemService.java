@@ -60,7 +60,7 @@ public class DiemService {
             
             if (dsUngTuyen == null || dsUngTuyen.isEmpty()) {
                 log.error("Không tìm thấy đơn ứng tuyển của người dùng {} cho tin tuyển dụng {}", 
-                    user.getUsername(), baiTest.getTinTuyenDung().getTieuDe());
+                    user.getEmail(), baiTest.getTinTuyenDung().getTieuDe());
                 return false;
             }
             

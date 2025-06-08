@@ -28,18 +28,18 @@
         <div class="auto-container">
           <!-- Job Search Form -->
           <div class="job-search-form style-two">
-            <form method="post" action="https://creativelayers.net/themes/superio/job-list-v10.html">
+            <form method="post" th:action="@{/tim-kiem-cong-ty}">
               <div class="row">
                 <!-- Form Group -->
                 <div class="form-group col-lg-4 col-md-12 col-sm-12">
                   <span class="icon flaticon-search-1"></span>
-                  <input type="text" name="field_name" placeholder="Job title, keywords, or company">
+                  <input type="text" name="field_name" placeholder="Tên công ty hoặc từ khoá">
                 </div>
 
                 <!-- Form Group -->
                 <div class="form-group col-lg-3 col-md-12 col-sm-12 location">
                   <span class="icon flaticon-map-locator"></span>
-                  <input type="text" name="field_name" placeholder="City or postcode">
+                  <input type="text" name="field_name" placeholder="Thành phố hoặc vị trí">
                 </div>
 
                 <!-- Form Group -->
@@ -87,51 +87,20 @@
 
               <!-- ls Switcher -->
               <div class="ls-switcher">
-                <div class="showing-result">
-                  <div class="top-filters">
-                    <div class="form-group">
-                      <select class="chosen-select">
-                        <option>Hình thức</option>
-                        <option>New Jobs</option>
-                        <option>Freelance</option>
-                        <option>Full Time</option>
-                        <option>Internship</option>
-                        <option>Part Time</option>
-                        <option>Temporary</option>
-                      </select>
-                    </div>
-
-                    <div class="form-group">
-                      <select class="chosen-select">
-                        <option>Founded Date</option>
-                        <option>New Jobs</option>
-                        <option>Freelance</option>
-                        <option>Full Time</option>
-                        <option>Internship</option>
-                        <option>Part Time</option>
-                        <option>Temporary</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
                 <div class="sort-by">
                   <select class="chosen-select">
-                    <option>Most Recent</option>
-                    <option>Freelance</option>
-                    <option>Full Time</option>
-                    <option>Internship</option>
-                    <option>Part Time</option>
-                    <option>Temporary</option>
+                    <option>Mới nhất</option>
+                    <option>Phổ biến</option>
+                    <option>Phù hợp</option>
+                    <option>Tất cả</option>
                   </select>
 
-                  <select class="chosen-select">
-                    <option>Show 10</option>
-                    <option>Show 20</option>
-                    <option>Show 30</option>
-                    <option>Show 40</option>
-                    <option>Show 50</option>
-                    <option>Show 60</option>
+                  <select class="chosen-select" id="pageSizeSelect">
+                    <option th:selected="${size == 10}" value="10">Hiện 10</option>
+                    <option th:selected="${size == 20}" value="20">Hiện 20</option>
+                    <option th:selected="${size == 30}" value="30">Hiện 30</option>
+                    <option th:selected="${size == 40}" value="40">Hiện 40</option>
+                    <option th:selected="${size == 50}" value="50">Hiện 50</option>
                   </select>
                 </div>
               </div>              <div class="row">
@@ -149,7 +118,7 @@
                       <div class="content-inner">
                         <span class="company-logo">
                           <img th:if="${congTy.logo != null}" th:src="@{'/fe/images/resource/company-logo/' + ${congTy.logo}}" alt="Company Logo">
-                          <img th:unless="${congTy.logo != null}" th:src="@{/fe/images/resource/company-logo/default.png}" alt="Default Logo">
+                          <img th:unless="${congTy.logo != null}" th:src="@{/fe/images/resource/company-logo/default.jpg}" alt="Default Logo">
                         </span>
                         <h4><a th:href="@{'/chitiet-congty/' + ${congTy.id}}" th:text="${congTy.tenCongTy}">Tên Công Ty</a></h4>
                         <ul class="job-info">
@@ -171,15 +140,55 @@
               </div>
 
               <!-- Pagination -->
-              <nav class="ls-pagination">
+              <nav class="ls-pagination" th:if="${totalPages > 0}">
                 <ul>
-                  <li class="prev"><a href="#"><i class="fa fa-arrow-left"></i></a></li>
-                  <li><a href="#">1</a></li>
-                  <li><a href="#" class="current-page">2</a></li>
-                  <li><a href="#">3</a></li>
-                  <li class="next"><a href="#"><i class="fa fa-arrow-right"></i></a></li>
+                  <!-- Nút Previous -->
+                  <li class="prev" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                    <a th:if="${currentPage > 0}" th:href="@{/dscongty(page=${currentPage - 1}, size=${size}, sort=${sort}, direction=${direction})}">
+                      <i class="fa fa-arrow-left"></i>
+                    </a>
+                    <span th:unless="${currentPage > 0}"><i class="fa fa-arrow-left"></i></span>
+                  </li>
+
+                  <!-- First page -->
+                  <li th:if="${startPage > 0}">
+                    <a th:href="@{/dscongty(page=0, size=${size}, sort=${sort}, direction=${direction})}">1</a>
+                  </li>
+
+                  <!-- Ellipsis after first page if needed -->
+                  <li th:if="${startPage > 1}">
+                    <span>...</span>
+                  </li>
+
+                  <!-- Pages -->
+                  <li th:each="i: ${#numbers.sequence(startPage, endPage)}" 
+                      th:class="${i == currentPage ? 'current-page' : ''}">
+                    <a th:href="@{/dscongty(page=${i}, size=${size}, sort=${sort}, direction=${direction})}" 
+                      th:text="${i + 1}"></a>
+                  </li>
+
+                  <!-- Ellipsis before last page if needed -->
+                  <li th:if="${endPage < totalPages - 2}">
+                    <span>...</span>
+                  </li>
+
+                  <!-- Last page -->
+                  <li th:if="${endPage < totalPages - 1}">
+                    <a th:href="@{/dscongty(page=${totalPages - 1}, size=${size}, sort=${sort}, direction=${direction})}" 
+                      th:text="${totalPages}"></a>
+                  </li>
+
+                  <!-- Nút Next -->
+                  <li class="next" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                    <a th:if="${currentPage < totalPages - 1}" th:href="@{/dscongty(page=${currentPage + 1}, size=${size}, sort=${sort}, direction=${direction})}">
+                      <i class="fa fa-arrow-right"></i>
+                    </a>
+                    <span th:unless="${currentPage < totalPages - 1}"><i class="fa fa-arrow-right"></i></span>
+                  </li>
                 </ul>
               </nav>
+
+              
             </div>
           </div>
         </div>
@@ -200,5 +209,13 @@
   <script th:src="@{/fe/js/infobox.min.js}"></script>
   <script th:src="@{/fe/js/markerclusterer.js}"></script>
   <script th:src="@{/fe/js/maps.js}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('pageSizeSelect').addEventListener('change', function() {
+        window.location.href = '/dscongty?page=0&size=' + this.value + '&sort=[[${sort}]]&direction=[[${direction}]]';
+      });
+    });
+  </script>
+  
 </body>
 </html>

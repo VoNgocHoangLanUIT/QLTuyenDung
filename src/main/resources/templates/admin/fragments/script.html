@@ -18,7 +18,7 @@
             // Handle company field visibility based on role
             function toggleCompanyField() {
                 var selectedRole = $('select[name="roleName"]').val();
-                var isStaffRole = selectedRole === 'HR_STAFF' || selectedRole === 'CV_STAFF';
+                var isStaffRole = selectedRole === 'HR_STAFF' || selectedRole === 'CV_STAFF' || selectedRole === 'RECRUITER';
                 
                 $('#companyGroup').toggle(isStaffRole);
                 $('#companySelect').prop('required', isStaffRole);

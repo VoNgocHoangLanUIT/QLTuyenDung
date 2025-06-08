@@ -9,17 +9,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.QLTuyenDung.dto.UserRoleDTO;
+import com.example.QLTuyenDung.model.CongTy;
 import com.example.QLTuyenDung.model.DonUngTuyen;
 import com.example.QLTuyenDung.model.PhongVan;
 import com.example.QLTuyenDung.model.Role;
 import com.example.QLTuyenDung.model.TinTuyenDung;
 import com.example.QLTuyenDung.model.User;
 import com.example.QLTuyenDung.model.UserRole;
+import com.example.QLTuyenDung.repository.CongTyRepository;
 import com.example.QLTuyenDung.repository.RoleRepository;
 import com.example.QLTuyenDung.repository.TinTuyenDungRepository;
 import com.example.QLTuyenDung.repository.UserRepository;
@@ -34,6 +41,7 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
     private final TinTuyenDungRepository tinTuyenDungRepository;
+    private final CongTyRepository congTyRepository;
     private final DonUngTuyenService donUngTuyenService;
     private final PhongVanService phongVanService;
     private final FileStorageService fileStorageService;
@@ -95,6 +103,14 @@ public class UserService {
     public List<User> getAllCandidates() {
         return userRepository.findByRoleName("CANDIDATE");
     }
+
+    public Page<User> getAllCandidatesPaginated(int page, int size, String sortField, String sortDirection) {
+        Sort sort = Sort.by(sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortField);
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return userRepository.findByRoleNamePaginated("CANDIDATE", pageable);
+    }
+
+    
 
     public List<UserRoleDTO> getAllUsersWithRoles() {
         try {
@@ -228,13 +244,30 @@ public class UserService {
         }
 
         // Check if deleting a CANDIDATE role and user has CV file
-        if (userRole.getRole().getName().equals("CANDIDATE") && user.getCvFile() != null) {
-            try {
-                // Delete physical CV file
-                Path cvPath = Paths.get(fileStorageService.getUploadDir() + File.separator + user.getCvFile());
-                Files.deleteIfExists(cvPath);
-            } catch (IOException e) {
-                System.err.println("Error deleting CV file: " + e.getMessage());
+        if (userRole.getRole().getName().equals("CANDIDATE")) {
+            if (user.getCvFile() != null) {
+                try {
+                    Path cvPath = Paths.get(fileStorageService.getUploadDir() + File.separator + "cvs" + File.separator + user.getCvFile());
+                    Files.deleteIfExists(cvPath);
+                } catch (IOException e) {
+                    System.err.println("Error deleting CV file: " + e.getMessage());
+                }
+            }
+            
+            // Delete avatar file if exists
+            if (user.getHinhAnh() != null) {
+                try {
+                    Path avatarPath = Paths.get("src/main/resources/static/fe/images/resource/avatar", user.getHinhAnh());
+                    boolean deleted = Files.deleteIfExists(avatarPath);
+                    
+                    if (!deleted) {
+                        // Try backup location
+                        Path backupPath = Paths.get(fileStorageService.getUploadDir() + File.separator + user.getHinhAnh());
+                        Files.deleteIfExists(backupPath);
+                    }
+                } catch (IOException e) {
+                    System.err.println("Error deleting avatar file: " + e.getMessage());
+                }
             }
         }
 
@@ -249,15 +282,14 @@ public class UserService {
         }
     }
 
-    public List<User> getNhanVienTuyenDungByCongTyId(Long tinTuyenDungId) {
-        TinTuyenDung tin = tinTuyenDungRepository.findById(tinTuyenDungId)
-            .orElseThrow(() -> new RuntimeException("Không tìm thấy tin tuyển dụng"));
+    public List<User> getNhanVienTuyenDungByCongTyId(Long congtyId) {
+        CongTy congty = congTyRepository.findById(congtyId)
+            .orElseThrow(() -> new RuntimeException("Không tìm thấy công ty"));
 
 
-        return userRepository.findByCongTy(tin.getCongty()).stream()
+        return userRepository.findByCongTy(congty).stream()
             .filter(user -> user.getUserRoles().stream()
-                .anyMatch(userRole -> userRole.getRole().getName().equals("HR_STAFF") 
-                    || userRole.getRole().getName().equals("CV_STAFF")))
+                .anyMatch(userRole -> userRole.getRole().getName().equals("HR_STAFF")))
             .toList();
     }
 
@@ -265,7 +297,6 @@ public class UserService {
     public List<User> getNhanVienChuaPhanCongPhongVan(Long donUngTuyenId, Long congtyId) {
         // Lấy đơn ứng tuyển
         DonUngTuyen donUngTuyen = donUngTuyenService.getDonUngTuyenById(donUngTuyenId);
-        
         // Lấy danh sách nhân viên đã được phân công phỏng vấn
         List<PhongVan> dsPhongVan = phongVanService.getPhongVanByDonUngTuyen(donUngTuyen);
         List<Long> nhanVienDaPhanCongIds = dsPhongVan.stream()
@@ -273,7 +304,6 @@ public class UserService {
             .map(pv -> pv.getNhanVienTD().getId())
             .distinct()
             .collect(Collectors.toList());
-        
         // Lấy tất cả nhân viên tuyển dụng của công ty
         List<User> allStaff = getNhanVienTuyenDungByCongTyId(congtyId);
         // Lọc ra những nhân viên chưa được phân công
@@ -305,4 +335,5 @@ public class UserService {
         
         return true; // Đổi mật khẩu thành công
     }
+
 }

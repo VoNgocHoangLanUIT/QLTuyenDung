@@ -37,6 +37,7 @@
 
     <div class="form-container login-container">
       <form th:action="@{/login}" method="post">
+        <input type="hidden" name="redirect" th:if="${param.redirect}" th:value="${param.redirect[0]}" />
         <h1>Đăng nhập</h1>
         <div th:if="${registerError}" class="alert alert-danger">
           <span th:text="${errorMessage}">Email đã được đăng ký cho vai trò này!</span>

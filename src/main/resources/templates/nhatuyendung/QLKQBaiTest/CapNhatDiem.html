@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{user/layout/head :: head}"></head>
+
+<body>
+  <div class="page-wrapper dashboard">
+    <!-- Preloader -->
+    <div class="preloader"></div>
+    <!-- Header Span -->
+    <span class="header-span"></span>
+    <!-- Main Header-->
+    <header th:replace="~{user/layout/header :: header}"></header>
+    <!-- User Sidebar -->
+    <div th:replace="~{nhatuyendung/layout/sidebar :: sidebar}"></div>
+
+    <!-- Dashboard -->
+    <section class="user-dashboard">
+      <div class="dashboard-outer">
+        <div class="upper-title-box">
+          <a th:href="@{/nhatd/dskqbaitest/{tinTuyenDungId}(tinTuyenDungId=${tinTuyenDung.id})}" class="btn btn-sm btn-outline-primary mb-3">
+            <i class="la la-arrow-left"></i> Quay lại kết quả bài test
+          </a>
+          <h3>Cập nhật điểm bài test</h3>
+          <div class="text">Tin tuyển dụng: <span th:text="${tinTuyenDung.tieuDe}">Tiêu đề tin</span></div>
+        </div>
+
+        <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+        <div class="row">
+          <div class="col-lg-8 offset-lg-2">
+            <div class="ls-widget">
+              <div class="widget-title">
+                <h4>Thông tin ứng viên và bài test</h4>
+              </div>
+
+              <div class="widget-content">
+                <div class="candidate-info-card mb-4">
+                  <div class="row align-items-center">
+                    <div class="col-md-3">
+                      <img th:if="${don.user.hinhAnh != null}" th:src="@{'/fe/images/resource/avatar/' + ${don.user.hinhAnh}}" alt="Candidate Image" class="img-fluid rounded">
+                      <img th:unless="${don.user.hinhAnh != null}" th:src="@{/fe/images/resource/avatar/default.jpg}" alt="Default Avatar" class="img-fluid rounded">
+                    </div>
+                    <div class="col-md-9">
+                      <h4 th:text="${don.user.hoTen}">Tên ứng viên</h4>
+                      <ul class="list-unstyled">
+                        <li><i class="la la-graduation-cap mr-2"></i> <span th:text="${don.user.chuyenNganh}">Chuyên ngành</span></li>
+                        <li><i class="la la-map-marker mr-2"></i> <span th:text="${don.user.diaChi}">Địa chỉ</span></li>
+                        <li><i class="la la-calendar mr-2"></i> Ngày ứng tuyển: <span th:text="${#dates.format(don.ngayUngTuyen, 'dd/MM/yyyy')}">Ngày ứng tuyển</span></li>
+                      </ul>
+                      <span th:class="${don.trangThai == 'datuyen' ? 'badge badge-success' : 
+                                       don.trangThai == 'dangduyet' ? 'badge badge-primary' : 
+                                       don.trangThai == 'chotest' ? 'badge badge-warning' : 
+                                       don.trangThai == 'phongvan' ? 'badge badge-info' : 'badge badge-danger'}"
+                            th:text="${don.trangThai == 'datuyen' ? 'Đã tuyển' : 
+                                     don.trangThai == 'dangduyet' ? 'Đang duyệt hồ sơ' : 
+                                     don.trangThai == 'chotest' ? 'Chờ bài test' :
+                                     don.trangThai == 'phongvan' ? 'Phỏng vấn' : 'Từ chối'}">
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Form cập nhật điểm -->
+                <form th:action="@{/nhatd/edit-kqtest/{donId}(donId=${don.id})}" method="post">
+                  <!-- Hiển thị thông báo nếu không có bài test -->
+                  <div th:if="${#maps.isEmpty(ketQuaTests)}" class="alert alert-warning">
+                    Ứng viên này chưa được cấp quyền làm bài test nào.
+                  </div>
+                  
+                  <!-- Hiển thị form cập nhật điểm nếu có bài test -->
+                  <div th:unless="${#maps.isEmpty(ketQuaTests)}" class="tests-container">
+                    <div class="form-group" th:each="ketQua : ${ketQuaTests}">
+                      <div class="card mb-3" th:classappend="${ketQua.value.baiTest.loai == 'ngonngu' ? 'border-success' : 
+                                                             ketQua.value.baiTest.loai == 'logic' ? 'border-primary' : 'border-danger'}">
+                        <div class="card-header" th:classappend="${ketQua.value.baiTest.loai == 'ngonngu' ? 'bg-success text-white' : 
+                                                                 ketQua.value.baiTest.loai == 'logic' ? 'bg-primary text-white' : 'bg-danger text-white'}">
+                          <h5 class="mb-0" th:text="${ketQua.value.baiTest.loai == 'ngonngu' ? 'Bài test Ngôn ngữ' : 
+                                                    ketQua.value.baiTest.loai == 'logic' ? 'Bài test Logic' : 'Bài test Chuyên môn'}">
+                            Loại bài test
+                          </h5>
+                        </div>
+                        <div class="card-body">
+                          <div class="test-info mb-4">
+                            <p class="mb-1">Tiêu đề: <strong th:text="${ketQua.value.baiTest.tieuDe}">Tiêu đề bài test</strong></p>
+                            <p class="mb-1">Trạng thái: 
+                              <span th:if="${ketQua.value.ngayLam != null}" 
+                                   th:text="'Đã làm bài ngày ' + ${#dates.format(ketQua.value.ngayLam, 'dd/MM/yyyy HH:mm')}" 
+                                   class="text-success">
+                                Đã làm bài
+                              </span>
+                              <span th:unless="${ketQua.value.ngayLam != null}" class="text-warning">Chưa làm bài</span>
+                            </p>
+                          </div>
+                          
+                          <div class="form-group">
+                            <label th:for="'diem-' + ${ketQua.key}">Điểm bài test:</label>
+                            <div class="input-group">
+                              <input type="text" class="form-control" th:id="'diem-' + ${ketQua.key}" 
+                                     th:name="'diem[' + ${ketQua.key} + ']'" th:value="${ketQua.value.diem}" 
+                                     min="0" max="100" step="1" required>
+                              <div class="input-group-append">
+                                <span class="input-group-text">/ 100 điểm</span>
+                              </div>
+                            </div>
+                            <small class="form-text text-muted">Điểm tối đa: 100</small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="form-group text-right">
+                      <a th:href="@{/nhatd/kqbaitest/{tinTuyenDungId}(tinTuyenDungId=${tinTuyenDung.id})}" class="btn btn-secondary">Hủy</a>
+                      <button type="submit" class="btn btn-primary">Cập nhật điểm</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Copyright -->
+    <div th:replace="~{nhatuyendung/layout/footer :: footer}"></div>
+  </div><!-- End Page Wrapper -->
+
+  <div th:replace="~{user/layout/script :: script}"></div>
+</body>
+</html>

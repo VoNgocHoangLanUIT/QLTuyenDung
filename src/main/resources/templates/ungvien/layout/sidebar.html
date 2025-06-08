@@ -1,29 +1,23 @@
 <div class="user-sidebar" th:fragment="sidebar">
     <div class="sidebar-inner">
         <ul class="navigation">
-          <li class="nav-item" data-urls="/nhatd">
-            <a th:href="@{/nhatd}"> <i class="la la-home"></i> Dashboard</a>
+          <li class="nav-item" data-urls="/ungvien">
+            <a th:href="@{/ungvien}"> <i class="la la-home"></i> Dashboard</a>
           </li>
-          <li class="nav-item" data-urls="/nhatd/edit-congty">
-            <a th:href="@{/nhatd/edit-congty}"><i class="la la-user-tie"></i>Thông tin công ty</a>
+          <li class="nav-item" data-urls="/ungvien/edit-user,/ungvien/add-hocvan,/ungvien/add-kinhnghiem,/ungvien/add-thanhtuu">
+            <a th:href="@{/ungvien/edit-user}"><i class="la la-user-tie"></i>Thông tin cá nhân</a>
           </li>
-          <li class="nav-item" data-urls="/nhatd/add-tintd">
-            <a th:href="@{/nhatd/add-tintd}"><i class="la la-paper-plane"></i>Đăng tin tuyển dụng</a>
-          </li>
-          <li class="nav-item" data-urls="/nhatd/dstintd,/nhatd/edit-tintd,/nhatd/dsdonut">
-            <a th:href="@{/nhatd/dstintd}"><i class="la la-briefcase"></i>QL tin tuyển dụng</a>
+          <li class="nav-item" data-urls="/ungvien/dsdonut">
+            <a th:href="@{/ungvien/dsdonut}"><i class="la la-briefcase"></i>DS đơn ứng tuyển</a>
           </li>          
-          <li class="nav-item" data-urls="/nhatd/dsbaitest,/nhatd/chitiet-baitest,/nhatd/add-baitest,/nhatd/ds-truycap,/nhatd/add-truycap,/nhatd/edit-baitest,/nhatd/dskqbaitest">
-            <a th:href="@{/nhatd/dsbaitest}"><i class="la la-file-invoice"></i>QL bài test</a>
+          <li class="nav-item" data-urls="/ungvien/dsbaitest,/ungvien/chitiet-baitest">
+            <a th:href="@{/ungvien/dsbaitest}"><i class="la la-file-invoice"></i>Bài test</a>
           </li>
-          <li class="nav-item" data-urls="/nhatd/dsphongvan,/nhatd/chitiet-phongvan,/nhatd/add-phongvan,/nhatd/edit-phongvan">
-            <a th:href="@{/nhatd/dsphongvan}"><i class="la la-box"></i>QL phỏng vấn</a>
+          <li class="nav-item" data-urls="/ungvien/phong-van">
+            <a th:href="@{/ungvien/phong-van}"><i class="la la-box"></i>Phỏng vấn</a>
           </li>
-          <li class="nav-item" data-urls="/nhatd/ungvien-yeuthich">
-            <a th:href="@{/nhatd/ungvien-yeuthich}"><i class="la la-bookmark-o"></i>Ứng viên yêu thích</a>
-          </li>
-          <li >
-            <a th:href="@{dashboard-company-profile.html}"><i class="la la-user-alt"></i>Thông tin cá nhân</a>
+          <li class="nav-item" data-urls="/ungvien/tintd-yeuthich">
+            <a th:href="@{/ungvien/tintd-yeuthich}"><i class="la la-bookmark-o"></i>Công việc yêu thích</a>
           </li>
           <li class="nav-item" data-urls="/doi-password">
             <a th:href="@{/doi-password}"><i class="la la-lock"></i>Thay đổi mật khẩu</a>

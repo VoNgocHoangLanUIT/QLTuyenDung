@@ -13,4 +13,5 @@ public interface DonUngTuyenRepository extends JpaRepository<DonUngTuyen, Long> 
     List<DonUngTuyen> findByTrangThaiAndTinTuyenDungId(String trangThai, Long tinTuyenDungId);
     List<DonUngTuyen> findByQuyenTestAndTinTuyenDungId(boolean quyenTest, Long tinTuyenDungId);
     List<DonUngTuyen> findByUserIdAndTinTuyenDungId(Long userId, Long tinTuyenDungId);
+    List<DonUngTuyen> findByUserIdOrderByNgayUngTuyenDesc(Long userId);
 }

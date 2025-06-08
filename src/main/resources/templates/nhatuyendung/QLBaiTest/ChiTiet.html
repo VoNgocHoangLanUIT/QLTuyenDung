@@ -100,13 +100,13 @@
                       <div class="row">
                         <div class="col-md-6">
                           <a th:href="${baiTest.linkGGForm}" target="_blank" class="theme-btn btn-style-one btn-block">
-                            <i class="la la-external-link"></i> Truy cập link bài test
+                            <span class="icon-text"><span class="la la-external-link"></span> Truy cập link bài test</span>
                           </a>
                         </div>
                         <div class="col-md-6">
                           <button type="button" class="theme-btn btn-style-four btn-block" 
                                   onclick="copyToClipboard()">
-                            <i class="la la-copy"></i> Sao chép link bài test
+                            <span class="icon-text"><span class="la la-copy"></span> Sao chép link bài test</span>
                           </button>
                         </div>
                       </div>
@@ -134,7 +134,7 @@
                   <div class="option-box">
                     <div class="form-group">
                       <a th:href="@{/nhatd/edit-baitest/{id}(id=${baiTest.id})}" class="theme-btn btn-style-one btn-block">
-                        <i class="la la-edit"></i> Chỉnh sửa bài test
+                        <span class="icon-text"><span class="la la-edit"></span> Chỉnh sửa bài test</span>
                       </a>
                     </div>
                     
@@ -145,15 +145,15 @@
                         </div>
                         <button type="button" class="theme-btn btn-style-four btn-block" 
                                 onclick="copyToClipboard(document.getElementById('testLink').innerText)">
-                            <i class="la la-copy"></i> Sao chép link bài test
+                            <span class="icon-text"><span class="la la-copy"></span> Sao chép link bài test</span>
                         </button>
                     </div>
                     
-                    <div class="form-group">
+                    <div class="form-group mt-2">
                       <a th:href="@{/nhatd/delete-baitest/{id}(id=${baiTest.id})}" 
                          class="theme-btn btn-style-three btn-block"
                          onclick="return confirm('Bạn có chắc chắn muốn xóa bài test này?');">
-                        <i class="la la-trash"></i> Xóa bài test
+                        <span class="icon-text"><span class="la la-trash"></span> Xóa bài test</span>
                       </a>
                     </div>
                   </div>

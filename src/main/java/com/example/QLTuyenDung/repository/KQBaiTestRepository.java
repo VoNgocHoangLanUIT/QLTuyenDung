@@ -11,4 +11,5 @@ public interface KQBaiTestRepository extends JpaRepository<KQBaiTest, Long> {
     List<KQBaiTest> findByBaiTestId(Long baiTestId);
     long countByDonUngTuyenIdAndIdNot(Long donUngTuyenId, Long kqBaiTestId);
     KQBaiTest findByDonUngTuyenIdAndBaiTestId(Long donUngTuyenId, Long baiTestId);
+    List<KQBaiTest> findByDonUngTuyenId(Long donUngTuyenId);
 }

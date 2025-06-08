@@ -1,7 +1,11 @@
 package com.example.QLTuyenDung.controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,7 +13,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.QLTuyenDung.model.CustomUserDetail;
+import com.example.QLTuyenDung.model.TinTuyenDung;
+import com.example.QLTuyenDung.model.TinYeuThich;
 import com.example.QLTuyenDung.model.User;
+import com.example.QLTuyenDung.service.TinTuyenDungService;
+import com.example.QLTuyenDung.service.TinYeuThichService;
 import com.example.QLTuyenDung.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -19,8 +27,31 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("")
 public class HomeController {
     private final UserService userService;
+    private final TinTuyenDungService tinTuyenDungService;
+    private final TinYeuThichService tinYeuThichService;
     @GetMapping("")
-    public String user(){
+    public String user(Model model, Authentication authentication){
+        List<TinTuyenDung> latestJobs = tinTuyenDungService.getLatestJobs(5);
+        model.addAttribute("latestJobs", latestJobs);
+        
+        // Thêm thông tin bookmark nếu user đã đăng nhập
+        if (authentication != null && authentication.isAuthenticated()) {
+            CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+            User user = userDetails.getUser();
+            
+            boolean isCandidate = userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("CANDIDATE"));
+                
+            if (isCandidate) {
+                List<TinYeuThich> bookmarks = tinYeuThichService.getDSTinYeuThichByUngVienID(user.getId());
+                List<Long> bookmarkIds = bookmarks.stream()
+                    .map(bookmark -> bookmark.getTinTuyenDung().getId())
+                    .collect(Collectors.toList());
+                
+                model.addAttribute("userBookmarks", bookmarkIds);
+            }
+        }
+        
         return "user/index";
     }
 

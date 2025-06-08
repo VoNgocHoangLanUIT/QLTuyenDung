@@ -237,14 +237,130 @@
                         </div>
                       </div>
 
-                      <!-- Tab: Logic (tương tự như tab Ngôn ngữ) -->
+                      <!-- Tab: Logic -->
                       <div class="tab" id="logic">
-                        <!-- Nội dung tương tự như tab Ngôn ngữ, nhưng với điều kiện th:if="${baiTest.loai == 'logic'}" -->
+                        <div class="row">
+                          <div class="col-lg-12">
+                            <div class="table-outer">
+                              <table class="default-table manage-job-table">
+                                <thead>
+                                  <tr>
+                                    <th>Tiêu đề bài test</th>
+                                    <th>Tin tuyển dụng</th>
+                                    <th>Số kết quả</th>
+                                    <th>Ngày đăng & Hạn nộp</th>
+                                    <th>Thao tác</th>
+                                  </tr>
+                                </thead>
+
+                                <tbody>
+                                  <tr th:if="${logicCount == 0}">
+                                    <td colspan="5" class="text-center">Chưa có bài test logic nào</td>
+                                  </tr>
+                                  
+                                  <tr th:each="baiTest : ${dsBaiTest}" th:if="${baiTest.loai == 'logic'}">
+                                    <td>
+                                      <h6 th:text="${baiTest.tieuDe}">Tiêu đề bài test</h6>
+                                    </td>
+                                    
+                                    <td>
+                                      <span th:text="${baiTest.tinTuyenDung != null ? baiTest.tinTuyenDung.tieuDe : 'N/A'}">Tin tuyển dụng</span>
+                                    </td>
+                                    
+                                    <td class="applied">
+                                      <span th:text="${baiTest.dSKQBaiTest != null ? baiTest.dSKQBaiTest.size() + ' kết quả' : '0 kết quả'}">
+                                        Số kết quả
+                                      </span>
+                                    </td>
+                                    
+                                    <td>
+                                      <span th:text="${#dates.format(baiTest.ngayTao, 'dd/MM/yyyy')}">Ngày đăng</span><br>
+                                      <span th:text="${#dates.format(baiTest.ngayDong, 'dd/MM/yyyy')}">Hạn nộp</span>
+                                    </td>
+                                    
+                                    <td>
+                                      <div class="option-box">
+                                        <ul class="option-list">
+                                          <li><a th:href="@{/nhatd/kqbaitest/{id}(id=${baiTest.id})}" data-text="Xem kết quả"><span class="la la-eye"></span></a></li>
+                                          <li><a th:href="@{/nhatd/edit-baitest/{id}(id=${baiTest.id})}" data-text="Chỉnh sửa"><span class="la la-pencil"></span></a></li>
+                                          <li><a th:href="@{/nhatd/delete-baitest/{id}(id=${baiTest.id})}" 
+                                                data-text="Xóa" 
+                                                onclick="return confirm('Bạn có chắc chắn muốn xóa bài test này?')">
+                                                <span class="la la-trash"></span>
+                                              </a>
+                                          </li>
+                                        </ul>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
                       </div>
 
-                      <!-- Tab: Chuyên môn (tương tự như tab Ngôn ngữ) -->
+                      <!-- Tab: Chuyên môn -->
                       <div class="tab" id="chuyenmon">
-                        <!-- Nội dung tương tự như tab Ngôn ngữ, nhưng với điều kiện th:if="${baiTest.loai == 'chuyenmon'}" -->
+                        <div class="row">
+                          <div class="col-lg-12">
+                            <div class="table-outer">
+                              <table class="default-table manage-job-table">
+                                <thead>
+                                  <tr>
+                                    <th>Tiêu đề bài test</th>
+                                    <th>Tin tuyển dụng</th>
+                                    <th>Số kết quả</th>
+                                    <th>Ngày đăng & Hạn nộp</th>
+                                    <th>Thao tác</th>
+                                  </tr>
+                                </thead>
+
+                                <tbody>
+                                  <tr th:if="${chuyenMonCount == 0}">
+                                    <td colspan="5" class="text-center">Chưa có bài test chuyên môn nào</td>
+                                  </tr>
+                                  
+                                  <tr th:each="baiTest : ${dsBaiTest}" th:if="${baiTest.loai == 'chuyenmon'}">
+                                    <td>
+                                      <h6 th:text="${baiTest.tieuDe}">Tiêu đề bài test</h6>
+                                    </td>
+                                    
+                                    <td>
+                                      <span th:text="${baiTest.tinTuyenDung != null ? baiTest.tinTuyenDung.tieuDe : 'N/A'}">Tin tuyển dụng</span>
+                                    </td>
+                                    
+                                    <td class="applied">
+                                      <span th:text="${baiTest.dSKQBaiTest != null ? baiTest.dSKQBaiTest.size() + ' kết quả' : '0 kết quả'}">
+                                        Số kết quả
+                                      </span>
+                                    </td>
+                                    
+                                    <td>
+                                      <span th:text="${#dates.format(baiTest.ngayTao, 'dd/MM/yyyy')}">Ngày đăng</span><br>
+                                      <span th:text="${#dates.format(baiTest.ngayDong, 'dd/MM/yyyy')}">Hạn nộp</span>
+                                    </td>
+                                    
+                                    <td>
+                                      <div class="option-box">
+                                        <ul class="option-list">
+                                          <li><a th:href="@{/nhatd/kqbaitest/{id}(id=${baiTest.id})}" data-text="Xem kết quả"><span class="la la-eye"></span></a></li>
+                                          <li><a th:href="@{/nhatd/edit-baitest/{id}(id=${baiTest.id})}" data-text="Chỉnh sửa"><span class="la la-pencil"></span></a></li>
+                                          <li><a th:href="@{/nhatd/delete-baitest/{id}(id=${baiTest.id})}" 
+                                                data-text="Xóa" 
+                                                onclick="return confirm('Bạn có chắc chắn muốn xóa bài test này?')">
+                                                <span class="la la-trash"></span>
+                                              </a>
+                                          </li>
+                                        </ul>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>

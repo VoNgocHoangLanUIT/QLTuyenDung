@@ -143,7 +143,7 @@ public class PhongVanService {
             phongVan.setDonUngTuyen(donUngTuyen);
             phongVan.setNgayPV(ngayPV);
             phongVan.setDiaDiem(diaDiem);
-            phongVan.setTrangThai("chopv"); // Trạng thái đã xếp lịch
+            phongVan.setTrangThai("chopv");
             phongVan.setNhanVienTD(nhanVien);
             
             // Lưu vào danh sách
@@ -203,5 +203,9 @@ public class PhongVanService {
         
         // Xóa phỏng vấn
         phongVanRepository.delete(phongVan);
+    }
+
+    public List<PhongVan> getPhongVanByNhanVien(User nhanVien) {
+        return phongVanRepository.findByNhanVienTD(nhanVien);
     }
 }

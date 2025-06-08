@@ -78,7 +78,7 @@ Fonts
 @import url("line-awesome.css");
 @import url("mmenu.css");
 @import url("jquery.fancybox.min.css");
-@import url("https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400;1,500;1,700;1,900&display=swap&subset=vietnamese");
 /*** 
 
 ====================================================================
@@ -109,7 +109,7 @@ body {
   background: #ffffff;
   -webkit-font-smoothing: antialiased;
   -moz-font-smoothing: antialiased;
-  font-family: 'Jost', sans-serif;
+  font-family: 'Open Sans', sans-serif;
   font-style: normal;
 }
 
@@ -177,7 +177,7 @@ p,
 .job-detail p.text,
 .text{
   color: #202124 !important;
-  font-family: Jost;
+  font-family: 'Open Sans';
   line-height: 28px;
 }
 .list-style-three li.dark-color{
@@ -276,7 +276,7 @@ p,
 .ud-btn2{
   color: #202124;
   font-size: 15px;
-  font-family: Jost;
+  font-family: 'Open Sans';
   font-style: normal;
   font-weight: 500;
   line-height: 28px;
@@ -293,7 +293,7 @@ p,
   border-radius: 12px;
   display: inline-block;
   font-size: 15px;
-  font-family: jost;
+  font-family: 'Open Sans';
   height: 52px;
   line-height: 52px;
   min-width: 140px;
@@ -403,7 +403,7 @@ p,
 }
 .home22-cta-2.at-home19 .content-column .title{
   color: #FFF;
-  font-family: Jost;
+  font-family: 'Open Sans';
   font-size: 40px;
   font-style: normal;
   font-weight: 500;
@@ -411,7 +411,7 @@ p,
 }
 .home22-cta-2.at-home19 .content-column p{
   color: #FFF;
-  font-family: Jost;
+  font-family: 'Open Sans';
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
@@ -437,7 +437,7 @@ p,
 }
 .home22-cta-2 .content-column .title{
   color: #FFF;
-  font-family: Jost;
+  font-family: 'Open Sans';
   font-size: 25px;
   font-style: normal;
   font-weight: 500;
@@ -909,7 +909,7 @@ Switches
 .switchbox.at-jlv16 .title{
   color: #202124;
   font-size: 15px;
-  font-family: Jost;
+  font-family: 'Open Sans';
   font-style: normal;
   font-weight: 400;
   line-height: 40px;
@@ -7183,7 +7183,7 @@ Job Section
   height: 34px;
   color: #202124;
   font-size: 14px;
-  font-family: Jost;
+  font-family: 'Open Sans';
   font-style: normal;
   font-weight: 400;
   line-height: 22px;
@@ -7206,7 +7206,7 @@ Job Section
   color: #202124;
   text-edge: cap;
   font-size: 14px;
-  font-family: Jost;
+  font-family: 'Open Sans';
   font-style: normal;
   font-weight: 400;
   line-height: 22px;
@@ -8498,7 +8498,7 @@ Job Detail Section
   border: 1px solid #ECEDF2;
   color: #202124;
   font-size: 15px;
-  font-family: Jost;
+  font-family: 'Open Sans';
   font-style: normal;
   font-weight: 400;
   height: 42px;
@@ -9268,7 +9268,7 @@ Map Listing Item
   font-size: 16px;
   line-height: 22px;
   color: #202124;
-  font-family: Jost;
+  font-family: 'Open Sans';
   margin-bottom: 4px;
 }
 
@@ -9747,7 +9747,7 @@ Page Title
 }
 .hero-at-jlv17 h1{
   font-size: 40px;
-  font-family: Jost;
+  font-family: 'Open Sans';
   font-style: normal;
   font-weight: 500;
   line-height: normal;
@@ -22720,4 +22720,150 @@ Work Section
     color: #e9c058;
   }
 
+ /* Tùy chỉnh giao diện phỏng vấn */
+    .job-card {
+      border: 1px solid #eee;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.05);
+      background: #fff;
+      margin-bottom: 20px;
+      padding: 20px;
+    }
+    
+    .job-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .company-logo {
+      width: 70px;
+      height: 70px;
+      overflow: hidden;
+      border-radius: 5px;
+      margin-right: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f5f5f5;
+    }
+    
+    .company-logo img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    
+    .job-info {
+      flex-grow: 1;
+    }
+    
+    .job-title {
+      margin: 0 0 5px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .company-name {
+      font-size: 15px;
+      color: #666;
+      margin-bottom: 5px;
+    }
+    
+    .job-location {
+      font-size: 14px;
+      color: #888;
+    }
+    
+    .interview-count {
+      margin-left: 15px;
+    }
+    
+    .count-badge {
+      background: #ff8b00;
+      color: #fff;
+      padding: 5px 12px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .interview-table-wrapper {
+      overflow-x: auto;
+    }
+    
+    .interview-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    
+    .interview-table th {
+      background: #f9f9f9;
+      padding: 12px 15px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .interview-table td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #f5f5f5;
+      vertical-align: middle;
+    }
+    
+    .interview-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .badge {
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .badge-warning {
+      background-color: #ffc107;
+      color: #000;
+    }
+    
+    .badge-info {
+      background-color: #17a2b8;
+      color: #fff;
+    }
+    
+    .badge-success {
+      background-color: #28a745;
+      color: #fff;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    
+    @media (max-width: 767px) {
+      .job-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .company-logo {
+        margin-bottom: 15px;
+      }
+      
+      .interview-count {
+        margin-left: 0;
+        margin-top: 10px;
+      }
+    }
 
+    .icon-text {
+  font-family: 'Open Sans', sans-serif !important;
+  font-weight: 500;
+}

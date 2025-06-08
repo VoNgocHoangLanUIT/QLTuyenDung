@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{user/layout/head :: head}"></head>
+
+<body>
+
+  <div class="page-wrapper dashboard">
+
+    <!-- Preloader -->
+    <div class="preloader"></div>
+
+    <!-- Header Span -->
+    <span class="header-span"></span>
+
+    <!-- Main Header-->
+    <header th:replace="~{user/layout/header :: header}"></header>
+    <!--End Main Header -->
+
+    <!-- Sidebar Backdrop -->
+    <div class="sidebar-backdrop"></div>
+
+    <!-- User Sidebar -->
+    <div th:replace="~{ungvien/layout/sidebar :: sidebar}"></div>
+    <!-- End User Sidebar -->
+
+    <!-- Dashboard -->
+    <section class="user-dashboard">
+      <div class="dashboard-outer">
+        <div class="upper-title-box">
+          <h3>Tin tuyển dụng yêu thích</h3>
+          <div class="text">Danh sách các tin tuyển dụng bạn đã đánh dấu yêu thích</div>
+        </div>
+        
+        <!-- Thông báo thành công/lỗi -->
+        <div class="alert alert-success" th:if="${success}" role="alert">
+          <i class="la la-check-circle"></i> <span th:text="${success}">Thành công!</span>
+        </div>
+        <div class="alert alert-danger" th:if="${error}" role="alert">
+          <i class="la la-times-circle"></i> <span th:text="${error}">Lỗi!</span>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-12">
+            <!-- Tin tuyển dụng widget -->
+            <div class="applicants-widget ls-widget">
+              <div class="widget-title">
+                <h4>Tin tuyển dụng yêu thích</h4>
+
+                <div class="chosen-outer">
+                  <!--search box-->
+                  <div class="search-box-one">
+                    <form method="post" action="#">
+                      <div class="form-group">
+                        <span class="icon flaticon-search-1"></span>
+                        <input type="search" name="search-field" value="" placeholder="Tìm kiếm" required="">
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+              <div class="widget-content">
+                <!-- Hiển thị thông báo nếu không có tin tuyển dụng yêu thích -->
+                <div th:if="${#lists.isEmpty(danhSachYeuThich)}" class="alert alert-info text-center py-5">
+                  <div class="icon-box">
+                    <i class="la la-heart-o" style="font-size: 48px; color: #ddd;"></i>
+                  </div>
+                  <h5 class="mt-3">Chưa có tin tuyển dụng yêu thích nào</h5>
+                  <p>Bạn chưa đánh dấu tin nào vào danh sách yêu thích.</p>
+                  <a th:href="@{/dstintd}" class="theme-btn btn-style-one mt-3">
+                    <i class="la la-search"></i> Tìm kiếm tin tuyển dụng
+                  </a>
+                </div>
+
+                <!-- Danh sách tin tuyển dụng yêu thích -->
+                <div th:unless="${#lists.isEmpty(danhSachYeuThich)}" class="row">
+                  <!-- Job Block -->
+                  <div class="job-block col-lg-6 col-md-12 col-sm-12" th:each="item : ${danhSachYeuThich}">
+                    <div class="inner-box">
+                      <div class="content">
+                        <span class="company-logo">
+                          <img th:if="${item.tinTuyenDung.congty != null && item.tinTuyenDung.congty.logo != null}" 
+                               th:src="@{'/fe/images/resource/company-logo/' + ${item.tinTuyenDung.congty.logo}}" 
+                               th:alt="${item.tinTuyenDung.congty.tenCongTy}">
+                          <img th:unless="${item.tinTuyenDung.congty != null && item.tinTuyenDung.congty.logo != null}" 
+                               th:src="@{/fe/images/resource/company-logo/default.jpg}" alt="Logo">
+                        </span>
+                        <h4>
+                          <a th:href="@{'/chitiet-tintd/' + ${item.tinTuyenDung.id}}" 
+                             th:text="${item.tinTuyenDung.tieuDe} + ' - ' + ${item.tinTuyenDung.congty != null ? item.tinTuyenDung.congty.tenCongTy : 'Không xác định'}">
+                            Tên công việc
+                          </a>
+                        </h4>
+                        <ul class="job-info">
+                          <li><span class="icon flaticon-briefcase"></span><span th:text="${item.tinTuyenDung.congty != null ? item.tinTuyenDung.congty.tenCongTy : 'Không xác định'}"></span></li>
+                          <li><span class="icon flaticon-map-locator"></span> <span th:text="${item.tinTuyenDung.diaDiemLV}">Địa điểm</span></li>
+                          <li><span class="icon flaticon-clock-3"></span> <span th:text="${item.tinTuyenDung.ngayDang != null ? #dates.format(item.tinTuyenDung.ngayDang, 'dd/MM/yyyy') : 'Chưa xác định'}">Ngày đăng</span></li>
+                          <li><span class="icon flaticon-money"></span> <span th:text="${item.tinTuyenDung.mucLuong != null ? item.tinTuyenDung.mucLuong : 'Thương lượng'}">Mức lương</span></li>
+                        </ul>
+                        <ul class="job-other-info">
+                          <li class="time" th:text="${item.tinTuyenDung.hinhThucLV}">Full Time</li>
+                          <li class="green" th:if="${item.tinTuyenDung.trangThai == 'dangtuyen'}">Đang tuyển</li>
+                          <li class="closed" th:if="${item.tinTuyenDung.trangThai == 'dadong'}">Đã đóng</li>
+                          <li class="required" th:text="${item.tinTuyenDung.linhVuc != null ? item.tinTuyenDung.linhVuc : 'Khác'}">Hot</li>
+                        </ul>
+                        <a th:href="@{'/ungvien/xoa-tintd-yeuthich/' + ${item.id}}"
+                           onclick="return confirm('Bạn có chắc chắn muốn xóa tin này khỏi danh sách yêu thích?');"
+                           class="bookmark-btn active">
+                          <i class="flaticon-bookmark"></i>
+                        </a>
+                      </div>
+                      <div class="option-box">
+                        <a th:href="@{'/chitiet-tintd/' + ${item.tinTuyenDung.id}}" class="theme-btn btn-style-three mr-2">
+                          <span class="icon-text"><span class="la la-eye"></span> Xem chi tiết</span>
+                        </a>
+                        <a th:if="${item.tinTuyenDung.trangThai == 'dangtuyen'}" 
+                           th:href="@{'/ungvien/add-donut/' + ${item.tinTuyenDung.id}}"
+                           class="theme-btn btn-style-one">
+                          <span class="icon-text"><span class="la la-paper-plane"></span> Ứng tuyển</span>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Dashboard -->
+
+    <!-- Copyright -->
+    <div th:replace="~{nhatuyendung/layout/footer :: footer}"></div>
+  </div><!-- End Page Wrapper -->
+
+  <div th:replace="~{user/layout/script :: script}"></div>
+
+</body>
+</html>

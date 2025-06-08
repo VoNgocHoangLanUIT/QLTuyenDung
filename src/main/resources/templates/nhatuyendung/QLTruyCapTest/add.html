@@ -85,8 +85,9 @@
                                 <label class="form-check-label" th:for="'don-' + ${don.id}">
                                   <div class="d-flex align-items-center">
                                     <figure class="image mr-3">
-                                      <img th:src="${don.user.hinhAnh != null ? don.user.hinhAnh : '/fe/images/resource/candidate-default.png'}" 
-                                           alt="" style="width: 50px; height: 50px; border-radius: 50%;">
+                                      
+                                      <img th:if="${don.user.hinhAnh != null}" th:src="@{'/fe/images/resource/avatar/' + ${don.user.hinhAnh}}" alt="Candidate Image" style="width: 50px; height: 50px; border-radius: 50%;">
+                                      <img th:unless="${don.user.hinhAnh != null}" th:src="@{/fe/images/resource/avatar/default.jpg}" alt="Default Avatar" style="width: 50px; height: 50px; border-radius: 50%;">
                                     </figure>
                                     <div>
                                       <h5 class="candidate-name" th:text="${don.user.hoTen}">Tên ứng viên</h5>
@@ -104,7 +105,7 @@
 
                     <div class="form-group text-right">
                       <button type="submit" class="theme-btn btn-style-one" id="submitBtn" disabled>
-                        <i class="la la-plus"></i> Thêm ứng viên đã chọn
+                        <span class="icon-text"><span class="la la-plus"></span> Thêm ứng viên đã chọn</span>
                       </button>
                     </div>
                   </form>

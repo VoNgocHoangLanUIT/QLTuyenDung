@@ -41,10 +41,11 @@
               <div class="inner-box">
                 <div class="content">
                   <figure class="image">
-                    <img th:src="@{/fe/images/resource/candidate-1.png}" alt="Ứng viên">
+                    <img th:if="${ungVien.hinhAnh != null}" th:src="@{'/fe/images/resource/avatar/' + ${ungVien.hinhAnh}}" alt="Candidate Image" class="thumb">
+                    <img th:unless="${ungVien.hinhAnh != null}" th:src="@{/fe/images/resource/avatar/default.jpg}" alt="Default Avatar" class="thumb">
                   </figure>
                   <h4 class="name">
-                    <a th:href="@{'/nhatd/chitiet-ungvien/' + ${ungVien.id}}" th:text="${ungVien.hoTen != null ? ungVien.hoTen : ungVien.username}">Tên ứng viên</a>
+                    <a th:href="@{/hosoungtuyen/{id}(id=${donUngTuyen.id})}" th:text="${ungVien.hoTen != null ? ungVien.hoTen : ungVien.username}">Tên ứng viên</a>
                   </h4>
                   <div class="candidate-info">
                     <span class="designation" th:text="${ungVien.chuyenNganh != null ? ungVien.chuyenNganh : 'Chưa cập nhật chuyên ngành'}">Chuyên ngành</span>
@@ -62,17 +63,11 @@
                     </li>
                   </ul>
                 </div>
-
-                <div class="option-box">
-                  <div class="candidate-action-box">
-                    <a th:href="@{'/nhatd/chitiet-ungvien/' + ${ungVien.id}}" class="candidate-action-btn">
-                      <i class="las la-user"></i> Xem hồ sơ
-                    </a>
-                    <a th:href="@{'/nhatd/add-phongvan/' + ${donUngTuyen.id}}" class="theme-btn btn-style-one ml-3">
-                      <i class="la la-plus-circle"></i> Thêm phỏng vấn
-                    </a>
-                  </div>
+                <div class="btn-box d-block d-sm-flex mt20">
+                  <a th:href="@{/hosoungtuyen/{id}(id=${donUngTuyen.id})}" class="ud-btn-transparent mr20 mb-2 mb-sm-0"><span class="icon-text"><span class="las la-user"></span> Xem hồ sơ</span></a>
+                  <a th:href="@{'/nhatd/add-phongvan/' + ${donUngTuyen.id}}" class="theme-btn btn-style-one"><span class="icon-text"><span class="la la-plus-circle"></span> Thêm phỏng vấn</span></a>
                 </div>
+                
               </div>
             </div>
           </div>
@@ -176,13 +171,12 @@
                           <div class="timeline-footer">
                             <div class="actions">
                               <a th:href="@{'/nhatd/edit-phongvan/' + ${pv.id}}" class="action-btn edit-btn" title="Cập nhật">
-                                <i class="la la-pencil"></i> Cập nhật
+                                <span class="la la-pencil"></span>
                               </a>
-                              <a th:if="${pv.trangThai != 'dapv'}" 
-                                 th:href="@{'/nhatd/delete-phongvan/' + ${pv.id}}" 
+                              <a th:href="@{'/nhatd/delete-phongvan/' + ${pv.id}}" 
                                  onclick="return confirm('Bạn có chắc chắn muốn xóa phỏng vấn này?');"
                                  class="action-btn delete-btn" title="Xóa">
-                                <i class="la la-trash"></i> Xóa
+                                <span class="la la-trash"></span>
                               </a>
                             </div>
                           </div>
@@ -193,20 +187,18 @@
                 </div>
 
                 <div class="p-3 text-center">
-                    <div class="btn-group">
-                        <a th:href="@{/nhatd/update-trangthai/{id}/{trangThai}(id=${donUngTuyen.id}, trangThai='datuyen')}" 
-                                      th:class="${donUngTuyen.trangThai == 'datuyen' ? 'active-status' : ''}"
-                                      data-text="Tuyển dụng"
-                                      onclick="return confirm('Bạn có chắc chắn muốn tuyển dụng ứng viên này?');">
-                                      <i class="la la-check"></i> Tuyển dụng
-                        </a>
-                        <a th:href="@{/nhatd/update-trangthai/{id}/{trangThai}(id=${donUngTuyen.id}, trangThai='tuchoi')}" 
-                                      th:class="${donUngTuyen.trangThai == 'tuchoi' ? 'active-status' : ''}"
-                                      data-text="Từ chối"
-                                      onclick="return confirm('Bạn có chắc chắn muốn từ chối ứng viên này?');">
-                                      <i class="la la-times-circle"></i> Từ chối
-                        </a>
-                </div>
+                  <div class="decision-actions">
+                    <a th:href="@{/nhatd/update-trangthai/{id}/{trangThai}(id=${donUngTuyen.id}, trangThai='datuyen')}" 
+                      th:class="${donUngTuyen.trangThai == 'datuyen' ? 'theme-btn btn-style-one active-decision' : 'theme-btn btn-style-one btn-approve'}"
+                      onclick="return confirm('Bạn có chắc chắn muốn tuyển dụng ứng viên này?');">
+                      <span class="icon-text"><span class="la la-check-circle"></span> Tuyển dụng</span>
+                    </a>
+                    <a th:href="@{/nhatd/update-trangthai/{id}/{trangThai}(id=${donUngTuyen.id}, trangThai='tuchoi')}" 
+                      th:class="${donUngTuyen.trangThai == 'tuchoi' ? 'theme-btn btn-style-three active-decision' : 'theme-btn btn-style-three btn-reject'}"
+                      onclick="return confirm('Bạn có chắc chắn muốn từ chối ứng viên này?');">
+                      <span class="icon-text"><span class="la la-times-circle"></span> Từ chối</span>
+                    </a>
+                  </div>
               </div>
             </div>
           </div>
@@ -479,6 +471,50 @@
     .action-btn.delete-btn:hover {
       background: #fff0f1;
     }
+
+    .decision-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 10px;
+  }
+  
+  .btn-approve {
+    background-color: #38b653 !important;
+    border-color: #38b653 !important;
+    padding: 12px 30px !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+  }
+  
+  .btn-approve:hover {
+    background-color: #2ea044 !important;
+    box-shadow: 0 5px 15px rgba(56, 182, 83, 0.3) !important;
+    transform: translateY(-2px) !important;
+  }
+  
+  .btn-reject {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    padding: 12px 30px !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    color: #ffffff !important;
+  }
+  
+  .btn-reject:hover {
+    background-color: #c82333 !important;
+    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3) !important;
+    transform: translateY(-2px) !important;
+  }
+  
+  .active-decision {
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1) !important;
+  }
+  
+  
   </style>
 </body>
 </html>

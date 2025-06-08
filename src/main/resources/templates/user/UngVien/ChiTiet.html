@@ -27,7 +27,10 @@
               <!-- Candidate block Five -->
               <div class="candidate-block-five at-v4">
                 <div class="inner-box">                  <div class="content">
-                    <figure class="image"><img th:src="@{/fe/images/resource/candidate-1-v4.png}" alt="Candidate Image"></figure>
+                    <figure class="image">
+                      <img th:if="${ungVien.hinhAnh != null}" th:src="@{'/fe/images/resource/avatar/' + ${ungVien.hinhAnh}}" alt="Candidate Image">
+                      <img th:unless="${ungVien.hinhAnh != null}" th:src="@{/fe/images/resource/avatar/default.jpg}" alt="Default Avatar">
+                    </figure>
                     <h4 class="name"><a th:text="${ungVien.hoTen != null ? ungVien.hoTen : ungVien.username}">Jane Cooper</a></h4>
                     <ul class="candidate-info at-sv5">
                       <li class="designation" th:text="${ungVien.chuyenNganh != null ? ungVien.chuyenNganh : 'Chưa cập nhật chuyên ngành'}">UX Designer</li>
@@ -47,12 +50,12 @@
                 <ul class="post-tags at-sv5 mt20">
                   <li class="mb-2 mb-sm-0" th:if="${ungVien.namKinhNghiem > 0}"><a href="#" th:text="${ungVien.namKinhNghiem + ' năm kinh nghiệm'}">5 năm kinh nghiệm</a></li>
                   <li class="mb-2 mb-sm-0" th:if="${ungVien.namKinhNghiem == 0 || ungVien.namKinhNghiem == null}"><a href="#" class="purple">Mới ra trường</a></li>
-                  <li th:if="${ungVien.chungChi != null}"><a href="#" th:text="${ungVien.chungChi}">Chứng chỉ</a></li>
+                  <li th:if="${ungVien.ngonNgu != null}"><a href="#" th:text="${ungVien.ngonNgu}">Ngôn ngữ</a></li>
                 </ul>                
                 <div class="btn-box d-block d-sm-flex mt20">
-                  <a th:if="${ungVien.cvFile != null}" th:href="@{'/download-cv/' + ${ungVien.id}}" class="theme-btn btn-style-one">Tải xuống CV <i class="fal fa-long-arrow-right text-white d-block ml15"></i></a>
-                  <a href="#" class="ud-btn-transparent mr20 mb-2 mb-sm-0">Theo dõi <i class="fal fa-long-arrow-right"></i></a>
                   <a th:href="@{/dsungvien}" class="ud-btn-transparent mr20 mb-2 mb-sm-0">Quay lại <i class="fal fa-long-arrow-right"></i></a>
+                  <a th:if="${ungVien.cvFile != null}" th:href="@{'/download-cv/' + ${ungVien.id}}" class="theme-btn btn-style-one">Tải xuống CV <i class="fal fa-long-arrow-right text-white d-block ml15"></i></a>
+                  
                 </div>
               </div>
               <div class="job-detail">
@@ -175,7 +178,7 @@
                         <i class="icon far fa-mars"></i>
                         <div class="ml15" th:if="${ungVien.gioiTinh != null}">
                           <h5>Giới tính</h5>
-                          <span th:text="${ungVien.gioiTinh == 'nam' ? 'Nam' : 'Nữ'}">Nam</span>
+                          <span th:text="${ungVien.gioiTinh == 'Nam' ? 'Nam' : 'Nữ'}">Nam</span>
                         </div>
                         <div class="ml15" th:unless="${ungVien.gioiTinh != null}">
                           <h5>Giới tính</h5>
@@ -190,17 +193,6 @@
                         </div>
                         <div class="ml15" th:unless="${ungVien.tuoi != 0}">
                           <h5>Tuổi</h5>
-                          <span>Chưa cập nhật</span>
-                        </div>
-                      </li>
-                      <li>
-                        <i class="icon flaticon-exercise"></i>
-                        <div class="ml15" th:if="${ungVien.chungChi != null}">
-                          <h5>Chứng chỉ</h5>
-                          <span th:text="${ungVien.chungChi}">Chứng chỉ</span>
-                        </div>
-                        <div class="ml15" th:unless="${ungVien.chungChi != null}">
-                          <h5>Chứng chỉ</h5>
                           <span>Chưa cập nhật</span>
                         </div>
                       </li>

@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
@@ -18,6 +20,7 @@ public class ThanhTuu {
     private Long id;
     private String tenThanhTuu;
     @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date ngayDat;
     private String moTa;
     

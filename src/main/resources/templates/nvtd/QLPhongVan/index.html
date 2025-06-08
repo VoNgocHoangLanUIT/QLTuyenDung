@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{user/layout/head :: head}"></head>
+
+<body>
+
+  <div class="page-wrapper dashboard ">
+
+    <!-- Preloader -->
+    <div class="preloader"></div>
+
+    <!-- Header Span -->
+    <span class="header-span"></span>
+
+    <!-- Main Header-->
+    <header th:replace="~{user/layout/header :: header}"></header>
+    <!--End Main Header -->
+
+    <!-- Sidebar Backdrop -->
+    <div class="sidebar-backdrop"></div>
+
+    <!-- User Sidebar -->
+    <div th:replace="~{nvtd/layout/sidebar :: sidebar}"></div>
+    <!-- End User Sidebar -->
+
+    <!-- Dashboard -->
+    <section class="user-dashboard">
+      <div class="dashboard-outer">
+        <div class="upper-title-box">
+          <h3>Phỏng vấn được phân công cho bạn</h3>
+          <div class="text">Xem và quản lý các cuộc phỏng vấn được phân công</div>
+        </div>
+
+        <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+        <div class="row">
+          <div class="col-lg-12">
+            <!-- Ls widget -->
+            <div class="ls-widget">
+              <div class="tabs-box">
+                <div class="widget-title">
+                  <h4>Danh sách ứng viên phỏng vấn của bạn</h4>
+                </div>
+
+                <div class="widget-content">
+                <!-- Hiển thị thông báo nếu không có đơn ứng tuyển nào -->
+                    <div th:if="${#maps.isEmpty(phongVanByDonUT)}" class="col-12 text-center p-5">
+                        <div class="empty-state">
+                          <img src="/fe/images/resource/empty-interview.png" alt="No interviews" style="max-width: 150px;">
+                          <h5 class="mt-3">Bạn chưa được phân công phỏng vấn nào</h5>
+                          <p>Khi bạn được phân công phỏng vấn, thông tin sẽ hiển thị ở đây.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Hiển thị các đơn ứng tuyển theo nhóm -->
+                    <div th:unless="${#maps.isEmpty(phongVanByDonUT)}" class="candidate-list">
+                      <div th:each="entry : ${phongVanByDonUT}" class="candidate-card">
+                        <!-- Thông tin ứng viên -->
+                        <div class="candidate-info-wrapper">
+                          <div class="candidate-image">
+                            <img th:if="${entry.key.user.hinhAnh != null}" th:src="@{'/fe/images/resource/avatar/' + ${entry.key.user.hinhAnh}}" alt="Candidate Image" class="thumb">
+                            <img th:unless="${entry.key.user.hinhAnh != null}" th:src="@{/fe/images/resource/avatar/default.jpg}" alt="Default Avatar" class="thumb">
+                          </div>
+                          <div class="candidate-details">
+                            <h4 class="candidate-name">
+                              <a th:href="@{/hosoungtuyen/{id}(id=${entry.key.id})}" th:text="${entry.key.user.hoTen}">Tên ứng viên</a>
+                            </h4>
+                            <ul class="candidate-contact">
+                              <li><span class="icon flaticon-mail"></span> <a th:href="'mailto:' + ${entry.key.user.email}" th:text="${entry.key.user.email}">Email</a></li>
+                              <li><span class="icon flaticon-phone"></span> <a th:href="'tel:' + ${entry.key.user.soDienThoai}" th:text="${entry.key.user.soDienThoai}">Số điện thoại</a></li>
+                            </ul>
+                          </div>
+                          
+                          <div class="interview-count">
+                            <span class="interview-counter badge badge-info" th:text="'Phỏng vấn của bạn'">Phỏng vấn của bạn</span>
+                          </div>
+                        </div>
+                      
+                        <!-- Thông tin vị trí -->
+                        <div class="position-info">
+                          <h5 class="position-title" th:text="${entry.key.tinTuyenDung.tieuDe}">Tên vị trí</h5>
+                          <div class="position-location"><i class="la la-map-marker"></i> <span th:text="${entry.key.tinTuyenDung.diaDiemLV}">Địa điểm</span></div>
+                        </div>
+                        
+                        <!-- Chỉ hiển thị phỏng vấn của nhân viên hiện tại -->
+                        <div class="interview-table-wrapper">
+                          <table class="interview-table">
+                            <thead>
+                              <tr>
+                                <th>Ngày phỏng vấn</th>
+                                <th>Địa điểm</th>
+                                <th>Trạng thái</th>
+                                <th>Đánh giá</th>
+                                <th>Thao tác</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr th:each="pv : ${entry.value}" th:data-status="${pv.trangThai}">
+                                <td th:text="${pv.ngayPV != null ? #dates.format(pv.ngayPV, 'dd/MM/yyyy HH:mm') : 'Chưa đặt lịch'}">Ngày PV</td>
+                                <td th:text="${pv.diaDiem != null && !pv.diaDiem.isEmpty() ? pv.diaDiem : 'Chưa có'}">Địa điểm</td>
+                                <td>
+                                  <span class="badge" th:classappend="${
+                                    pv.trangThai == 'chopv' ? 'badge-warning' :
+                                    pv.trangThai == 'xeplich' ? 'badge-info' :
+                                    pv.trangThai == 'dapv' ? 'badge-success' : 'badge-secondary'
+                                  }" th:text="${
+                                    pv.trangThai == 'chopv' ? 'Chờ phỏng vấn' :
+                                    pv.trangThai == 'xeplich' ? 'Đang xếp lịch' :
+                                    pv.trangThai == 'dapv' ? 'Đã phỏng vấn' : 'Không xác định'
+                                  }">Trạng thái</span>
+                                </td>
+                                <td th:text="${pv.trangThai == 'dapv' ? pv.diemDanhGia + '/10' : 'Chưa đánh giá'}">Điểm đánh giá</td>
+                                <td>
+                                  <div class="interview-actions">
+                                    <a th:href="@{/nvtd/edit-phongvan/{id}(id=${pv.id})}" class="action-btn edit-btn" title="Cập nhật">
+                                      <i class="la la-pencil"></i>
+                                    </a>
+                                  </div>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                        
+                        <div class="p-3 text-center">
+                          <div class="btn-group">
+                            <a th:href="@{/hosoungtuyen/{id}(id=${entry.key.id})}" class="theme-btn btn-style-three mr-2">
+                              <span class="icon-text"><span class="la la-file-text"></span> Xem CV ứng viên</span>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Dashboard -->
+
+    <!-- Copyright -->
+    <div th:replace="~{nhatuyendung/layout/footer :: footer}"></div>
+
+  </div><!-- End Page Wrapper -->
+
+  <div th:replace="~{user/layout/script :: script}"></div>
+
+  <style>
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    
+    .candidate-card {
+      border: 1px solid #eee;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.05);
+      background: #fff;
+      margin-bottom: 20px;
+      padding: 20px;
+    }
+    
+    .candidate-info-wrapper {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .candidate-image {
+      width: 70px;
+      height: 70px;
+      overflow: hidden;
+      border-radius: 50%;
+      margin-right: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f5f5f5;
+    }
+    
+    .candidate-image img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: cover;
+    }
+  </style>
+</body>
+</html>

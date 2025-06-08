@@ -55,4 +55,7 @@ public class TinTuyenDung {
 
     @OneToMany(mappedBy = "tinTuyenDung", fetch = FetchType.EAGER)
     private Set<BaiTest> dSBaiTest;
+
+    @OneToMany(mappedBy = "tinTuyenDung", fetch = FetchType.LAZY)
+    private Set<TinYeuThich> dSTinYeuThich;
 }

@@ -30,8 +30,8 @@
         // Nếu url là chính xác thì so sánh đúng
         if (currentPath === url || currentPath === url + '/') return true;
 
-        // Nếu url dài hơn (có dạng /nhatd/edit-tintd) thì mới dùng startsWith
-        return url.length > 6 && currentPath.startsWith(url);
+        // Nếu url dài hơn (có dạng /nhatd/edit-tintd ==> dài hơn 8(/ungvien)) thì mới dùng startsWith
+        return url.length > 8 && currentPath.startsWith(url);
       });
 
       if (isActive) {

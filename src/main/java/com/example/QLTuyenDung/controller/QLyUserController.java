@@ -9,8 +9,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example.QLTuyenDung.dto.UserRoleDTO;
 import com.example.QLTuyenDung.model.CongTy;
+import com.example.QLTuyenDung.model.CustomUserDetail;
 import com.example.QLTuyenDung.model.User;
 import com.example.QLTuyenDung.model.UserRole;
 import com.example.QLTuyenDung.service.CongTyService;
@@ -50,9 +53,34 @@ public class QLyUserController {
     private final ThanhTuuService thanhTuuService;
     
     @GetMapping("/dsungvien")
-    public String showDSUngVien(Model model) {
-        List<User> dSUngVien = userService.getAllCandidates();
+    public String showDSUngVien(
+            Model model,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(defaultValue = "hoTen") String sort,
+            @RequestParam(defaultValue = "asc") String direction) {
+        
+        // Lấy danh sách ứng viên với phân trang
+        Page<User> pageUngVien = userService.getAllCandidatesPaginated(page, size, sort, direction);
+        List<User> dSUngVien = pageUngVien.getContent();
+        
+        // Thêm thông tin phân trang vào model
         model.addAttribute("dSUngVien", dSUngVien);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", pageUngVien.getTotalPages());
+        model.addAttribute("totalItems", pageUngVien.getTotalElements());
+        model.addAttribute("size", size);
+        model.addAttribute("sort", sort);
+        model.addAttribute("direction", direction);
+        model.addAttribute("reverseSortDir", direction.equals("asc") ? "desc" : "asc");
+        
+        // Thông tin cho phân trang
+        int startPage = Math.max(0, page - 2);
+        int endPage = Math.min(pageUngVien.getTotalPages() - 1, page + 2);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+        model.addAttribute("currentUrl", "/dsungvien");
+        
         return "user/UngVien/index";
     }
     
@@ -135,7 +163,7 @@ public class QLyUserController {
         try {
             user.setId(id);
             user.setEnabled(enabled);
-            if (roleName.equals("HR_STAFF") || roleName.equals("CV_STAFF")) {
+            if (roleName.equals("RECRUITER") || roleName.equals("HR_STAFF") || roleName.equals("CV_STAFF")) {
                 if (companyId == null) {
                     throw new RuntimeException("Vui lòng chọn công ty cho nhân viên");
                 }
@@ -243,5 +271,310 @@ public class QLyUserController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error downloading file");
         }
+    }
+
+    @GetMapping("/ungvien/edit-user")
+    public String ungVienUpdateThongTinCaNhan(Model model, Authentication authentication) {
+        try {
+            CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+            User userHienTai = userDetails.getUser();
+            model.addAttribute("user", userHienTai);
+            model.addAttribute("dSHocVan", hocVanService.getHocVanByUserId(userHienTai.getId()));
+            model.addAttribute("dSKinhNghiem", kinhNghiemLamViecService.getKinhNghiemLamViecByUserId(userHienTai.getId()));
+            model.addAttribute("dSThanhTuu", thanhTuuService.getThanhTuuByUserId(userHienTai.getId()));
+            return "ungvien/CapNhatThongTinCaNhan";
+        } catch (Exception e) {
+            return "redirect:/login";
+        }
+    }
+
+    @PostMapping("/ungvien/edit-user")
+    public String ungVienUpdateThongTinCaNhan(@ModelAttribute User user, 
+                                @RequestParam(required = false) MultipartFile avatarFile,
+                                Authentication authentication, 
+                                RedirectAttributes redirectAttributes) {
+        try {
+            // Lấy thông tin user hiện tại
+            CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+            User userHienTai = userDetails.getUser();
+            
+            // Cập nhật các thuộc tính cơ bản
+            userHienTai.setHoTen(user.getHoTen());
+            userHienTai.setSoDienThoai(user.getSoDienThoai());
+            userHienTai.setGioiTinh(user.getGioiTinh());
+            userHienTai.setTuoi(user.getTuoi());
+            userHienTai.setChuyenNganh(user.getChuyenNganh());
+            userHienTai.setNamKinhNghiem(user.getNamKinhNghiem());
+            userHienTai.setLuongMongMuon(user.getLuongMongMuon());
+            userHienTai.setNgonNgu(user.getNgonNgu());
+            userHienTai.setGioiThieu(user.getGioiThieu());
+            
+            // Xử lý upload avatar
+            if (avatarFile != null && !avatarFile.isEmpty()) {
+                // Xóa file cũ nếu có
+                if (userHienTai.getHinhAnh() != null) {
+                    try {
+                        Path staticPath = Paths.get("src/main/resources/static/fe/images/resource/avatar", userHienTai.getHinhAnh());
+                        boolean deleted = Files.deleteIfExists(staticPath);
+
+                        if (!deleted) {
+                            // Nếu không tìm thấy trong static, thử xóa trong uploads
+                            Path uploadPath = Paths.get(fileStorageService.getUploadDir() + File.separator + userHienTai.getHinhAnh());
+                            Files.deleteIfExists(uploadPath);
+                        }
+                    } catch (IOException e) {
+                        System.err.println("Lỗi khi xóa file cũ: " + e.getMessage());
+                    }
+                }
+                
+                String fileName = fileStorageService.storeAvatar(avatarFile);
+                userHienTai.setHinhAnh(fileName);
+            }
+            
+            // Lưu thay đổi
+            userService.updateUser(userHienTai);
+            redirectAttributes.addFlashAttribute("success", "Cập nhật thông tin thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Cập nhật thất bại: " + e.getMessage());
+        }
+        
+        return "redirect:/ungvien/edit-user";
+    }
+
+    @PostMapping("/ungvien/edit-mxh")
+    public String ungVienUpdateMXH(@ModelAttribute User user, 
+                                Authentication authentication, 
+                                RedirectAttributes redirectAttributes) {
+        try {
+            // Lấy thông tin user hiện tại
+            CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+            User userHienTai = userDetails.getUser();
+            
+            // Cập nhật thông tin mạng xã hội
+            userHienTai.setFaceBook(user.getFaceBook());
+            userHienTai.setLinkedIn(user.getLinkedIn());
+            
+            // Lưu thay đổi
+            userService.updateUser(userHienTai);
+            redirectAttributes.addFlashAttribute("success", "Cập nhật thông tin mạng xã hội thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Cập nhật thất bại: " + e.getMessage());
+        }
+        
+        return "redirect:/ungvien/edit-user";
+    }
+
+    @PostMapping("/ungvien/edit-diachi")
+    public String ungVienUpdateDiaChi(@ModelAttribute User user, 
+                                Authentication authentication, 
+                                RedirectAttributes redirectAttributes) {
+        try {
+            // Lấy thông tin user hiện tại
+            CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+            User userHienTai = userDetails.getUser();
+            
+            // Cập nhật địa chỉ
+            userHienTai.setDiaChi(user.getDiaChi());
+            
+            // Lưu thay đổi
+            userService.updateUser(userHienTai);
+            redirectAttributes.addFlashAttribute("success", "Cập nhật địa chỉ thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Cập nhật thất bại: " + e.getMessage());
+        }
+        
+        return "redirect:/ungvien/edit-user";
+    }
+
+    @PostMapping("/ungvien/upload-cv")
+    public String uploadCV(@RequestParam(required = false) MultipartFile cvMultipartFile,
+                        Authentication authentication,
+                        RedirectAttributes redirectAttributes) {
+        try {
+            // Kiểm tra file
+            if (cvMultipartFile.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Vui lòng chọn file CV");
+                return "redirect:/ungvien/edit-user";
+            }
+            
+            // Kiểm tra định dạng file
+            String contentType = cvMultipartFile.getContentType();
+            if (!contentType.equals("application/pdf") && 
+                !contentType.equals("application/msword") && 
+                !contentType.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
+                redirectAttributes.addFlashAttribute("error", "Chỉ hỗ trợ file PDF, DOC, DOCX");
+                return "redirect:/ungvien/edit-user";
+            }
+            
+            // Kiểm tra kích thước file (tối đa 5MB)
+            if (cvMultipartFile.getSize() > 5 * 1024 * 1024) {
+                redirectAttributes.addFlashAttribute("error", "Kích thước file không được vượt quá 5MB");
+                return "redirect:/ungvien/edit-user";
+            }
+            
+            // Lấy thông tin user hiện tại
+            CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+            User userHienTai = userDetails.getUser();
+            // Xóa file cũ nếu có
+            if (userHienTai.getCvFile() != null) {
+                try {
+                    Path cvPath = Paths.get(fileStorageService.getUploadDir() + File.separator + userHienTai.getCvFile());
+                    Files.deleteIfExists(cvPath);
+                } catch (IOException e) {
+                    System.err.println("Lỗi khi xóa file CV cũ: " + e.getMessage());
+                }
+            }
+            
+            // Lưu file mới
+            String fileName = fileStorageService.storeCV(cvMultipartFile);
+            userHienTai.setCvFile(fileName);
+            // Lưu thay đổi
+            userService.updateUser(userHienTai);
+            
+            redirectAttributes.addFlashAttribute("success", "Tải CV lên thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Tải CV lên thất bại: " + e.getMessage());
+        }
+        
+        return "redirect:/ungvien/edit-user";
+    }
+
+    @PostMapping("/ungvien/delete-cv")
+    public ResponseEntity<?> deleteCV(Authentication authentication) {
+        try {
+            // Lấy thông tin user hiện tại
+            CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+            User userHienTai = userDetails.getUser();
+            
+            // Kiểm tra xem user có CV không
+            if (userHienTai.getCvFile() == null || userHienTai.getCvFile().isEmpty()) {
+                return ResponseEntity.badRequest().body("Không có CV để xóa");
+            }
+            
+            // Lấy đường dẫn file CV
+            String uploadDir = fileStorageService.getUploadDir();
+            Path cvPath = Paths.get(uploadDir + File.separator + userHienTai.getCvFile());
+            // Kiểm tra file có tồn tại không
+            if (Files.exists(cvPath)) {
+
+                Files.delete(cvPath);
+            }
+            
+            // Cập nhật thông tin user
+            userHienTai.setCvFile(null);
+            userService.updateUser(userHienTai);
+            
+            return ResponseEntity.ok().body("Xóa CV thành công");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Xóa CV thất bại: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/user/edit-user")
+    public String updateThongTinCaNhan(Model model, Authentication authentication) {
+        try {
+            CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+            User userHienTai = userDetails.getUser();
+            model.addAttribute("user", userHienTai);
+            return "user/CapNhatThongTinCaNhan";
+        } catch (Exception e) {
+            return "redirect:/login";
+        }
+    }
+
+    @PostMapping("/user/edit-user")
+    public String updateThongTinCaNhan(@ModelAttribute User user, 
+                                @RequestParam(required = false) MultipartFile avatarFile,
+                                Authentication authentication, 
+                                RedirectAttributes redirectAttributes) {
+        try {
+            // Lấy thông tin user hiện tại
+            CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+            User userHienTai = userDetails.getUser();
+            
+            // Cập nhật các thuộc tính cơ bản
+            userHienTai.setHoTen(user.getHoTen());
+            userHienTai.setSoDienThoai(user.getSoDienThoai());
+            userHienTai.setGioiTinh(user.getGioiTinh());
+            userHienTai.setTuoi(user.getTuoi());
+            userHienTai.setChuyenNganh(user.getChuyenNganh());
+            userHienTai.setGioiThieu(user.getGioiThieu());
+            
+            // Xử lý upload avatar
+            if (avatarFile != null && !avatarFile.isEmpty()) {
+                // Xóa file cũ nếu có
+                if (userHienTai.getHinhAnh() != null) {
+                    try {
+                        Path staticPath = Paths.get("src/main/resources/static/fe/images/resource/avatar", userHienTai.getHinhAnh());
+                        boolean deleted = Files.deleteIfExists(staticPath);
+
+                        if (!deleted) {
+                            // Nếu không tìm thấy trong static, thử xóa trong uploads
+                            Path uploadPath = Paths.get(fileStorageService.getUploadDir() + File.separator + userHienTai.getHinhAnh());
+                            Files.deleteIfExists(uploadPath);
+                        }
+                    } catch (IOException e) {
+                        System.err.println("Lỗi khi xóa file cũ: " + e.getMessage());
+                    }
+                }
+                
+                String fileName = fileStorageService.storeAvatar(avatarFile);
+                userHienTai.setHinhAnh(fileName);
+            }
+            
+            // Lưu thay đổi
+            userService.updateUser(userHienTai);
+            redirectAttributes.addFlashAttribute("success", "Cập nhật thông tin thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Cập nhật thất bại: " + e.getMessage());
+        }
+        
+        return "redirect:/user/edit-user";
+    }
+
+    @PostMapping("/user/edit-mxh")
+    public String updateMXH(@ModelAttribute User user, 
+                                Authentication authentication, 
+                                RedirectAttributes redirectAttributes) {
+        try {
+            // Lấy thông tin user hiện tại
+            CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+            User userHienTai = userDetails.getUser();
+            
+            // Cập nhật thông tin mạng xã hội
+            userHienTai.setFaceBook(user.getFaceBook());
+            userHienTai.setLinkedIn(user.getLinkedIn());
+            
+            // Lưu thay đổi
+            userService.updateUser(userHienTai);
+            redirectAttributes.addFlashAttribute("success", "Cập nhật thông tin mạng xã hội thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Cập nhật thất bại: " + e.getMessage());
+        }
+        
+        return "redirect:/user/edit-user";
+    }
+
+    @PostMapping("/user/edit-diachi")
+    public String updateDiaChi(@ModelAttribute User user, 
+                                Authentication authentication, 
+                                RedirectAttributes redirectAttributes) {
+        try {
+            // Lấy thông tin user hiện tại
+            CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+            User userHienTai = userDetails.getUser();
+            
+            // Cập nhật địa chỉ
+            userHienTai.setDiaChi(user.getDiaChi());
+            
+            // Lưu thay đổi
+            userService.updateUser(userHienTai);
+            redirectAttributes.addFlashAttribute("success", "Cập nhật địa chỉ thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Cập nhật thất bại: " + e.getMessage());
+        }
+        
+        return "redirect:/user/edit-user";
     }
 }

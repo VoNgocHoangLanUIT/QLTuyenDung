@@ -1,7 +1,15 @@
 package com.example.QLTuyenDung.service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +30,11 @@ public class CongTyService {
     
     public List<CongTy> getAllCongTy() {
         return congTyRepository.findAll();
+    }
+    public Page<CongTy> getAllCongTyPaginated(int page, int size, String sortField, String sortDirection) {
+        Sort sort = Sort.by(sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortField);
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return congTyRepository.findAll(pageable);
     }
 
     public CongTy getCongTyById(Long id) {
@@ -63,8 +76,18 @@ public class CongTyService {
     public void updateThongTinCongTy(User user, CongTy congTyRequest, MultipartFile logoFile) {
         // Xử lý upload logo nếu có
         if (logoFile != null && !logoFile.isEmpty()) {
-            String fileName = fileStorageService.storeFile(logoFile);
-            congTyRequest.setLogo(fileName);
+            if (congTyRequest.getLogo() != null) {
+                try {
+                    // Thử xóa từ thư mục static resources trước
+                    Path staticPath = Paths.get("src/main/resources/static/fe/images/resource/company-logo", congTyRequest.getLogo());
+                    boolean deleted = Files.deleteIfExists(staticPath);
+                } catch (IOException e) {
+                    System.err.println("Lỗi khi xóa logo cũ: " + e.getMessage());
+                }
+            }
+            String logoFileName = fileStorageService.storeCompanyLogo(logoFile);
+            congTyRequest.setLogo(logoFileName);
+            System.out.println("Logo đã được lưu: " + logoFileName);
         }
         
         if (user.getCongTy() == null) {

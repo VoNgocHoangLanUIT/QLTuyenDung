@@ -6,7 +6,7 @@ import lombok.Data;
 public class UserRoleDTO {
     private Long id;
     private String email;
-    private String username;
+    private String Username;
     private Boolean enabled;
     private String hoTen;
     private String soDienThoai;

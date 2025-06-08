@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{user/layout/head :: head}"></head>
+
+
+<body>
+
+  <div class="page-wrapper dashboard">
+
+    <!-- Preloader -->
+    <div class="preloader"></div>
+
+    <!-- Header Span -->
+    <span class="header-span"></span>
+
+    <!-- Main Header-->
+    <header th:replace="~{user/layout/header :: header}"></header>
+    <!--End Main Header -->
+
+    <!-- Sidebar Backdrop -->
+    <div class="sidebar-backdrop"></div>
+
+    <!-- User Sidebar -->
+    <div th:replace="~{ungvien/layout/sidebar :: sidebar}"></div>
+    <!-- End User Sidebar -->
+
+    <!-- Dashboard -->
+    <section class="user-dashboard">
+      <div class="dashboard-outer">
+        <div class="upper-title-box">
+          <a th:href="@{/ungvien/dsbaitest}" class="btn btn-sm btn-outline-primary mb-3">
+            <i class="la la-arrow-left"></i> Quay lại danh sách
+          </a>
+          <h3 th:text="${baiTest.tieuDe}">Chi tiết bài test</h3>
+          <div class="text" th:text="'Mã bài test: ' + ${baiTest.id}">Mã bài test</div>
+        </div>
+
+        <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+        <div class="row">
+          <div class="col-lg-8">
+            <!-- Thông tin chi tiết về bài test -->
+            <div class="ls-widget">
+              <div class="tabs-box">
+                <div class="widget-title">
+                  <h4>Chi tiết bài test</h4>
+                </div>
+
+                <div class="widget-content">
+                  <div class="detail-content">
+                    <h5>Mô tả bài test</h5>
+                    <p th:text="${baiTest.moTa}">Mô tả chi tiết về bài test</p>
+                  </div>
+                  
+                  <div class="detail-content">
+                    <h5>Thông tin áp dụng</h5>
+                    <ul class="info-list">
+                      <li>
+                        <span class="icon flaticon-briefcase"></span>
+                        <strong>Tin tuyển dụng:</strong> 
+                        <a th:href="@{/chitiet-tintd/{id}(id=${baiTest.tinTuyenDung.id})}" 
+                           th:text="${baiTest.tinTuyenDung.tieuDe}">
+                           Tên tin tuyển dụng
+                        </a>
+                      </li>
+                      <li>
+                        <span class="icon flaticon-calendar"></span>
+                        <strong>Ngày tạo:</strong> 
+                        <span th:text="${#dates.format(baiTest.ngayTao, 'dd/MM/yyyy')}">
+                          Ngày tạo
+                        </span>
+                      </li>
+                      <li>
+                        <span class="icon flaticon-clock-3"></span>
+                        <strong>Hạn nộp:</strong> 
+                        <span th:text="${#dates.format(baiTest.ngayDong, 'dd/MM/yyyy')}">
+                          Ngày đóng
+                        </span>
+                      </li>
+                      <li>
+                        <span class="icon flaticon-tag"></span>
+                        <strong>Loại bài test:</strong> 
+                        <span th:class="${baiTest.loai == 'ngonngu' ? 'ngonngu' : 
+                                        baiTest.loai == 'logic' ? 'logic' : 'chuyenmon'}"
+                              th:text="${baiTest.loai == 'ngonngu' ? 'Ngôn ngữ' : 
+                                       baiTest.loai == 'logic' ? 'Logic' : 'Chuyên môn'}">
+                          Loại bài test
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+                  
+                  <div class="detail-content">
+                    <h5>Làm bài test</h5>
+                    <p>Ứng viên có thể làm bài test bằng cách truy cập vào link Google Form dưới đây:</p>
+                    <div class="action-buttons text-center mb-4">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <a th:href="${baiTest.linkGGForm}" target="_blank" class="theme-btn btn-style-one btn-block">
+                            <span class="icon-text"><span class="la la-external-link"></span> Truy cập link bài test</span>
+                          </a>
+                        </div>
+                        <div class="col-md-6">
+                          <button type="button" class="theme-btn btn-style-four btn-block" 
+                                  onclick="copyToClipboard()">
+                            <span class="icon-text"><span class="la la-copy"></span> Sao chép link bài test</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="qr-code">
+                      <h5>Quét QR code để làm bài</h5>
+                      <img th:src="@{'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + ${baiTest.linkGGForm}}" alt="QR Code">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div sec:authorize="hasAuthority('RECRUITER')">
+          <div class="col-lg-4">
+            <!-- Quản lý bài test -->
+            <div class="ls-widget">
+              <div class="tabs-box">
+                <div class="widget-title">
+                  <h4>Quản lý bài test</h4>
+                </div>
+
+                <div class="widget-content">
+                  <div class="option-box">
+                    <div class="form-group">
+                      <a th:href="@{/nhatd/edit-baitest/{id}(id=${baiTest.id})}" class="theme-btn btn-style-one btn-block">
+                        <i class="la la-edit"></i> Chỉnh sửa bài test
+                      </a>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="mt-2">
+                            <textarea id="testLink" readonly class="form-control" style="height: 60px; font-size: 12px;"
+                                    th:text="${baiTest.linkGGForm}">Link bài test</textarea>
+                        </div>
+                        <button type="button" class="theme-btn btn-style-four btn-block" 
+                                onclick="copyToClipboard(document.getElementById('testLink').innerText)">
+                            <i class="la la-copy"></i> Sao chép link bài test
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                      <a th:href="@{/nhatd/delete-baitest/{id}(id=${baiTest.id})}" 
+                         class="theme-btn btn-style-three btn-block"
+                         onclick="return confirm('Bạn có chắc chắn muốn xóa bài test này?');">
+                        <i class="la la-trash"></i> Xóa bài test
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Dashboard -->
+
+    <!-- Copyright -->
+    <div th:replace="~{nhatuyendung/layout/footer :: footer}"></div>
+
+  </div><!-- End Page Wrapper -->
+
+  <div th:replace="~{user/layout/script :: script}"></div>
+
+  <script>
+  function copyToClipboard() {
+    const textarea = document.getElementById('testLink');
+    if (!textarea) {
+      alert('Không tìm thấy link bài test!');
+      return;
+    }
+    
+    const text = textarea.value;
+    
+    // Sử dụng Clipboard API (Modern browsers)
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text)
+        .then(() => {
+          alert('Đã sao chép link bài test vào clipboard!');
+        })
+        .catch(err => {
+          console.error('Lỗi khi sao chép:', err);
+          fallbackCopyToClipboard(textarea);
+        });
+    } else {
+      fallbackCopyToClipboard(textarea);
+    }
+  }
+  
+  function fallbackCopyToClipboard(textarea) {
+    // Phương pháp cũ
+    textarea.select();
+    textarea.setSelectionRange(0, 99999);
+    
+    try {
+      const successful = document.execCommand('copy');
+      if (successful) {
+        alert('Đã sao chép link bài test vào clipboard!');
+      } else {
+        alert('Không thể sao chép, vui lòng thử lại!');
+      }
+    } catch (err) {
+      console.error('Lỗi sao chép:', err);
+      alert('Lỗi khi sao chép: ' + err);
+    }
+  }
+</script>
+</body>
+</html>

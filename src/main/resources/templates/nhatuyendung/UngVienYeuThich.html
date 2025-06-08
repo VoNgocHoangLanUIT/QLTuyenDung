@@ -81,7 +81,8 @@
                     <div class="inner-box">
                       <div class="content">
                         <figure class="image">
-                          <img th:src="@{/fe/images/resource/candidate-1.png}" alt="">
+                          <img th:if="${item.ungVien.hinhAnh != null}" th:src="@{'/fe/images/resource/avatar/' + ${item.ungVien.hinhAnh}}" alt="Candidate Image">
+                          <img th:unless="${item.ungVien.hinhAnh != null}" th:src="@{/fe/images/resource/avatar/default.jpg}" alt="Default Avatar">
                         </figure>
                         <h4 class="name">
                           <a th:href="@{'/nhatd/chitiet-ungvien/' + ${item.ungVien.id}}" 

@@ -3,6 +3,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
         xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{user/layout/head :: head}"></head>
+<style>
+  .bookmark-btn.active {
+    color: #ffb36c !important;
+    background-color: rgba(255, 179, 108, 0.1) !important;
+}
+
+.bookmark-btn.active .flaticon-bookmark:before {
+    color: #ffb36c !important;
+}
+</style>
 
 <body>
 
@@ -41,190 +51,148 @@
           <!-- Filters Column -->
           <div class="filters-column hide-left">
             <div class="inner-column">
+
               <div class="filters-outer">
                 <button type="button" class="theme-btn close-filters">X</button>
-
-                <!-- Filter Block -->
-                <div class="filter-block">
-                  <h4>Tìm kiếm theo từ khoá</h4>
-                  <div class="form-group">
-                    <input type="text" name="listing-search" placeholder="Tiêu đề công việc, từ khoá hoặc công ty">
-                    <span class="icon flaticon-search-3"></span>
-                  </div>
-                </div>
-
-                <!-- Filter Block -->
-                <div class="filter-block">
-                  <h4>Địa điểm</h4>
-                  <div class="form-group">
-                    <input type="text" name="listing-search" placeholder="Thành phố hoặc vị trí">
-                    <span class="icon flaticon-map-locator"></span>
-                  </div>
-                  <p>Bán kính xung quanh khu vực tìm kiếm</p>
-                  <div class="range-slider-one">
-                    <div class="area-range-slider"></div>
-                    <div class="input-outer">
-                      <div class="amount-outer"><span class="area-amount"></span>km</div>
+                <form id="filter-form" th:action="@{/tim-kiem-nang-cao}" method="get">
+                  <!-- Filter Block - Tìm kiếm theo từ khóa -->
+                  <div class="filter-block">
+                    <h4>Tìm kiếm theo từ khoá</h4>
+                    <div class="form-group">
+                      <input type="text" name="tuKhoa" th:value="${tuKhoa}" placeholder="Tiêu đề công việc, từ khoá hoặc công ty">
+                      <span class="icon flaticon-search-3"></span>
                     </div>
                   </div>
-                </div>
 
-                <!-- Filter Block -->
-                <div class="filter-block">
-                  <h4>Lĩnh vực công việc</h4>
-                  <div class="form-group">
-                    <select class="chosen-select">
-                      <option>Chọn lĩnh vực công việc</option>
-                      <option>Kế toán - Tài chính</option>
-                      <option>Công nghệ thông tin</option>
-                      <option>Dịch vụ</option>
-                      <option>Marketing</option>
-                      <option>Nhân sự</option>
-                      <option>Chăm sóc sức khoẻ</option>
-                      <option>Thiết kế</option>
-                      <option>Quản lý dự án</option>
-                      <option>Công nghiệp ô tô</option>
-                    </select>
-                    <span class="icon flaticon-briefcase"></span>
+                  <!-- Filter Block - Địa điểm -->
+                  <div class="filter-block">
+                    <h4>Địa điểm</h4>
+                    <div class="form-group">
+                      <input type="text" name="diaDiem" th:value="${diaDiem}" placeholder="Thành phố hoặc vị trí">
+                      <span class="icon flaticon-map-locator"></span>
+                    </div>
                   </div>
-                </div>
 
-                <!-- Switchbox Outer -->
-                <div class="switchbox-outer">
-                  <h4>Hình thức làm việc</h4>
-                  <ul class="switchbox">
-                    <li>
-                      <label class="switch">
-                        <input type="checkbox" checked>
-                        <span class="slider round"></span>
-                        <span class="title">Freelance</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label class="switch">
-                        <input type="checkbox">
-                        <span class="slider round"></span>
-                        <span class="title">Full Time</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label class="switch">
-                        <input type="checkbox">
-                        <span class="slider round"></span>
-                        <span class="title">Internship</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label class="switch">
-                        <input type="checkbox">
-                        <span class="slider round"></span>
-                        <span class="title">Part Time</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label class="switch">
-                        <input type="checkbox">
-                        <span class="slider round"></span>
-                        <span class="title">Temporary</span>
-                      </label>
-                    </li>
-                  </ul>
-                </div>
+                  <!-- Filter Block - Lĩnh vực -->
+                  <div class="filter-block">
+                    <h4>Lĩnh vực công việc</h4>
+                    <div class="form-group">
+                      <select class="chosen-select" name="linhVuc">
+                        <option value="">Tất cả lĩnh vực</option>
+                        <option value="Kế toán - Tài chính" th:selected="${linhVuc == 'Kế toán - Tài chính'}">Kế toán - Tài chính</option>
+                        <option value="Công nghệ thông tin" th:selected="${linhVuc == 'Công nghệ thông tin'}">Công nghệ thông tin</option>
+                        <option value="Marketing" th:selected="${linhVuc == 'Marketing'}">Marketing</option>
+                        <option value="Nhân sự" th:selected="${linhVuc == 'Nhân sự'}">Nhân sự</option>
+                        <option value="Dịch vụ" th:selected="${linhVuc == 'Dịch vụ'}">Dịch vụ</option>
+                        <option value="Thiết kế" th:selected="${linhVuc == 'Thiết kế'}">Thiết kế</option>
+                        <option value="Quản lý dự án" th:selected="${linhVuc == 'Quản lý dự án'}">Quản lý dự án</option>
+                      </select>
+                      <span class="icon flaticon-briefcase"></span>
+                    </div>
+                  </div>
 
-                <!-- Checkboxes Ouer -->
-                <div class="checkbox-outer">
-                  <h4>Ngày đăng</h4>
-                  <ul class="checkboxes">
-                    <li>
-                      <input id="check-f" type="checkbox" name="check">
-                      <label for="check-f">Tất cả</label>
-                    </li>
-                    <li>
-                      <input id="check-a" type="checkbox" name="check">
-                      <label for="check-a">1 giờ trước</label>
-                    </li>
-                    <li>
-                      <input id="check-b" type="checkbox" name="check">
-                      <label for="check-b">24 giờ trước</label>
-                    </li>
-                    <li>
-                      <input id="check-c" type="checkbox" name="check">
-                      <label for="check-c">7 ngày trước</label>
-                    </li>
-                    <li>
-                      <input id="check-d" type="checkbox" name="check">
-                      <label for="check-d">14 ngày trước</label>
-                    </li>
-                    <li>
-                      <input id="check-e" type="checkbox" name="check">
-                      <label for="check-e">30 ngày trước</label>
-                    </li>
-                  </ul>
-                </div>
+                  <!-- Switchbox - Hình thức làm việc -->
+                  <div class="switchbox-outer">
+                    <h4>Hình thức làm việc</h4>
+                    <ul class="checkboxes">
+                      <li>
+                        <input id="job-type-all" type="checkbox" name="hinhThucLV" value="all" 
+                              th:checked="${hinhThucLVList == null || hinhThucLVList.contains('all')}">
+                        <label for="job-type-all">Tất cả</label>
+                      </li>
+                      <li>
+                        <input id="job-type-full" type="checkbox" name="hinhThucLV" value="Toàn thời gian" 
+                              th:checked="${hinhThucLVList != null && hinhThucLVList.contains('Toàn thời gian')}">
+                        <label for="job-type-full">Toàn thời gian</label>
+                      </li>
+                      <li>
+                        <input id="job-type-part" type="checkbox" name="hinhThucLV" value="Bán thời gian" 
+                              th:checked="${hinhThucLVList != null && hinhThucLVList.contains('Bán thời gian')}">
+                        <label for="job-type-part">Bán thời gian</label>
+                      </li>
+                      <li>
+                        <input id="job-type-free" type="checkbox" name="hinhThucLV" value="Tự do" 
+                              th:checked="${hinhThucLVList != null && hinhThucLVList.contains('Tự do')}">
+                        <label for="job-type-free">Tự do</label>
+                      </li>
+                      <li>
+                        <input id="job-type-intern" type="checkbox" name="hinhThucLV" value="Thực tập" 
+                              th:checked="${hinhThucLVList != null && hinhThucLVList.contains('Thực tập')}">
+                        <label for="job-type-intern">Thực tập</label>
+                      </li>
+                    </ul>
+                  </div>
 
-                <!-- Checkboxes Ouer -->
-                <div class="checkbox-outer">
-                  <h4>Experience Level</h4>
-                  <ul class="checkboxes square">
-                    <li>
-                      <input id="check-ba" type="checkbox" name="check">
-                      <label for="check-ba">All</label>
-                    </li>
-                    <li>
-                      <input id="check-bb" type="checkbox" name="check">
-                      <label for="check-bb">Internship</label>
-                    </li>
-                    <li>
-                      <input id="check-bc" type="checkbox" name="check">
-                      <label for="check-bc">Entry level</label>
-                    </li>
-                    <li>
-                      <input id="check-bd" type="checkbox" name="check">
-                      <label for="check-bd">Associate</label>
-                    </li>
-                    <li>
-                      <input id="check-be" type="checkbox" name="check">
-                      <label for="check-be">Mid-Senior level4</label>
-                    </li>
-                    <li>
-                      <button class="view-more"><span class="icon flaticon-plus"></span> View More</button>
-                    </li>
-                  </ul>
-                </div>
+                  <!-- Checkboxes - Ngày đăng -->
+                  <div class="checkbox-outer">
+                    <h4>Ngày đăng</h4>
+                    <ul class="checkboxes">
+                      <li>
+                        <input id="time-all" type="checkbox" name="timeFilter" value="all" 
+                              th:checked="${timeFilter == null || timeFilter == 'all'}">
+                        <label for="time-all">Tất cả</label>
+                      </li>
+                      <li>
+                        <input id="time-1h" type="checkbox" name="timeFilter" value="1hour" 
+                              th:checked="${timeFilter == '1hour'}">
+                        <label for="time-1h">1 giờ trước</label>
+                      </li>
+                      <li>
+                        <input id="time-24h" type="checkbox" name="timeFilter" value="24hour" 
+                              th:checked="${timeFilter == '24hour'}">
+                        <label for="time-24h">24 giờ trước</label>
+                      </li>
+                      <li>
+                        <input id="time-7d" type="checkbox" name="timeFilter" value="7day" 
+                              th:checked="${timeFilter == '7day'}">
+                        <label for="time-7d">7 ngày trước</label>
+                      </li>
+                      <li>
+                        <input id="time-14d" type="checkbox" name="timeFilter" value="14day" 
+                              th:checked="${timeFilter == '14day'}">
+                        <label for="time-14d">14 ngày trước</label>
+                      </li>
+                      <li>
+                        <input id="time-30d" type="checkbox" name="timeFilter" value="30day" 
+                              th:checked="${timeFilter == '30day'}">
+                        <label for="time-30d">30 ngày trước</label>
+                      </li>
+                    </ul>
+                  </div>
 
-                <!-- Filter Block -->
-                <div class="filter-block">
-                  <h4>Mức lương</h4>
+                  <!-- Mức lương -->
+                  <div class="filter-block">
+                    <h4>Mức lương</h4>
 
-                  <div class="range-slider-one salary-range">
-                    <div class="salary-range-slider"></div>
-                    <div class="input-outer">
-                      <div class="amount-outer">
-                        <span class="amount salary-amount">
-                          $<span class="min">0</span>
-                          $<span class="max">0</span>
-                        </span>
+                    <div class="range-slider-one salary-range">
+                      <div class="salary-range-slider"></div>
+                      <div class="input-outer">
+                        <div class="amount-outer">
+                          <span class="amount salary-amount">
+                            $<span class="min">0</span>
+                            $<span class="max">0</span>
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <!-- Filter Block -->
-                <div class="filter-block">
-                  <h4>Tags</h4>
-                  <ul class="tags-style-one">
-                    <li><a href="#">app</a></li>
-                    <li><a href="#">administrative</a></li>
-                    <li><a href="#">android</a></li>
-                    <li><a href="#">wordpress</a></li>
-                    <li><a href="#">design</a></li>
-                    <li><a href="#">react</a></li>
-                  </ul>
-                </div>
+                  <!-- Submit button -->
+                  <div class="form-group mt-4">
+                    <button type="submit" class="theme-btn btn-style-one w-100">
+                      <span class="btn-title">Áp dụng bộ lọc</span>
+                    </button>
+                  </div>
+                  
+                  <div class="form-group">
+                    <a th:href="@{/tim-kiem}" class="theme-btn btn-style-two w-100">
+                      <span class="btn-title">Xóa bộ lọc</span>
+                    </a>
+                  </div>
+                </form>
               </div>
             </div>
           </div>
-
           <!-- Content Column -->
           <div class="content-column col-lg-12">
             <div class="ls-outer">
@@ -249,13 +217,12 @@
                     <option>Temporary</option>
                   </select>
 
-                  <select class="chosen-select">
-                    <option>Hiện 10</option>
-                    <option>Hiện 20</option>
-                    <option>Hiện 30</option>
-                    <option>Hiện 40</option>
-                    <option>Hiện 50</option>
-                    <option>Hiện 60</option>
+                  <select class="chosen-select" id="pageSizeSelect">
+                    <option th:selected="${size == 10}" value="10">Hiện 10</option>
+                    <option th:selected="${size == 20}" value="20">Hiện 20</option>
+                    <option th:selected="${size == 30}" value="30">Hiện 30</option>
+                    <option th:selected="${size == 40}" value="40">Hiện 40</option>
+                    <option th:selected="${size == 50}" value="50">Hiện 50</option>
                   </select>
                 </div>
               </div>
@@ -265,45 +232,92 @@
                 <div class="job-block col-lg-6 col-md-12 col-sm-12" th:each="tin : ${dSTinTD}">
                   <div class="inner-box">
                     <div class="content">
-                      <span class="company-logo">                        <img th:if="${tin.congty != null && tin.congty.logo != null}" 
+                      <span class="company-logo">                        
+                        <img th:if="${tin.congty != null && tin.congty.logo != null}" 
                             th:src="@{'/fe/images/resource/company-logo/' + ${tin.congty.logo}}" 
                             th:alt="${tin.congty.tenCongTy}">
                         <img th:unless="${tin.congty != null && tin.congty.logo != null}" 
-                            th:src="@{/fe/images/resource/company-logo/default.png}" alt="Logo">
+                            th:src="@{/fe/images/resource/company-logo/default.jpg}" alt="Logo">
                       </span>
                       <h4><a th:href="@{'/chitiet-tintd/' + ${tin.id}}" th:text="${tin.tieuDe} + ' - ' + ${tin.congty != null ? tin.congty.tenCongTy : 'Không xác định'}">Tên công việc</a></h4>
                       <ul class="job-info">
                         <li><span class="icon flaticon-briefcase"></span><span th:text="${tin.congty != null ? tin.congty.tenCongTy : 'Không xác định'}"></span></li>
-                        <li><span class="icon flaticon-map-locator"></span> <span th:text="${tin.diaDiemLV}">Địa điểm</span></li>
+                        <li><span class="icon flaticon-map-locator"></span> <span th:text="${tin.thanhPhoLV != null && tin.quocGiaLV != null ? tin.thanhPhoLV + ', ' + tin.quocGiaLV : 'đang cập nhật'}">Địa điểm</span></li>
                         <li><span class="icon flaticon-clock-3"></span> <span th:text="${tin.ngayDang != null ? #dates.format(tin.ngayDang, 'dd/MM/yyyy') : 'Chưa xác định'}">Ngày đăng</span></li>
-                        <li><span class="icon flaticon-money"></span> <span th:text="${tin.mucLuong != null ? tin.mucLuong : 'Thương lượng'}">Mức lương</span></li>
+                        <li><span class="icon flaticon-money"></span> <span th:text="${tin.mucLuong > 0 ? tin.mucLuong + ' triệu VND' : 'Thỏa thuận'}">Mức lương</span></li>
                       </ul>                      <ul class="job-other-info">
                         <li class="time" th:text="${tin.hinhThucLV}">Full Time</li>
                         <li class="green" th:if="${tin.trangThai == 'dangtuyen'}">Đang tuyển</li>
                         <li class="closed" th:if="${tin.trangThai == 'dadong'}">Đã đóng</li>
                         <li class="required" th:text="${tin.linhVuc != null ? tin.linhVuc : 'Khác'}">Hot</li>
                       </ul>
-                      <button class="bookmark-btn"><span class="flaticon-bookmark"></span></button>
+                      <button class="bookmark-btn" 
+                              th:class="${#vars.userBookmarks != null && #lists.contains(#vars.userBookmarks, tin.id) ? 'bookmark-btn active' : 'bookmark-btn'}" 
+                              th:data-id="${tin.id}"
+                              onclick="toggleBookmark(this)"
+                              sec:authorize="hasAuthority('CANDIDATE')">
+                        <span class="flaticon-bookmark"></span>
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
               <!-- Pagination -->
-              <nav class="ls-pagination mb-5">
+              <nav class="ls-pagination" th:if="${totalPages > 0}">
                 <ul>
-                  <li class="prev"><a href="#"><i class="fa fa-arrow-left"></i></a></li>
-                  <li><a href="#">1</a></li>
-                  <li><a href="#" class="current-page">2</a></li>
-                  <li><a href="#">3</a></li>
-                  <li class="next"><a href="#"><i class="fa fa-arrow-right"></i></a></li>
+                  <!-- Nút Previous -->
+                  <li class="prev" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                    <a th:if="${currentPage > 0}" 
+                      th:href="@{${request.requestURI}(page=${currentPage - 1}, size=${size}, sort=${sort}, direction=${direction}, tuKhoa=${tuKhoa}, diaDiem=${diaDiem})}">
+                      <i class="fa fa-arrow-left"></i>
+                    </a>
+                    <span th:unless="${currentPage > 0}"><i class="fa fa-arrow-left"></i></span>
+                  </li>
+
+                  <!-- First page -->
+                  <li th:if="${startPage > 0}">
+                    <a th:href="@{${request.requestURI}(page=0, size=${size}, sort=${sort}, direction=${direction}, tuKhoa=${tuKhoa}, diaDiem=${diaDiem})}">1</a>
+                  </li>
+
+                  <!-- Ellipsis after first page if needed -->
+                  <li th:if="${startPage > 1}">
+                    <span>...</span>
+                  </li>
+
+                  <!-- Pages -->
+                  <li th:each="i: ${#numbers.sequence(startPage, endPage)}" 
+                      th:class="${i == currentPage ? 'current-page' : ''}">
+                    <a th:href="@{${request.requestURI}(page=${i}, size=${size}, sort=${sort}, direction=${direction}, tuKhoa=${tuKhoa}, diaDiem=${diaDiem})}" 
+                      th:text="${i + 1}"></a>
+                  </li>
+
+                  <!-- Ellipsis before last page if needed -->
+                  <li th:if="${endPage < totalPages - 2}">
+                    <span>...</span>
+                  </li>
+
+                  <!-- Last page -->
+                  <li th:if="${endPage < totalPages - 1}">
+                    <a th:href="@{${request.requestURI}(page=${totalPages - 1}, size=${size}, sort=${sort}, direction=${direction}, tuKhoa=${tuKhoa}, diaDiem=${diaDiem})}" 
+                      th:text="${totalPages}"></a>
+                  </li>
+
+                  <!-- Nút Next -->
+                  <li class="next" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                    <a th:if="${currentPage < totalPages - 1}" 
+                      th:href="@{${request.requestURI}(page=${currentPage + 1}, size=${size}, sort=${sort}, direction=${direction}, tuKhoa=${tuKhoa}, diaDiem=${diaDiem})}">
+                      <i class="fa fa-arrow-right"></i>
+                    </a>
+                    <span th:unless="${currentPage < totalPages - 1}"><i class="fa fa-arrow-right"></i></span>
+                  </li>
                 </ul>
               </nav>
 
               <!-- Call To Action -->
               <div class="call-to-action-four style-two">
-                <h5>Recruiting?</h5>
-                <p>Advertise your jobs to millions of monthly users and search 15.8 million <br>CVs in our database.</p>
-                <a href="#" class="theme-btn btn-style-one bg-blue"><span class="btn-title">Start Recruiting Now</span></a>
+                <h5>Tuyển dụng?</h5>
+                <p>Quảng cáo việc làm của bạn tới hàng triệu người dùng hàng tháng và tìm kiếm 15,8 triệu <br>CV trong cơ sở dữ liệu của chúng tôi.</p>
+                <a href="#" class="theme-btn btn-style-one bg-blue"><span class="btn-title">Đăng tin tuyển dụng ngay</span></a>
                 <div class="image" th:style="'background-image: url(' + @{/fe/images/resource/ads-bg-4.png} + ');'"></div>
               </div>
               <!-- End Call To Action -->
@@ -324,6 +338,109 @@
 
 
   <div th:replace="~{user/layout/script :: script}"></div>
+  <script>
+  function toggleBookmark(button) {
+    const tinTuyenDungId = button.getAttribute("data-id");
+    
+    // Thay đổi trạng thái nút trước để người dùng thấy phản hồi ngay lập tức
+    const isCurrentlyActive = button.classList.contains('active');
+    if (isCurrentlyActive) {
+      button.classList.remove('active');
+    } else {
+      button.classList.add('active');
+    }
+    
+    fetch(`/ungvien/toggle-bookmark/${tinTuyenDungId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        if (data.bookmarked) {
+          button.classList.add('active');
+          showNotification('Đã thêm vào danh sách yêu thích');
+        } else {
+          button.classList.remove('active');
+          showNotification('Đã xóa khỏi danh sách yêu thích');
+        }
+      } else {
+        // Khôi phục trạng thái ban đầu nếu có lỗi
+        if (isCurrentlyActive) {
+          button.classList.add('active');
+        } else {
+          button.classList.remove('active');
+        }
+        showNotification('Có lỗi xảy ra: ' + data.message, 'error');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      // Khôi phục trạng thái ban đầu nếu có lỗi
+      if (isCurrentlyActive) {
+        button.classList.add('active');
+      } else {
+        button.classList.remove('active');
+      }
+      showNotification('Có lỗi xảy ra khi xử lý yêu cầu', 'error');
+    });
+  }
 
+  function showNotification(message, type = 'success') {
+    // Kiểm tra nếu đã có thông báo trước đó, xóa đi
+    const existingAlert = document.querySelector('.bookmark-alert');
+    if (existingAlert) {
+      existingAlert.remove();
+    }
+    
+    // Tạo thông báo mới
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `bookmark-alert alert ${type === 'success' ? 'alert-success' : 'alert-danger'}`;
+    alertDiv.style.position = 'fixed';
+    alertDiv.style.top = '20px';
+    alertDiv.style.right = '20px';
+    alertDiv.style.zIndex = '9999';
+    alertDiv.style.padding = '15px 25px';
+    alertDiv.style.borderRadius = '5px';
+    alertDiv.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+    alertDiv.style.opacity = '0';
+    alertDiv.style.transition = 'opacity 0.3s ease';
+    
+    alertDiv.innerHTML = `
+      <i class="${type === 'success' ? 'la la-check-circle' : 'la la-times-circle'}"></i>
+      <span>${message}</span>
+    `;
+    
+    document.body.appendChild(alertDiv);
+    
+    // Hiển thị thông báo
+    setTimeout(() => {
+      alertDiv.style.opacity = '1';
+    }, 10);
+    
+    // Tự động ẩn thông báo sau 3 giây
+    setTimeout(() => {
+      alertDiv.style.opacity = '0';
+      setTimeout(() => {
+        alertDiv.remove();
+      }, 300);
+    }, 3000);
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('pageSizeSelect').addEventListener('change', function() {
+      // Lấy các tham số hiện tại từ URL
+      var urlParams = new URLSearchParams(window.location.search);
+      urlParams.set('page', '0'); // Quay về trang đầu tiên khi đổi size
+      urlParams.set('size', this.value);
+      
+      // Tạo URL mới
+      var newUrl = window.location.pathname + '?' + urlParams.toString();
+      window.location.href = newUrl;
+    });
+  });
+  </script>
 </body>
 </html>

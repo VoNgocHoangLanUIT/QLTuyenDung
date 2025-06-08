@@ -5,7 +5,11 @@
       <!--Nav Outer -->
       <div class="nav-outer">
         <div class="logo-box">
-          <div class="logo"><a th:href="@{/}"><img th:src="@{/fe/images/logo.svg}" alt="" title=""></a></div>
+          <div class="logo">
+            <a th:href="@{/}">
+              <img th:src="@{/fe/images/logo.svg}" alt="" title="">
+            </a>
+          </div>
         </div>
 
         <nav class="nav main-menu">
@@ -31,7 +35,7 @@
                 <span class="contact-info">
                   <span class="phone-num"><span>Liên hệ</span><a th:href="@{tel:1234567890}">123 456 7890</a></span>
                   <span class="address">TP. Hồ Chí Minh, Việt Nam</span>
-                  <a th:href="@{mailto:support@superio.com}" class="email">support@superio.com</a>
+                  <a th:href="@{mailto:support@superio.com}" class="email">support@talenthub.com</a>
                 </span>
                 <span class="social-links">
                   <a th:href="@{fe/#}"><span class="fab fa-facebook-f"></span></a>
@@ -70,8 +74,9 @@
           <!-- Dashboard Option -->
           <div class="dropdown dashboard-option">
             <a class="dropdown-toggle" role="button" data-toggle="dropdown" aria-expanded="false">
-              <img th:src="@{images/resource/company-6.png}" alt="avatar" class="thumb">
-              <span class="name">My Account</span>
+              <img th:if="${#authentication.principal.user.hinhAnh != null}" th:src="@{'/fe/images/resource/avatar/' + ${#authentication.principal.user.hinhAnh}}" alt="Candidate Image" class="thumb">
+              <img th:unless="${#authentication.principal.user.hinhAnh != null}" th:src="@{/fe/images/resource/avatar/default.jpg}" alt="Default Avatar" class="thumb">
+              <span class="name" th:text="${#authentication.principal.user.username}">My Account</span>
             </a>
             <ul class="dropdown-menu">
               <li class="nav-item" data-urls="/nhatd">
@@ -81,7 +86,7 @@
                 <a th:href="@{/nhatd/edit-congty}"><i class="la la-user-tie"></i>Thông tin công ty</a>
               </li>
               <li class="nav-item" data-urls="/nhatd/add-tintd">
-                <a th:href="@{/nhatd/add-tintd}"><i class="la la-paper-plane"></i>Đăng tin tuyển dụng</a>
+                <a th:href="@{/nhatd/add-tintd}"><i class="la la-paper-plane"></i>Đăng tin</a>
               </li>
               <li class="nav-item" data-urls="/nhatd/dstintd,/nhatd/edit-tintd,/nhatd/dsdonut">
                 <a th:href="@{/nhatd/dstintd}"><i class="la la-briefcase"></i>QL tin tuyển dụng</a>
@@ -95,8 +100,8 @@
               <li class="nav-item" data-urls="/nhatd/ungvien-yeuthich">
                 <a th:href="@{/nhatd/ungvien-yeuthich}"><i class="la la-bookmark-o"></i>Ứng viên yêu thích</a>
               </li>
-              <li >
-                <a th:href="@{dashboard-company-profile.html}"><i class="la la-user-alt"></i>Thông tin cá nhân</a>
+              <li class="nav-item" data-urls="/user/edit-user">
+                <a th:href="@{/user/edit-user}"><i class="la la-user-alt"></i>Thông tin cá nhân</a>
               </li>
               <li class="nav-item" data-urls="/doi-password">
                 <a th:href="@{/doi-password}"><i class="la la-lock"></i>Thay đổi mật khẩu</a>
@@ -112,7 +117,145 @@
           </div>
         </div>
       </div>
+      <div sec:authorize="hasAuthority('CANDIDATE')">
+        <div class="outer-box">
+          <button class="menu-btn">
+            <span class="count">1</span>
+            <span class="icon la la-heart-o"></span>
+          </button>
+
+          <button class="menu-btn">
+            <span class="icon la la-bell"></span>
+          </button>
+
+          <!-- Dashboard Option -->
+          <div class="dropdown dashboard-option">
+            <a class="dropdown-toggle" role="button" data-toggle="dropdown" aria-expanded="false">
+              <img th:if="${#authentication.principal.user.hinhAnh != null}" th:src="@{'/fe/images/resource/avatar/' + ${#authentication.principal.user.hinhAnh}}" alt="Candidate Image" class="thumb">
+              <img th:unless="${#authentication.principal.user.hinhAnh != null}" th:src="@{/fe/images/resource/avatar/default.jpg}" alt="Default Avatar" class="thumb">
+              <span class="name" th:text="${#authentication.principal.user.username}">My Account</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li class="nav-item" data-urls="/ungvien">
+                <a th:href="@{/ungvien}"> <i class="la la-home"></i> Dashboard</a>
+              </li>
+              <li class="nav-item" data-urls="/ungvien/edit-user,/ungvien/add-hocvan,/ungvien/add-kinhnghiem,/ungvien/add-thanhtuu">
+                <a th:href="@{/ungvien/edit-user}"><i class="la la-user-tie"></i>Thông tin cá nhân</a>
+              </li>
+              <li class="nav-item" data-urls="/ungvien/dsdonut">
+                <a th:href="@{/ungvien/dsdonut}"><i class="la la-briefcase"></i>DS đơn ứng tuyển</a>
+              </li>          
+              <li class="nav-item" data-urls="/ungvien/dsbaitest,/ungvien/chitiet-baitest">
+                <a th:href="@{/ungvien/dsbaitest}"><i class="la la-file-invoice"></i>Bài test</a>
+              </li>
+              <li class="nav-item" data-urls="/ungvien/phong-van">
+                <a th:href="@{/ungvien/phong-van}"><i class="la la-box"></i>Phỏng vấn</a>
+              </li>
+              <li class="nav-item" data-urls="/ungvien/tintd-yeuthich">
+                <a th:href="@{/ungvien/tintd-yeuthich}"><i class="la la-bookmark-o"></i>Công việc yêu thích</a>
+              </li>
+              <li class="nav-item" data-urls="/doi-password">
+                <a th:href="@{/doi-password}"><i class="la la-lock"></i>Thay đổi mật khẩu</a>
+              </li>
+              
+              <li>
+                <a onclick="confirmLogout()"><i class="la la-sign-out"></i>Đăng xuất</a>
+              </li>
+              <li>
+                <a th:href="@{index.html}"><i class="la la-trash"></i>Xoá tài khoản</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div sec:authorize="hasAuthority('CV_STAFF')">
+        <div class="outer-box">
+          <button class="menu-btn">
+            <span class="count">1</span>
+            <span class="icon la la-heart-o"></span>
+          </button>
+
+          <button class="menu-btn">
+            <span class="icon la la-bell"></span>
+          </button>
+
+          <!-- Dashboard Option -->
+          <div class="dropdown dashboard-option">
+            <a class="dropdown-toggle" role="button" data-toggle="dropdown" aria-expanded="false">
+              <img th:if="${#authentication.principal.user.hinhAnh != null}" th:src="@{'/fe/images/resource/avatar/' + ${#authentication.principal.user.hinhAnh}}" alt="Candidate Image" class="thumb">
+              <img th:unless="${#authentication.principal.user.hinhAnh != null}" th:src="@{/fe/images/resource/avatar/default.jpg}" alt="Default Avatar" class="thumb">
+              <span class="name" th:text="${#authentication.principal.user.username}">My Account</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li class="nav-item" data-urls="/nvhs">
+                <a th:href="@{/nvhs}"> <i class="la la-home"></i> Dashboard</a>
+              </li>
+              <li class="nav-item" data-urls="/nvhs/dstintd,/nvhs/dsdonut">
+                <a th:href="@{/nvhs/dstintd}"><i class="la la-briefcase"></i>QL tin tuyển dụng</a>
+              </li>          
+              <li class="nav-item" data-urls="/nvhs/dsbaitest,/nvhs/dskqbaitest">
+                <a th:href="@{/nvhs/dsbaitest}"><i class="la la-file-invoice"></i>QL bài test</a>
+              </li>
+              <li class="nav-item" data-urls="/user/edit-user">
+                <a th:href="@{/user/edit-user}"><i class="la la-user-alt"></i>Thông tin cá nhân</a>
+              </li>
+              <li class="nav-item" data-urls="/doi-password">
+                <a th:href="@{/doi-password}"><i class="la la-lock"></i>Thay đổi mật khẩu</a>
+              </li>
+              
+              <li>
+                <a onclick="confirmLogout()"><i class="la la-sign-out"></i>Đăng xuất</a>
+              </li>
+              <li>
+                <a th:href="@{index.html}"><i class="la la-trash"></i>Xoá tài khoản</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div sec:authorize="hasAuthority('HR_STAFF')">
+        <div class="outer-box">
+          <button class="menu-btn">
+            <span class="count">1</span>
+            <span class="icon la la-heart-o"></span>
+          </button>
+
+          <button class="menu-btn">
+            <span class="icon la la-bell"></span>
+          </button>
+
+          <!-- Dashboard Option -->
+          <div class="dropdown dashboard-option">
+            <a class="dropdown-toggle" role="button" data-toggle="dropdown" aria-expanded="false">
+              <img th:if="${#authentication.principal.user.hinhAnh != null}" th:src="@{'/fe/images/resource/avatar/' + ${#authentication.principal.user.hinhAnh}}" alt="Candidate Image" class="thumb">
+              <img th:unless="${#authentication.principal.user.hinhAnh != null}" th:src="@{/fe/images/resource/avatar/default.jpg}" alt="Default Avatar" class="thumb">
+              <span class="name" th:text="${#authentication.principal.user.username}">My Account</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li class="nav-item" data-urls="/nvtd">
+                <a th:href="@{/nvtd}"> <i class="la la-home"></i> Dashboard</a>
+              </li>
+              <li class="nav-item" data-urls="/nvtd/dsphongvan,/nvtd/edit-phongvan">
+                <a th:href="@{/nvtd/dsphongvan}"><i class="la la-box"></i>QL phỏng vấn</a>
+              </li>
+              <li class="nav-item" data-urls="/user/edit-user">
+                <a th:href="@{/user/edit-user}"><i class="la la-user-alt"></i>Thông tin cá nhân</a>
+              </li>
+              <li class="nav-item" data-urls="/doi-password">
+                <a th:href="@{/doi-password}"><i class="la la-lock"></i>Thay đổi mật khẩu</a>
+              </li>
+              <li>
+                <a onclick="confirmLogout()"><i class="la la-sign-out"></i>Đăng xuất</a>
+              </li>
+              <li>
+                <a th:href="@{index.html}"><i class="la la-trash"></i>Xoá tài khoản</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
+    
 
     <!-- Mobile Header -->
     <div class="mobile-header">

@@ -302,7 +302,7 @@ public class QLPhongVanController {
             
             // Lấy danh sách nhân viên tuyển dụng
             List<User> danhSachNhanVien = userService.getNhanVienChuaPhanCongPhongVan(donUngTuyenId, userHienTai.getCongTy().getId());
-            
+            System.out.println("Danh sách nhân viên chưa phân công: ");
             model.addAttribute("donUngTuyen", donUngTuyen);
             model.addAttribute("danhSachNhanVien", danhSachNhanVien);
             
@@ -556,6 +556,165 @@ public class QLPhongVanController {
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             return "redirect:/nhatd/dsphongvan";
+        }
+    }
+
+    @GetMapping("/ungvien/phong-van")
+    public String ungVienPhongVan(Model model, Authentication authentication) {
+        try {
+            // Lấy thông tin người dùng hiện tại
+            CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+            User userHienTai = userDetails.getUser();
+            
+            // Lấy tất cả đơn ứng tuyển của ứng viên
+            List<DonUngTuyen> donUngTuyens = donUngTuyenService.getDonUngTuyenByUserId(userHienTai.getId());
+            
+            // Lọc ra các đơn có trạng thái phỏng vấn
+            List<DonUngTuyen> donUngTuyenPhongVan = donUngTuyens.stream()
+                    .filter(don -> "phongvan".equals(don.getTrangThai()))
+                    .collect(Collectors.toList());
+            // Nhóm phỏng vấn theo tin tuyển dụng
+            Map<TinTuyenDung, List<PhongVan>> phongVanByTinTD = new HashMap<>();
+            
+            for (DonUngTuyen don : donUngTuyenPhongVan) {
+                List<PhongVan> dsPhongVan = phongVanService.getPhongVanByDonUngTuyen(don);
+                
+                if (!dsPhongVan.isEmpty()) {
+                    TinTuyenDung tinTD = don.getTinTuyenDung();
+                    
+                    if (!phongVanByTinTD.containsKey(tinTD)) {
+                        phongVanByTinTD.put(tinTD, new ArrayList<>());
+                    }
+                    
+                    phongVanByTinTD.get(tinTD).addAll(dsPhongVan);
+                }
+            }
+            
+            model.addAttribute("phongVanByTinTD", phongVanByTinTD);
+            return "ungvien/PhongVan/index";
+        } catch (Exception e) {
+            model.addAttribute("error", "Lỗi: " + e.getMessage());
+            return "ungvien/PhongVan/index";
+        }
+    }
+
+    @GetMapping("/nvtd/dsphongvan")
+    public String nVTDShowDSPhongVan(Model model, Authentication authentication) {
+        // Lấy thông tin người dùng hiện tại
+        CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+        User userHienTai = userDetails.getUser();
+        
+        try {
+            // Kiểm tra user có công ty không
+            if (userHienTai.getCongTy() == null) {
+                model.addAttribute("error", "Bạn cần cập nhật thông tin công ty trước!");
+                return "redirect:/nvtd";
+            }
+            
+            // Tạo Map để nhóm các cuộc phỏng vấn theo đơn ứng tuyển
+            Map<DonUngTuyen, List<PhongVan>> phongVanByDonUT = new HashMap<>();
+            
+            // Lấy tất cả phỏng vấn được phân công cho nhân viên hiện tại
+            List<PhongVan> phongVanCuaNV = phongVanService.getPhongVanByNhanVien(userHienTai);
+            
+            // Nhóm phỏng vấn theo đơn ứng tuyển
+            for (PhongVan pv : phongVanCuaNV) {
+                DonUngTuyen donUngTuyen = pv.getDonUngTuyen();
+                
+                // Đảm bảo chỉ lấy các đơn có trạng thái phỏng vấn
+                if ("phongvan".equals(donUngTuyen.getTrangThai())) {
+                    if (!phongVanByDonUT.containsKey(donUngTuyen)) {
+                        phongVanByDonUT.put(donUngTuyen, new ArrayList<>());
+                    }
+                    phongVanByDonUT.get(donUngTuyen).add(pv);
+                }
+            }
+            
+            model.addAttribute("phongVanByDonUT", phongVanByDonUT);
+            return "nvtd/QLPhongVan/index";
+        } catch (Exception e) {
+            model.addAttribute("error", "Lỗi: " + e.getMessage());
+            return "nvtd/QLPhongVan/index";
+        }
+    }
+
+    @GetMapping("/nvtd/edit-phongvan/{id}")
+    public String nVTDUpdatePhongVan(@PathVariable Long id, 
+                                    Model model, Authentication authentication) {
+        // Lấy thông tin người dùng hiện tại
+        CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+        User userHienTai = userDetails.getUser();
+        
+        try {
+            // Kiểm tra xem user đã có công ty chưa
+            if (userHienTai.getCongTy() == null) {
+                model.addAttribute("error", "Bạn cần cập nhật thông tin công ty trước!");
+                return "redirect:/nvtd";
+            }
+            
+            // Lấy thông tin phỏng vấn
+            PhongVan phongVan = phongVanService.getPhongVanById(id);
+            DonUngTuyen donUngTuyen = phongVan.getDonUngTuyen();
+            
+            // Kiểm tra quyền (phỏng vấn phải thuộc tin tuyển dụng của công ty người dùng)
+            if (!donUngTuyen.getTinTuyenDung().getCongty().getId().equals(userHienTai.getCongTy().getId())) {
+                model.addAttribute("error", "Bạn không có quyền quản lý cuộc phỏng vấn này!");
+                return "redirect:/nvtd/dsphongvan";
+            }
+
+            // Kiểm tra quyền (phỏng vấn phải được phân công cho nhân viên hiện tại)
+            if (phongVan.getNhanVienTD() == null || !phongVan.getNhanVienTD().getId().equals(userHienTai.getId())) {
+                model.addAttribute("error", "Bạn không có quyền cập nhật cuộc phỏng vấn này!");
+                return "redirect:/nvtd/dsphongvan";
+            }
+            
+            // Lấy danh sách nhân viên có thể được phân công
+            // Bao gồm nhân viên hiện tại và các nhân viên chưa được phân công
+            List<User> danhSachNhanVien = userService.getNhanVienChuaPhanCongPhongVan(
+                donUngTuyen.getId(), userHienTai.getCongTy().getId());
+            
+            // Thêm nhân viên hiện tại đang phỏng vấn nếu không nằm trong danh sách
+            
+            model.addAttribute("phongVan", phongVan);
+            model.addAttribute("donUngTuyen", donUngTuyen);
+            model.addAttribute("trangThaiOptions", Arrays.asList("chopv", "dapv"));
+            
+            return "nvtd/QLPhongVan/edit";
+        } catch (Exception e) {
+            model.addAttribute("error", "Lỗi: " + e.getMessage());
+            return "redirect:/nvtd/dsphongvan";
+        }
+    }
+
+    @PostMapping("/nvtd/update-phongvan")
+    public String nVTDUpdatePhongVan(@RequestParam Long phongVanId,
+                            @RequestParam(required = false) String trangThai,
+                            @RequestParam(required = false, defaultValue = "0") Integer diemDanhGia,
+                            @RequestParam(required = false) String nhanXet,
+                            RedirectAttributes redirectAttributes,
+                            Authentication authentication) {
+        // Lấy thông tin người dùng hiện tại
+        CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+        User userHienTai = userDetails.getUser();
+        
+        try {
+            // Lấy thông tin phỏng vấn
+            PhongVan phongVan = phongVanService.getPhongVanById(phongVanId);
+            
+            // Kiểm tra quyền (phỏng vấn phải được phân công cho nhân viên hiện tại)
+            if (phongVan.getNhanVienTD() == null || !phongVan.getNhanVienTD().getId().equals(userHienTai.getId())) {
+                redirectAttributes.addFlashAttribute("error", "Bạn không có quyền cập nhật cuộc phỏng vấn này!");
+                return "redirect:/nvtd/dsphongvan";
+            }
+            
+            // Cập nhật thông tin phỏng vấn (không thay đổi ngày và địa điểm, chỉ cập nhật đánh giá)
+            phongVanService.capNhatPhongVan(phongVanId, null, null, trangThai, null, diemDanhGia, nhanXet);
+            
+            redirectAttributes.addFlashAttribute("success", "Cập nhật thông tin phỏng vấn thành công!");
+            return "redirect:/nvtd/dsphongvan";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi: " + e.getMessage());
+            return "redirect:/nvtd/update-phongvan/" + phongVanId;
         }
     }
 }

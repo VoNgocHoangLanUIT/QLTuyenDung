@@ -27,7 +27,6 @@ public class CustomUserDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
     
         if (email == null || email.trim().isEmpty()) {
-            System.out.println("Email is empty or null");
             throw new UsernameNotFoundException("Email cannot be empty");
         }
         

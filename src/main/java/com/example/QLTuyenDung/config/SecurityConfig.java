@@ -26,27 +26,26 @@ public class SecurityConfig {
     }
 
     @Bean
+    public CustomAuthenticationSuccessHandler authenticationSuccessHandler() {
+        return new CustomAuthenticationSuccessHandler();
+    }
+
+    @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((auth)-> auth
                     .requestMatchers("/*","/fe/**","/register", "/dsungvien", "/chitiet-ungvien/**", "/dscongty", "/chitiet-congty/**", "/dstintd/**", "/chitiet-tintd/**").permitAll()
                     .requestMatchers("/admin/**").hasAuthority("ADMIN")
                     .requestMatchers("/nhatd/**").hasAuthority("RECRUITER")
+                    .requestMatchers("/ungvien/**").hasAuthority("CANDIDATE")
+                    .requestMatchers("/nvhs/**").hasAuthority("CV_STAFF")
+                    .requestMatchers("/nvtd/**").hasAuthority("HR_STAFF")
                     .anyRequest().authenticated())
                 .formLogin(login -> login.loginPage("/login")
                             .loginProcessingUrl("/login")
                             .usernameParameter("email")
                             .passwordParameter("password")
-                            .successHandler((request, response, authentication) -> {
-                                var authorities = authentication.getAuthorities();
-                                if (authorities.stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
-                                    response.sendRedirect("/admin");
-                                } else if (authorities.stream().anyMatch(a -> a.getAuthority().equals("RECRUITER"))) {
-                                    response.sendRedirect("/nhatd");
-                                } else {
-                                    response.sendRedirect("/");
-                                }
-                            })
+                            .successHandler(authenticationSuccessHandler())
                             .failureUrl("/login?error=true"))
                 .logout(logout -> logout.logoutUrl("/logout")
                             .logoutSuccessUrl("/login?logout=true")

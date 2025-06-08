@@ -25,12 +25,13 @@
           <div class="job-block-seven">
             <div class="inner-box">
               <div class="content">
-                <span class="company-logo" th:if="${tinTuyenDung.congty != null && tinTuyenDung.congty.logo != null}">
-                  <img th:src="@{/fe/images/resource/company-logo/5-1.png}" alt="Company Logo">
-                </span>
-                <span class="company-logo" th:unless="${tinTuyenDung.congty != null && tinTuyenDung.congty.logo != null}">
-                  <img th:src="@{/fe/images/resource/company-logo/5-1.png}" alt="Logo">
-                </span>
+                <span class="company-logo">                        
+                        <img th:if="${tinTuyenDung.congty != null && tinTuyenDung.congty.logo != null}" 
+                            th:src="@{'/fe/images/resource/company-logo/' + ${tinTuyenDung.congty.logo}}" 
+                            th:alt="${tinTuyenDung.congty.tenCongTy}">
+                        <img th:unless="${tinTuyenDung.congty != null && tinTuyenDung.congty.logo != null}" 
+                            th:src="@{/fe/images/resource/company-logo/default.jpg}" alt="Logo">
+                      </span>
                 <h4><a th:href="@{'/chitiet-tintd/' + ${tinTuyenDung.id}}" th:text="${tinTuyenDung.tieuDe} + ' - ' + ${tinTuyenDung.congty != null ? tinTuyenDung.congty.tenCongTy : 'Không xác định'}">Product Designer / UI Designer</a></h4>
                 <ul class="job-info">
                   <li><span class="icon flaticon-briefcase"></span> <span th:text="${tinTuyenDung.congty != null ? tinTuyenDung.congty.tenCongTy : 'Không xác định'}">Segment</span></li>
@@ -45,8 +46,14 @@
                   <li class="required" th:if="${tinTuyenDung.linhVuc != null}" th:text="${tinTuyenDung.linhVuc}">Urgent</li>
                 </ul>
               </div>              <div class="btn-box">
-                <a href="#" class="theme-btn btn-style-one" th:if="${tinTuyenDung.trangThai == 'dangtuyen'}">Ứng tuyển ngay</a>
-                <button class="bookmark-btn"><i class="flaticon-bookmark"></i></button>
+                <a href="javascript:void(0)" onclick="confirmApply()" class="theme-btn btn-style-one" th:if="${tinTuyenDung.trangThai == 'dangtuyen'}">Ứng tuyển ngay</a>
+                <button class="bookmark-btn" 
+                        th:class="${isBookmarked != null && isBookmarked ? 'bookmark-btn active' : 'bookmark-btn'}" 
+                        th:data-id="${tinTuyenDung.id}"
+                        onclick="toggleBookmark(this)"
+                        sec:authorize="hasAuthority('CANDIDATE')">
+                  <i class="flaticon-bookmark"></i>
+                </button>
               </div>
             </div>
           </div>
@@ -99,7 +106,13 @@
                      th:if="${tin != null && tin.id != tinTuyenDung.id && tin.trangThai == 'dangtuyen'}">
                   <div class="inner-box">
                     <div class="content">
-                      <span class="company-logo"><img th:src="@{/fe/images/resource/company-logo/1-1.png}" alt=""></span>
+                      <span class="company-logo">                        
+                        <img th:if="${tin.congty != null && tin.congty.logo != null}" 
+                            th:src="@{'/fe/images/resource/company-logo/' + ${tin.congty.logo}}" 
+                            th:alt="${tin.congty.tenCongTy}">
+                        <img th:unless="${tin.congty != null && tin.congty.logo != null}" 
+                            th:src="@{/fe/images/resource/company-logo/default.jpg}" alt="Logo">
+                      </span>
                       <h4><a th:href="@{'/chitiet-tintd/' + ${tin.id}}" th:text="${tin.tieuDe} + ' - ' + ${tin.congty != null ? tin.congty.tenCongTy : 'Không xác định'}">Software Engineer (Android), Libraries</a></h4>
                       <ul class="job-info">
                         <li><span class="icon flaticon-briefcase"></span> <span th:text="${tin.congty != null ? tin.congty.tenCongTy : 'Không xác định'}">Segment</span></li>
@@ -176,7 +189,13 @@
                 <div class="sidebar-widget company-widget" th:if="${tinTuyenDung.congty != null}">
                   <div class="widget-content">
                     <div class="company-title">
-                      <div class="company-logo"><img th:src="${tinTuyenDung.congty.logo != null} ? ${tinTuyenDung.congty.logo} : @{/fe/images/resource/company-7.png}" alt=""></div>
+                      <span class="company-logo">                        
+                        <img th:if="${tinTuyenDung.congty != null && tinTuyenDung.congty.logo != null}" 
+                            th:src="@{'/fe/images/resource/company-logo/' + ${tinTuyenDung.congty.logo}}" 
+                            th:alt="${tinTuyenDung.congty.tenCongTy}">
+                        <img th:unless="${tinTuyenDung.congty != null && tinTuyenDung.congty.logo != null}" 
+                            th:src="@{/fe/images/resource/company-logo/default.jpg}" alt="Logo">
+                      </span>
                       <h5 class="company-name" th:text="${tinTuyenDung.congty.tenCongTy}">InVision</h5>
                       <a th:href="@{'/chitiet-congty/' + ${tinTuyenDung.congty.id}}" class="profile-link">Xem hồ sơ công ty</a>
                     </div>
@@ -215,8 +234,102 @@
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDaaCBm4FEmgKs5cfVrh3JYue3Chj1kJMw"></script>
   <script th:src="@{/fe/js/map-script.js}"></script>
   <!--End Google Map APi-->
+  <script th:inline="javascript">
+    function confirmApply() {
+      if (confirm("Bạn có chắc chắn muốn ứng tuyển vào vị trí này?")) {
+        const donId = [[${tinTuyenDung.id}]];
+        window.location.href = "/ungvien/add-donut/" + donId;
+      }
+    }
+  function toggleBookmark(button) {
+    const tinTuyenDungId = button.getAttribute("data-id");
+    
+    // Thay đổi trạng thái nút trước để người dùng thấy phản hồi ngay lập tức
+    const isCurrentlyActive = button.classList.contains('active');
+    if (isCurrentlyActive) {
+      button.classList.remove('active');
+    } else {
+      button.classList.add('active');
+    }
+    
+    fetch(`/ungvien/toggle-bookmark/${tinTuyenDungId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        if (data.bookmarked) {
+          button.classList.add('active');
+          showNotification('Đã thêm vào danh sách yêu thích');
+        } else {
+          button.classList.remove('active');
+          showNotification('Đã xóa khỏi danh sách yêu thích');
+        }
+      } else {
+        // Khôi phục trạng thái ban đầu nếu có lỗi
+        if (isCurrentlyActive) {
+          button.classList.add('active');
+        } else {
+          button.classList.remove('active');
+        }
+        showNotification('Có lỗi xảy ra: ' + data.message, 'error');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      // Khôi phục trạng thái ban đầu nếu có lỗi
+      if (isCurrentlyActive) {
+        button.classList.add('active');
+      } else {
+        button.classList.remove('active');
+      }
+      showNotification('Có lỗi xảy ra khi xử lý yêu cầu', 'error');
+    });
+  }
+
+  function showNotification(message, type = 'success') {
+    // Kiểm tra nếu đã có thông báo trước đó, xóa đi
+    const existingAlert = document.querySelector('.bookmark-alert');
+    if (existingAlert) {
+      existingAlert.remove();
+    }
+    
+    // Tạo thông báo mới
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `bookmark-alert alert ${type === 'success' ? 'alert-success' : 'alert-danger'}`;
+    alertDiv.style.position = 'fixed';
+    alertDiv.style.top = '20px';
+    alertDiv.style.right = '20px';
+    alertDiv.style.zIndex = '9999';
+    alertDiv.style.padding = '15px 25px';
+    alertDiv.style.borderRadius = '5px';
+    alertDiv.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+    alertDiv.style.opacity = '0';
+    alertDiv.style.transition = 'opacity 0.3s ease';
+    
+    alertDiv.innerHTML = `
+      <i class="${type === 'success' ? 'la la-check-circle' : 'la la-times-circle'}"></i>
+      <span>${message}</span>
+    `;
+    
+    document.body.appendChild(alertDiv);
+    
+    // Hiển thị thông báo
+    setTimeout(() => {
+      alertDiv.style.opacity = '1';
+    }, 10);
+    
+    // Tự động ẩn thông báo sau 3 giây
+    setTimeout(() => {
+      alertDiv.style.opacity = '0';
+      setTimeout(() => {
+        alertDiv.remove();
+      }, 300);
+    }, 3000);
+  }
+  </script>
 </body>
-
-
-<!-- Mirrored from creativelayers.net/themes/superio/job-single.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 21 Apr 2025 13:59:23 GMT -->
 </html>

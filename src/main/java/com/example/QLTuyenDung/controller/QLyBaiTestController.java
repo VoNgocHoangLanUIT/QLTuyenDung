@@ -21,9 +21,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.QLTuyenDung.model.BaiTest;
 import com.example.QLTuyenDung.model.CustomUserDetail;
+import com.example.QLTuyenDung.model.DonUngTuyen;
+import com.example.QLTuyenDung.model.KQBaiTest;
 import com.example.QLTuyenDung.model.TinTuyenDung;
 import com.example.QLTuyenDung.model.User;
 import com.example.QLTuyenDung.service.BaiTestService;
+import com.example.QLTuyenDung.service.DonUngTuyenService;
 import com.example.QLTuyenDung.service.TinTuyenDungService;
 
 import lombok.RequiredArgsConstructor;
@@ -33,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 public class QLyBaiTestController {
     private final BaiTestService baiTestService;
     private final TinTuyenDungService tinTuyenDungService;
+    private final DonUngTuyenService donUngTuyenService;
 
     @GetMapping("/admin/dsbaitest")
     public String adminShowDSBaiTest(Model model) {
@@ -328,7 +332,7 @@ public class QLyBaiTestController {
     }
 
     @PostMapping("/nhatd/edit-baitest/{id}")
-    public String nhaTDEditBaiTestSubmit(@PathVariable Long id,
+    public String nhaTDUpdateBaiTest(@PathVariable Long id,
                                         @ModelAttribute BaiTest baiTest,
                                         Authentication authentication,
                                         RedirectAttributes redirectAttributes) {
@@ -441,5 +445,171 @@ public class QLyBaiTestController {
             redirectAttributes.addFlashAttribute("error", "Lỗi: " + e.getMessage());
         }
         return "redirect:/nhatd/dsbaitest";
+    }
+
+    @GetMapping("/ungvien/dsbaitest")
+    public String ungVienShowDSBaiTest(Model model, Authentication authentication) {
+        try {
+            // Lấy thông tin người dùng hiện tại
+            CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+            User userHienTai = userDetails.getUser();
+            
+            // Lấy danh sách đơn ứng tuyển của ứng viên
+            List<DonUngTuyen> dsDonUngTuyen = donUngTuyenService.getDonUngTuyenByUserId(userHienTai.getId());
+            
+            // Tạo Map để lưu trữ danh sách bài test theo tin tuyển dụng
+            Map<TinTuyenDung, List<BaiTest>> groupedTests = new HashMap<>();
+            
+            // Tập hợp tất cả các tin tuyển dụng mà ứng viên đã ứng tuyển
+            Set<TinTuyenDung> tinTuyenDungs = dsDonUngTuyen.stream()
+                .map(DonUngTuyen::getTinTuyenDung)
+                .collect(Collectors.toSet());
+            
+            // Tính tổng số bài test
+            int totalCount = 0;
+            long ngonNguCount = 0;
+            long logicCount = 0;
+            long chuyenMonCount = 0;
+            
+            // Lấy danh sách bài test cho mỗi tin tuyển dụng
+            for (TinTuyenDung tinTD : tinTuyenDungs) {
+                List<BaiTest> baiTests = baiTestService.getBaiTestByTinTuyenDungId(tinTD.getId());
+                
+                // Chỉ lấy những bài test chưa quá hạn
+                List<BaiTest> activeTests = baiTests.stream()
+                    .filter(test -> test.getNgayDong().after(new Date()))
+                    .collect(Collectors.toList());
+                    
+                if (!activeTests.isEmpty()) {
+                    groupedTests.put(tinTD, activeTests);
+                    totalCount += activeTests.size();
+                    
+                    // Đếm số lượng bài test theo loại
+                    ngonNguCount += activeTests.stream().filter(b -> "ngonngu".equals(b.getLoai())).count();
+                    logicCount += activeTests.stream().filter(b -> "logic".equals(b.getLoai())).count();
+                    chuyenMonCount += activeTests.stream().filter(b -> "chuyenmon".equals(b.getLoai())).count();
+                }
+            }
+            
+            // Danh sách các bài test mà ứng viên đã làm (để hiển thị trạng thái "Đã làm")
+            Map<Long, KQBaiTest> doneTests = new HashMap<>();
+            for (DonUngTuyen don : dsDonUngTuyen) {
+                if (don.getDSKQBaiTest() != null) {
+                    for (KQBaiTest kq : don.getDSKQBaiTest()) {
+                        doneTests.put(kq.getBaiTest().getId(), kq);
+                    }
+                }
+            }
+            
+            model.addAttribute("groupedTests", groupedTests);
+            model.addAttribute("doneTests", doneTests);
+            model.addAttribute("ngonNguCount", ngonNguCount);
+            model.addAttribute("logicCount", logicCount);
+            model.addAttribute("chuyenMonCount", chuyenMonCount);
+            model.addAttribute("totalCount", totalCount);
+            
+            return "ungvien/BaiTest/index";
+        } catch (Exception e) {
+            return "redirect:/ungvien";
+        }
+    }
+
+    @GetMapping("/ungvien/chitiet-baitest/{id}")
+    public String ungVienChiTietBaiTest(@PathVariable Long id, 
+                                    Model model, 
+                                    Authentication authentication,
+                                    RedirectAttributes redirectAttributes) {
+        try {
+            // Lấy thông tin người dùng hiện tại
+            CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+            User userHienTai = userDetails.getUser();
+            
+            // Lấy bài test cần xem
+            BaiTest baiTest = baiTestService.getBaiTestById(id);
+            
+            // Lấy danh sách đơn ứng tuyển của ứng viên cho tin tuyển dụng chứa bài test này
+            List<DonUngTuyen> donUngTuyens = donUngTuyenService.getDonUngTuyenByUserIdAndTinTuyenDungId(
+                userHienTai.getId(), baiTest.getTinTuyenDung().getId());
+            
+            // Kiểm tra xem ứng viên có quyền xem bài test này không
+            boolean hasPermission = false;
+            for (DonUngTuyen don : donUngTuyens) {
+                if (don.isQuyenTest()) {
+                    hasPermission = true;
+                    break;
+                }
+            }
+            
+            if (!hasPermission) {
+                redirectAttributes.addFlashAttribute("error", "Bạn không có quyền xem chi tiết bài test này!");
+                return "redirect:/ungvien/dsbaitest";
+            }
+            
+            // Kiểm tra xem bài test có còn hiệu lực không
+            if (baiTest.getNgayDong() != null && baiTest.getNgayDong().before(new Date())) {
+                redirectAttributes.addFlashAttribute("error", "Bài test này đã hết hạn!");
+                return "redirect:/ungvien/dsbaitest";
+            }
+            
+            
+            
+            model.addAttribute("baiTest", baiTest);
+            
+            return "ungvien/BaiTest/ChiTiet";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi: " + e.getMessage());
+            return "redirect:/ungvien/dsbaitest";
+        }
+    }
+
+    @GetMapping("/nvhs/dsbaitest")
+    public String nVHSShowDSBaiTest(Model model, Authentication authentication) {
+        try {
+            // Lấy thông tin người dùng hiện tại
+            CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+            User userHienTai = userDetails.getUser();
+            
+            // Kiểm tra xem user đã có công ty chưa
+            if (userHienTai.getCongTy() == null) {
+                return "redirect:/nvhs";
+            }
+            
+            // Lấy danh sách bài test của công ty của nhà tuyển dụng (đã sắp xếp)
+            List<BaiTest> dsBaiTest = baiTestService.getBaiTestByCongtyIdSortedByTinTD(userHienTai.getCongTy().getId());
+            
+            // Lấy danh sách bài test được nhóm theo tin tuyển dụng
+            Map<TinTuyenDung, List<BaiTest>> groupedTests = 
+                baiTestService.getBaiTestGroupedByTinTD(userHienTai.getCongTy().getId());
+            
+            // Tính số lượng bài test theo loại
+            long ngonNguCount = dsBaiTest.stream().filter(b -> "ngonngu".equals(b.getLoai())).count();
+            long logicCount = dsBaiTest.stream().filter(b -> "logic".equals(b.getLoai())).count();
+            long chuyenMonCount = dsBaiTest.stream().filter(b -> "chuyenmon".equals(b.getLoai())).count();
+
+            // Tính toán số lượng ứng viên không trùng cho mỗi tin tuyển dụng
+            Map<TinTuyenDung, Integer> uniqueUngVienCounts = new HashMap<>();
+            for (Map.Entry<TinTuyenDung, List<BaiTest>> entry : groupedTests.entrySet()) {
+                int uniqueCount = (int) entry.getValue().stream()
+                    .filter(baiTest -> baiTest.getDSKQBaiTest() != null && !baiTest.getDSKQBaiTest().isEmpty())
+                    .flatMap(baiTest -> baiTest.getDSKQBaiTest().stream())
+                    .map(kq -> kq.getDonUngTuyen().getId())
+                    .distinct()
+                    .count();
+                uniqueUngVienCounts.put(entry.getKey(), uniqueCount);
+            }
+            
+
+            model.addAttribute("dsBaiTest", dsBaiTest); // Giữ lại danh sách thông thường (đã sắp xếp)
+            model.addAttribute("groupedTests", groupedTests); // Thêm danh sách đã nhóm
+            model.addAttribute("ngonNguCount", ngonNguCount);
+            model.addAttribute("logicCount", logicCount);
+            model.addAttribute("chuyenMonCount", chuyenMonCount);
+            model.addAttribute("totalCount", dsBaiTest.size());
+            model.addAttribute("uniqueUngVienCounts", uniqueUngVienCounts); // Số lượng ứng viên không trùng theo tin tuyển dụng
+            
+            return "nvhs/QLBaiTest/index";
+        } catch (Exception e) {
+            return "redirect:/nvhs";
+        }
     }
 }

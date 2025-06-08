@@ -1,0 +1,28 @@
+<div class="user-sidebar" th:fragment="sidebar">
+    <div class="sidebar-inner">
+        <ul class="navigation">
+          <li class="nav-item" data-urls="/nvhs">
+            <a th:href="@{/nvhs}"> <i class="la la-home"></i> Dashboard</a>
+          </li>
+          <li class="nav-item" data-urls="/nvhs/dstintd,/nvhs/dsdonut">
+            <a th:href="@{/nvhs/dstintd}"><i class="la la-briefcase"></i>QL tin tuyển dụng</a>
+          </li>          
+          <li class="nav-item" data-urls="/nvhs/dsbaitest,/nvhs/dskqbaitest">
+            <a th:href="@{/nvhs/dsbaitest}"><i class="la la-file-invoice"></i>QL bài test</a>
+          </li>
+          <li class="nav-item" data-urls="/user/edit-user">
+            <a th:href="@{/user/edit-user}"><i class="la la-user-alt"></i>Thông tin cá nhân</a>
+          </li>
+          <li class="nav-item" data-urls="/doi-password">
+            <a th:href="@{/doi-password}"><i class="la la-lock"></i>Thay đổi mật khẩu</a>
+          </li>
+          
+          <li>
+            <a onclick="confirmLogout()"><i class="la la-sign-out"></i>Đăng xuất</a>
+          </li>
+          <li>
+            <a th:href="@{index.html}"><i class="la la-trash"></i>Xoá tài khoản</a>
+          </li>
+        </ul>
+    </div>
+</div>

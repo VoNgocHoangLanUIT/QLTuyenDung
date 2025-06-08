@@ -46,9 +46,9 @@ public class User {
     private int tuoi;
     private int luongHienTai;
     private int luongMongMuon;
-    private String chungChi;
     private String ngonNgu;
     private String gioiTinh;
+    @Column(length = 4000)
     private String gioiThieu;
     private String faceBook;
     private String linkedIn;
@@ -85,4 +85,7 @@ public class User {
 
     @OneToMany(mappedBy = "nhaTuyenDung", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<UngVienYeuThich> dSNhaTDYeuThich;
+
+    @OneToMany(mappedBy = "ungVien", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<TinYeuThich> dSUngVienYeuThichTinTD;
 }

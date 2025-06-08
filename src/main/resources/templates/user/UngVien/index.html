@@ -44,107 +44,89 @@
             <div class="inner-column">
               <div class="filters-outer">
                 <button type="button" class="theme-btn close-filters">X</button>
+                <form id="filter-form" th:action="@{/tim-kiem-ungvien}" method="get">
 
-                <!-- Filter Block -->
-                <div class="filter-block">
-                  <h4>Tìm kiếm theo từ khoá</h4>
-                  <div class="form-group">
-                    <input type="text" name="listing-search" placeholder="Ứng viên">
-                    <span class="icon flaticon-search-3"></span>
-                  </div>
-                </div>
-
-                <!-- Filter Block -->
-                <div class="filter-block">
-                  <h4>Địa điểm</h4>
-                  <div class="form-group">
-                    <input type="text" name="listing-search" placeholder="Thành phố hoặc vị trí">
-                    <span class="icon flaticon-map-locator"></span>
-                  </div>
-                  <p>Bán kính xung quanh địa điểm</p>
-                  <div class="range-slider-one">
-                    <div class="area-range-slider"></div>
-                    <div class="input-outer">
-                      <div class="amount-outer"><span class="area-amount"></span>km</div>
+                  <!-- Filter Block -->
+                  <div class="filter-block">
+                    <h4>Tìm kiếm theo từ khoá</h4>
+                    <div class="form-group">
+                      <input type="text" name="tuKhoa" th:value="${tuKhoa}" placeholder="Tên ứng viên, chuyên ngành...">
+                      <span class="icon flaticon-search-3"></span>
                     </div>
                   </div>
-                </div>
 
-                
-
-                <!-- Filter Block -->
-                <div class="filter-block">
-                  <h4>Giới tính</h4>
-                  <div class="form-group">
-                    <select class="chosen-select">
-                      <option>Nam</option>
-                      <option>Nữ</option>
-                      <option>Khác</option>
-                    </select>
-                    <span class="icon flaticon-heart-1"></span>
+                  <!-- Filter Block -->
+                  <div class="filter-block">
+                    <h4>Địa điểm</h4>
+                    <div class="form-group">
+                      <input type="text" name="diaChi" th:value="${diaChi}" placeholder="Thành phố hoặc vị trí">
+                      <span class="icon flaticon-map-locator"></span>
+                    </div>
                   </div>
-                </div>
 
-                <!-- Checkboxes Ouer -->
-                <div class="checkbox-outer">
-                  <h4>Ngày tạo</h4>
-                  <ul class="checkboxes">
-                    <li>
-                      <input id="check-1" type="checkbox" name="check">
-                      <label for="check-1">Tất cả</label>
-                    </li>
-                    <li>
-                      <input id="check-a" type="checkbox" name="check">
-                      <label for="check-a">1 giờ trước</label>
-                    </li>
-                    <li>
-                      <input id="check-b" type="checkbox" name="check">
-                      <label for="check-b">24 giờ trước</label>
-                    </li>
-                    <li>
-                      <input id="check-c" type="checkbox" name="check">
-                      <label for="check-c">7 ngày trước</label>
-                    </li>
-                    <li>
-                      <input id="check-d" type="checkbox" name="check">
-                      <label for="check-d">14 ngày trước</label>
-                    </li>
-                    <li>
-                      <input id="check-e" type="checkbox" name="check">
-                      <label for="check-e">30 ngày trước</label>
-                    </li>
-                  </ul>
-                </div>
+                  
 
-                <!-- Checkboxes Ouer -->
-                <div class="checkbox-outer">
-                  <h4>Kinh nghiệm</h4>
-                  <ul class="checkboxes">
-                    <li>
-                      <input id="check-f" type="checkbox" name="check">
-                      <label for="check-f">0-2 Năm</label>
-                    </li>
-                    <li>
-                      <input id="check-g" type="checkbox" name="check">
-                      <label for="check-g">10-12 Năm</label>
-                    </li>
-                    <li>
-                      <input id="check-h" type="checkbox" name="check">
-                      <label for="check-h">12-16 Năm</label>
-                    </li>
-                    <li>
-                      <input id="check-i" type="checkbox" name="check">
-                      <label for="check-i">16-20 Năm</label>
-                    </li>
-                    <li>
-                      <input id="check-j" type="checkbox" name="check">
-                      <label for="check-j">20-25 Năm</label>
-                    </li>
-                    <li>
-                      <button class="view-more"><span class="icon flaticon-plus"></span> Xem thêm</button>
-                    </li>
-                  </ul>
-                </div>
+                  <!-- Filter Block -->
+                  <div class="filter-block">
+                    <h4>Giới tính</h4>
+                    <div class="form-group">
+                      <select name="gioiTinh" class="chosen-select">
+                        <option value="">Tất cả</option>
+                        <option value="Nam" th:selected="${gioiTinh == 'Nam'}">Nam</option>
+                        <option value="Nữ" th:selected="${gioiTinh == 'Nữ'}">Nữ</option>
+                        <option value="Khác" th:selected="${gioiTinh == 'Khác'}">Khác</option>
+                      </select>
+                      <span class="icon flaticon-heart-1"></span>
+                    </div>
+                  </div>
+
+
+                  <!-- Checkboxes Ouer -->
+                  <div class="checkbox-outer">
+                    <h4>Kinh nghiệm</h4>
+                    <ul class="checkboxes">
+                      <li>
+                        <input id="exp-all" type="checkbox" name="kinhNghiem" value="" 
+                              th:checked="${kinhNghiem == null}">
+                        <label for="exp-all">Tất cả</label>
+                      </li>
+                      <li>
+                        <input id="exp-0" type="checkbox" name="kinhNghiem" value="0" 
+                              th:checked="${kinhNghiem == '0'}">
+                        <label for="exp-0">Mới ra trường</label>
+                      </li>
+                      <li>
+                        <input id="exp-1-2" type="checkbox" name="kinhNghiem" value="1-2" 
+                              th:checked="${kinhNghiem == '1-2'}">
+                        <label for="exp-1-2">1-2 năm</label>
+                      </li>
+                      <li>
+                        <input id="exp-3-5" type="checkbox" name="kinhNghiem" value="3-5" 
+                              th:checked="${kinhNghiem == '3-5'}">
+                        <label for="exp-3-5">3-5 năm</label>
+                      </li>
+                      <li>
+                        <input id="exp-6-9" type="checkbox" name="kinhNghiem" value="6-9" 
+                              th:checked="${kinhNghiem == '6-9'}">
+                        <label for="exp-6-9">6-9 năm</label>
+                      </li>
+                      <li>
+                        <input id="exp-10+" type="checkbox" name="kinhNghiem" value="10+" 
+                              th:checked="${kinhNghiem == '10+'}">
+                        <label for="exp-10+">10+ năm</label>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="form-group mt-4">
+                    <button type="submit" class="theme-btn btn-style-four w-50">
+                      <span class="btn-title">Áp dụng</span>
+                    </button>
+                    <a th:href="@{/dsungvien}" class="theme-btn btn-style-eight w-45">
+                      <span class="btn-title">Xóa bộ lọc</span>
+                    </a>
+                  </div>
+                  
+                </form>
               </div>
             </div>
           </div>
@@ -159,25 +141,30 @@
               <div class="ls-switcher">
                 <div class="showing-result">
                   <div class="text" th:if="${dSUngVien != null && !dSUngVien.isEmpty()}">
-                    Đang hiện <strong th:text="${dSUngVien.size()}">0</strong> ứng viên
+                    Hiển thị <strong th:text="${currentPage * size + 1}">1</strong>-<strong th:text="${(currentPage * size) + dSUngVien.size()}">12</strong> 
+                    trong số <strong th:text="${totalItems}">100</strong> ứng viên
+                  </div>
+                  <div class="text" th:if="${dSUngVien == null || dSUngVien.isEmpty()}">
+                    Không tìm thấy ứng viên nào
                   </div>
                 </div>
                 <div class="sort-by">
-                  <select class="chosen-select">
-                    <option>Mới nhất</option>
-                    <option>Phổ biến nhất</option>
+                  <select class="chosen-select" id="sortSelect">
+                    <option value="hoTen-asc" th:selected="${sort == 'hoTen' && direction == 'asc'}">Tên A-Z</option>
+                    <option value="hoTen-desc" th:selected="${sort == 'hoTen' && direction == 'desc'}">Tên Z-A</option>
+                    <option value="namKinhNghiem-desc" th:selected="${sort == 'namKinhNghiem' && direction == 'desc'}">Kinh nghiệm cao nhất</option>
+                    <option value="namKinhNghiem-asc" th:selected="${sort == 'namKinhNghiem' && direction == 'asc'}">Kinh nghiệm thấp nhất</option>
                   </select>
 
-                  <select class="chosen-select">
-                    <option>Hiện 10</option>
-                    <option>Hiện 20</option>
-                    <option>Hiện 30</option>
-                    <option>Hiện 40</option>
-                    <option>Hiện 50</option>
-                    <option>Hiện 60</option>
+                  <select class="chosen-select" id="pageSizeSelect">
+                    <option value="12" th:selected="${size == 12}">Hiện 12</option>
+                    <option value="24" th:selected="${size == 24}">Hiện 24</option>
+                    <option value="36" th:selected="${size == 36}">Hiện 36</option>
+                    <option value="48" th:selected="${size == 48}">Hiện 48</option>
                   </select>
                 </div>
-              </div>              <div class="row">
+              </div>              
+              <div class="row">
                 <!-- Hiển thị thông báo nếu không có ứng viên -->
                 <div class="col-12" th:if="${#lists.isEmpty(dSUngVien)}">
                   <div class="alert alert-info text-center">
@@ -192,7 +179,11 @@
                           th:text="${ungVien.namKinhNghiem} + ' năm KN'">Kinh nghiệm</li>
                       <li class="purple" th:if="${ungVien.namKinhNghiem == 0 || ungVien.namKinhNghiem == null}">Mới ra trường</li>
                     </ul>
-                    <span class="thumb"><img th:src="@{/fe/images/resource/candidate-1.png}" alt=""></span>                    <h3 class="name">
+                    <span class="thumb">
+                      <img th:if="${ungVien.hinhAnh != null}" th:src="@{'/fe/images/resource/avatar/' + ${ungVien.hinhAnh}}" alt="Candidate Image">
+                      <img th:unless="${ungVien.hinhAnh != null}" th:src="@{/fe/images/resource/avatar/default.jpg}" alt="Default Avatar">
+                    </span>                    
+                    <h3 class="name">
                       <a th:href="@{'/chitiet-ungvien/' + ${ungVien.id}}" th:text="${ungVien.hoTen != null ? ungVien.hoTen : ungVien.username}">Tên ứng viên</a>
                     </h3>
                     <span class="cat" th:text="${ungVien.chuyenNganh != null ? ungVien.chuyenNganh : 'Chưa cập nhật'}">Chuyên ngành</span>
@@ -206,8 +197,8 @@
                         <span th:text="${ungVien.luongMongMuon} + ' triệu VNĐ'">Lương mong muốn</span>
                       </li>
                     </ul>
-                    <ul class="post-tags" th:if="${ungVien.chungChi != null}">
-                      <li><a href="#" th:text="${ungVien.chungChi}">Chứng chỉ</a></li>
+                    <ul class="post-tags" th:if="${ungVien.ngonNgu != null}">
+                      <li><a href="#" th:text="${ungVien.ngonNgu}">Ngôn ngữ</a></li>
                     </ul>
                     <a th:href="@{'/chitiet-ungvien/' + ${ungVien.id}}" class="theme-btn btn-style-three">Xem hồ sơ</a>
                   </div>
@@ -215,13 +206,53 @@
               </div>
 
               <!-- Pagination -->
-              <nav class="ls-pagination">
+              <nav class="ls-pagination" th:if="${totalPages > 0}">
                 <ul>
-                  <li class="prev"><a href="#"><i class="fa fa-arrow-left"></i></a></li>
-                  <li><a href="#">1</a></li>
-                  <li><a href="#" class="current-page">2</a></li>
-                  <li><a href="#">3</a></li>
-                  <li class="next"><a href="#"><i class="fa fa-arrow-right"></i></a></li>
+                  <!-- Nút Previous -->
+                  <li class="prev" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                    <a th:if="${currentPage > 0}" 
+                      th:href="@{${currentUrl}(page=${currentPage - 1}, size=${size}, sort=${sort}, direction=${direction}, tuKhoa=${tuKhoa}, diaChi=${diaChi}, gioiTinh=${gioiTinh}, kinhNghiem=${kinhNghiem})}">
+                      <i class="fa fa-arrow-left"></i>
+                    </a>
+                    <span th:unless="${currentPage > 0}"><i class="fa fa-arrow-left"></i></span>
+                  </li>
+
+                  <!-- First page -->
+                  <li th:if="${startPage > 0}">
+                    <a th:href="@{${currentUrl}(page=0, size=${size}, sort=${sort}, direction=${direction}, tuKhoa=${tuKhoa}, diaChi=${diaChi}, gioiTinh=${gioiTinh}, kinhNghiem=${kinhNghiem})}">1</a>
+                  </li>
+
+                  <!-- Ellipsis after first page if needed -->
+                  <li th:if="${startPage > 1}">
+                    <span>...</span>
+                  </li>
+
+                  <!-- Pages -->
+                  <li th:each="i: ${#numbers.sequence(startPage, endPage)}" 
+                      th:class="${i == currentPage ? 'current-page' : ''}">
+                    <a th:href="@{${currentUrl}(page=${i}, size=${size}, sort=${sort}, direction=${direction}, tuKhoa=${tuKhoa}, diaChi=${diaChi}, gioiTinh=${gioiTinh}, kinhNghiem=${kinhNghiem})}" 
+                      th:text="${i + 1}"></a>
+                  </li>
+
+                  <!-- Ellipsis before last page if needed -->
+                  <li th:if="${endPage < totalPages - 2}">
+                    <span>...</span>
+                  </li>
+
+                  <!-- Last page -->
+                  <li th:if="${endPage < totalPages - 1}">
+                    <a th:href="@{${currentUrl}(page=${totalPages - 1}, size=${size}, sort=${sort}, direction=${direction}, tuKhoa=${tuKhoa}, diaChi=${diaChi}, gioiTinh=${gioiTinh}, kinhNghiem=${kinhNghiem})}" 
+                      th:text="${totalPages}"></a>
+                  </li>
+
+                  <!-- Nút Next -->
+                  <li class="next" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                    <a th:if="${currentPage < totalPages - 1}" 
+                      th:href="@{${currentUrl}(page=${currentPage + 1}, size=${size}, sort=${sort}, direction=${direction}, tuKhoa=${tuKhoa}, diaChi=${diaChi}, gioiTinh=${gioiTinh}, kinhNghiem=${kinhNghiem})}">
+                      <i class="fa fa-arrow-right"></i>
+                    </a>
+                    <span th:unless="${currentPage < totalPages - 1}"><i class="fa fa-arrow-right"></i></span>
+                  </li>
                 </ul>
               </nav>
             </div>
@@ -238,7 +269,51 @@
   </div><!-- End Page Wrapper -->
 
   <div th:replace="~{user/layout/script :: script}"></div>
-
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Xử lý thay đổi số lượng hiển thị mỗi trang
+    document.getElementById('pageSizeSelect').addEventListener('change', function() {
+      // Lấy các tham số hiện tại từ URL
+      var urlParams = new URLSearchParams(window.location.search);
+      urlParams.set('page', '0'); // Quay về trang đầu tiên khi đổi size
+      urlParams.set('size', this.value);
+      
+      // Tạo URL mới
+      var newUrl = window.location.pathname + '?' + urlParams.toString();
+      window.location.href = newUrl;
+    });
+    
+    // Xử lý thay đổi sắp xếp
+    document.getElementById('sortSelect').addEventListener('change', function() {
+      var sortValues = this.value.split('-');
+      var sort = sortValues[0];
+      var direction = sortValues[1];
+      
+      // Lấy các tham số hiện tại từ URL
+      var urlParams = new URLSearchParams(window.location.search);
+      urlParams.set('sort', sort);
+      urlParams.set('direction', direction);
+      
+      // Tạo URL mới
+      var newUrl = window.location.pathname + '?' + urlParams.toString();
+      window.location.href = newUrl;
+    });
+    
+    // Xử lý các checkbox kinh nghiệm (nếu một checkbox được chọn, bỏ chọn các checkbox khác)
+    var expCheckboxes = document.querySelectorAll('input[name="kinhNghiem"]');
+    expCheckboxes.forEach(function(checkbox) {
+      checkbox.addEventListener('change', function() {
+        if (this.checked) {
+          expCheckboxes.forEach(function(cb) {
+            if (cb !== checkbox) {
+              cb.checked = false;
+            }
+          });
+        }
+      });
+    });
+  });
+</script>
 </body>
 
 </html>

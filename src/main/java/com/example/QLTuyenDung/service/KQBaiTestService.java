@@ -202,4 +202,8 @@ public class KQBaiTestService {
         kqBaiTestRepository.saveAll(dsKQBaiTestMoi);
         return dsKQBaiTestMoi.size();
     }
+
+    public List<KQBaiTest> getKQBaiTestsByDonUngTuyenId(Long donUngTuyenId) {
+        return kqBaiTestRepository.findByDonUngTuyenId(donUngTuyenId);
+    }
 }

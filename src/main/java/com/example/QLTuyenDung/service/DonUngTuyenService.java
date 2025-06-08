@@ -15,6 +15,7 @@ public class DonUngTuyenService {
     
     private final DonUngTuyenRepository donUngTuyenRepository;
     private final PhongVanService phongVanService;
+    private final FileStorageService fileStorageService;
     
     public List<DonUngTuyen> getAllDonUngTuyen() {
         try {
@@ -61,7 +62,20 @@ public class DonUngTuyenService {
         if (!donUngTuyenRepository.existsById(id)) {
             throw new RuntimeException("Không tìm thấy đơn ứng tuyển!");
         }
-        donUngTuyenRepository.deleteById(id);
+        DonUngTuyen donUngTuyen = getDonUngTuyenById(id);
+        String cvFileName = donUngTuyen.getCvFile();
+        
+        // Xóa đơn ứng tuyển
+        donUngTuyenRepository.deleteById(id);       
+        // Xóa file CV
+        if (cvFileName != null && !cvFileName.isEmpty()) {
+            boolean deleted = fileStorageService.deleteCV(cvFileName);
+            if (deleted) {
+                System.out.println("Đã xóa file CV: " + cvFileName);
+            } else {
+                System.err.println("Không thể xóa file CV: " + cvFileName);
+            }
+        }
     }
 
     public List<DonUngTuyen> getDonUngTuyenByTinTuyenDungId(Long tinTuyenDungId) {
@@ -116,4 +130,23 @@ public class DonUngTuyenService {
         }
     }
     
+    public List<DonUngTuyen> getDonUngTuyenByUserId(Long userId) {
+        try {
+            return donUngTuyenRepository.findByUserIdOrderByNgayUngTuyenDesc(userId);
+        } catch (Exception e) {
+            System.err.println("Lỗi khi lấy đơn ứng tuyển theo user ID: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public List<DonUngTuyen> getDonUngTuyenByUserIdAndTinTuyenDungId(Long userId, Long tinTuyenDungId) {
+        try {
+            return donUngTuyenRepository.findByUserIdAndTinTuyenDungId(userId, tinTuyenDungId);
+        } catch (Exception e) {
+            System.err.println("Lỗi khi lấy đơn ứng tuyển theo user ID và tin tuyển dụng ID: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
 }

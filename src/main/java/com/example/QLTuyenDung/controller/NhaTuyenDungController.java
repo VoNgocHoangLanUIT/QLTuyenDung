@@ -27,12 +27,12 @@ import lombok.RequiredArgsConstructor;
 public class NhaTuyenDungController {
 
     @GetMapping("")
-    public String chuyenHuongAdmin(){
+    public String chuyenHuongNhaTD(){
         return "redirect:/nhatd/";
     }
 
     @GetMapping("/")
-    public String admin(){
+    public String nhaTD(){
         return "nhatuyendung/dashboard";
     }
     

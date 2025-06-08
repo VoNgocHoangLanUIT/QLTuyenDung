@@ -51,7 +51,7 @@
 
                     <div class="actions">
                         <a th:href="@{/nhatd/add-truycap/{id}(id=${baiTest.id})}" class="theme-btn btn-style-one">
-                        <i class="la la-plus"></i> Thêm ứng viên
+                        <span class="icon-text"><span class="la la-plus"></span> Thêm ứng viên</span>
                         </a>
                     </div>
                 </div>
@@ -83,10 +83,11 @@
                               </ul>
                               <div class="content">
                                 <figure class="image">
-                                  <img th:src="${tc.donUngTuyen.user.hinhAnh != null ? tc.donUngTuyen.user.hinhAnh : '/fe/images/resource/candidate-default.png'}" alt="">
+                                  <img th:if="${tc.donUngTuyen.user.hinhAnh != null}" th:src="@{'/fe/images/resource/avatar/' + ${tc.donUngTuyen.user.hinhAnh}}" alt="Candidate Image" class="thumb">
+                                  <img th:unless="${tc.donUngTuyen.user.hinhAnh != null}" th:src="@{/fe/images/resource/avatar/default.jpg}" alt="Default Avatar" class="thumb">
                                 </figure>
                                 <h4 class="name">
-                                  <a th:href="@{/chitiet-ungvien/{id}(id=${tc.donUngTuyen.user.id})}" 
+                                  <a th:href="@{/hosoungtuyen/{id}(id=${tc.donUngTuyen.id})}" 
                                      th:text="${tc.donUngTuyen.user.hoTen}">Tên ứng viên</a>
                                 </h4>
                                 <ul class="candidate-info">

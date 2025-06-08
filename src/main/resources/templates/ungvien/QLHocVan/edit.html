@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{user/layout/head :: head}"></head>
+
+<body>
+
+  <div class="page-wrapper dashboard ">
+
+    <!-- Preloader -->
+    <div class="preloader"></div>
+
+    <!-- Header Span -->
+    <span class="header-span"></span>
+
+    <!-- Main Header-->
+    <header th:replace="~{user/layout/header :: header}"></header>
+    <!--End Main Header -->
+
+    <!-- Sidebar Backdrop -->
+    <div class="sidebar-backdrop"></div>
+
+    <!-- User Sidebar -->
+    <div th:replace="~{ungvien/layout/sidebar :: sidebar}"></div>
+    <!-- End User Sidebar -->
+
+    <!-- Dashboard -->
+    <section class="user-dashboard">
+      <div class="dashboard-outer">
+        <div class="upper-title-box">
+          <h3>Chỉnh sửa học vấn</h3>
+        </div>
+        
+        <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+        <div class="row">
+          <div class="col-lg-12">
+            <!-- Ls widget -->
+            <div class="ls-widget">
+              <div class="tabs-box">
+                <div class="widget-title">
+                  <h4>Thông tin học vấn</h4>
+                </div>
+
+                <div class="widget-content">
+                  <form class="default-form" method="post" th:action="@{/ungvien/edit-hocvan}" th:object="${hocVan}">
+                    <input type="hidden" th:field="*{id}" />
+                    <div class="row">
+                      <!-- Tên bằng cấp -->
+                      <div class="form-group col-lg-6 col-md-12">
+                        <label>Tên bằng cấp <span class="required">*</span></label>
+                        <input type="text" th:field="*{tenBang}" name="tenBang" required placeholder="Nhập tên bằng cấp">
+                      </div>
+
+                      <!-- Tên đơn vị cấp -->
+                      <div class="form-group col-lg-6 col-md-12">
+                        <label>Tên đơn vị cấp</label>
+                        <input type="text" th:field="*{tenDVCap}" name="tenDVCap" placeholder="Nhập tên đơn vị cấp">
+                      </div>
+
+                      <!-- Năm bắt đầu -->
+                      <div class="form-group col-lg-6 col-md-12">
+                        <label>Năm bắt đầu</label>
+                        <input type="number" th:field="*{namBD}" name="namBD" min="1900" th:max="${#calendars.format(#calendars.createNow(), 'yyyy')}" placeholder="VD: 2018">
+                      </div>
+
+                      <!-- Năm kết thúc -->
+                      <div class="form-group col-lg-6 col-md-12">
+                        <label>Năm kết thúc</label>
+                        <input type="number" th:field="*{namKT}" name="namKT" min="1900" th:max="${#calendars.format(#calendars.createNow(), 'yyyy')}" placeholder="VD: 2022">
+                      </div>
+
+                      <!-- Mô tả -->
+                      <div class="form-group col-lg-12 col-md-12">
+                        <label>Mô tả</label>
+                        <textarea th:field="*{moTa}" name="moTa" placeholder="Mô tả chi tiết về bằng cấp"></textarea>
+                      </div>
+
+                      <!-- Nút lưu và quay lại -->
+                      <div class="form-group col-lg-12 col-md-12">
+                        <button type="submit" class="theme-btn btn-style-one">Lưu thay đổi</button>
+                        <a th:href="@{/ungvien/edit-user}" class="theme-btn btn-style-three">Quay lại</a>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Dashboard -->
+
+    <!-- Copyright -->
+    <div th:replace="~{nhatuyendung/layout/footer :: footer}"></div>
+
+  </div><!-- End Page Wrapper -->
+
+
+  <div th:replace="~{user/layout/script :: script}"></div>
+</body>
+</html>

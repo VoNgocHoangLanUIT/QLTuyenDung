@@ -84,8 +84,8 @@
                                 <label class="form-check-label" th:for="'staff-' + ${nv.id}">
                                   <div class="d-flex align-items-center">
                                     <figure class="avatar mr-3">
-                                      <img th:if="${nv.hinhAnh != null}" th:src="${'/fe/images/resource/' + nv.hinhAnh}" alt="">
-                                      <img th:unless="${nv.hinhAnh != null}" th:src="@{/fe/images/resource/candidate-1.png}" alt="">
+                                      <img th:if="${nv.hinhAnh != null}" th:src="@{'/fe/images/resource/avatar/' + ${nv.hinhAnh}}" alt="Candidate Image" class="thumb">
+                                      <img th:unless="${nv.hinhAnh != null}" th:src="@{/fe/images/resource/avatar/default.jpg}" alt="Default Avatar" class="thumb">
                                     </figure>
                                     <div>
                                       <h5 class="staff-name" th:text="${nv.hoTen}">Tên nhân viên</h5>
@@ -102,7 +102,7 @@
                     
                     <div class="form-group text-right">
                       <button type="submit" class="theme-btn btn-style-one" id="submitBtn">
-                        <i class="la la-save"></i> Lưu phân công phỏng vấn
+                        <span class="icon-text"><span class="la la-save"></span> Lưu phân công phỏng vấn</span>
                       </button>
                     </div>
                   </form>
@@ -130,6 +130,8 @@
       transition: all 0.3s ease;
       height: 100%;
       border: 1px solid #eee;
+      cursor: pointer;
+      position: relative;
     }
     
     .staff-card:hover {
@@ -145,15 +147,16 @@
     .staff-card .form-check-label {
       width: 100%;
       cursor: pointer;
-      padding-left: 30px;
+      padding-left: 0;
       position: relative;
     }
     
     .staff-card .form-check-input {
       position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
     }
     
     .staff-card .avatar {
@@ -173,6 +176,26 @@
     .staff-card.selected {
       background-color: #e3f2fd;
       border-color: #1967D2;
+      box-shadow: 0 5px 15px rgba(25, 103, 210, 0.15);
+    }
+
+    .staff-card.selected:after {
+      content: "✓";
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: #1967D2;
+      color: white;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      border: 2px solid white;
     }
     
     .required {

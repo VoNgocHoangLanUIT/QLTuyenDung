@@ -81,10 +81,11 @@
                               </ul>
                               <div class="content">
                                 <figure class="image">
-                                  <img th:src="${don.user.hinhAnh != null ? don.user.hinhAnh : '/fe/images/resource/candidate-default.png'}" alt="">
+                                  <img th:if="${don.user.hinhAnh != null}" th:src="@{'/fe/images/resource/avatar/' + ${don.user.hinhAnh}}" alt="Candidate Image" class="thumb">
+                                  <img th:unless="${don.user.hinhAnh != null}" th:src="@{/fe/images/resource/avatar/default.jpg}" alt="Default Avatar" class="thumb">
                                 </figure>
                                 <h4 class="name">
-                                  <a th:href="@{/chitiet-ungvien/{id}(id=${don.user.id})}" th:text="${don.user.hoTen}">Tên ứng viên</a>
+                                  <a th:href="@{/hosoungtuyen/{id}(id=${don.id})}" th:text="${don.user.hoTen}">Tên ứng viên</a>
                                 </h4>
                                 <ul class="candidate-info">
                                   <li class="designation" th:text="${don.user.chuyenNganh}">Chuyên ngành</li>
@@ -151,6 +152,8 @@
                                       onclick="return confirm('Bạn có chắc chắn muốn từ chối ứng viên này?');">
                                       <span class="la la-times-circle"></span>
                                     </a>
+                                  </li>
+                                  <li><a th:href="@{/nhatd/edit-kqtest/{donId}(donId=${don.id})}" data-text="Chỉnh sửa"><span class="la la-pencil"></span></a></li>
                                   </li>
                                 </ul>
                               </div>

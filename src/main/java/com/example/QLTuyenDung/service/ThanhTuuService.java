@@ -17,4 +17,18 @@ public class ThanhTuuService {
     public List<ThanhTuu> getThanhTuuByUserId(Long userId) {
         return thanhTuuRepository.findByUserIdOrderByNgayDatDesc(userId);
     }
+    
+    public ThanhTuu getThanhTuuById(Long id) {
+        return thanhTuuRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy thành tựu với ID: " + id));
+    }
+    
+    public ThanhTuu saveThanhTuu(ThanhTuu thanhTuu) {
+        return thanhTuuRepository.save(thanhTuu);
+    }
+    
+    public void deleteThanhTuu(Long id) {
+        thanhTuuRepository.deleteById(id);
+    }
+    
 }

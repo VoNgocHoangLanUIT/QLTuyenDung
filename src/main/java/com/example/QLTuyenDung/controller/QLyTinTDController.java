@@ -2,7 +2,9 @@ package com.example.QLTuyenDung.controller;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,16 +14,20 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.QLTuyenDung.model.CongTy;
 import com.example.QLTuyenDung.model.CustomUserDetail;
 import com.example.QLTuyenDung.model.TinTuyenDung;
+import com.example.QLTuyenDung.model.TinYeuThich;
 import com.example.QLTuyenDung.model.User;
 import com.example.QLTuyenDung.service.CongTyService;
 import com.example.QLTuyenDung.service.TinTuyenDungService;
+import com.example.QLTuyenDung.service.TinYeuThichService;
 import com.example.QLTuyenDung.service.UserService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -31,6 +37,7 @@ public class QLyTinTDController {
     private final TinTuyenDungService tinTuyenDungService;
     private final CongTyService congTyService;
     private final UserService userService;
+    private final TinYeuThichService tinYeuThichService;
 
     @GetMapping("/admin/dstintd")
     public String adminShowDSTinTD(Model model) {
@@ -39,12 +46,7 @@ public class QLyTinTDController {
         return "admin/QLQuyTrinhTuyenDung/QLTinTuyenDung/index";
     }
 
-    @GetMapping("/dstintd")
-    public String userShowDSTinTD(Model model) {
-        List<TinTuyenDung> dSTinTD = tinTuyenDungService.getAllTinTuyenDung();
-        model.addAttribute("dSTinTD", dSTinTD);
-        return "user/TinTuyenDung/index";
-    }
+    
 
     @GetMapping("/admin/add-tintd")
     public String adminAddTinTuyenDung(Model model) {
@@ -126,13 +128,138 @@ public class QLyTinTDController {
         return "redirect:/admin/dstintd";
     }
 
+    @GetMapping("/dstintd")
+    public String userShowDSTinTD(Model model, 
+                                Authentication authentication,
+                                HttpServletRequest request,
+                                @RequestParam(defaultValue = "0") int page,
+                                @RequestParam(defaultValue = "10") int size,
+                                @RequestParam(defaultValue = "ngayDang") String sort,
+                                @RequestParam(defaultValue = "desc") String direction) {
+        
+        // Lấy tin tuyển dụng có phân trang
+        Page<TinTuyenDung> pageTinTD = tinTuyenDungService.getTinTuyenDungByTrangThaiPaginated("dangtuyen", page, size, sort, direction);
+        List<TinTuyenDung> dSTinTD = pageTinTD.getContent();
+        
+        if (authentication != null && authentication.isAuthenticated()) {
+            CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+            User user = userDetails.getUser();
+            
+            boolean isCandidate = userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("CANDIDATE"));
+                
+            if (isCandidate) {
+                List<TinYeuThich> bookmarks = tinYeuThichService.getDSTinYeuThichByUngVienID(user.getId());
+                List<Long> bookmarkIds = bookmarks.stream()
+                    .map(bookmark -> bookmark.getTinTuyenDung().getId())
+                    .collect(Collectors.toList());
+                
+                model.addAttribute("userBookmarks", bookmarkIds);
+            }
+        }
+        
+        // Thêm thông tin phân trang vào model
+        model.addAttribute("dSTinTD", dSTinTD);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", pageTinTD.getTotalPages());
+        model.addAttribute("totalItems", pageTinTD.getTotalElements());
+        model.addAttribute("size", size);
+        model.addAttribute("sort", sort);
+        model.addAttribute("direction", direction);
+        model.addAttribute("reverseSortDir", direction.equals("asc") ? "desc" : "asc");
+        
+        // Thông tin cho phân trang
+        int startPage = Math.max(0, page - 2);
+        int endPage = Math.min(pageTinTD.getTotalPages() - 1, page + 2);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+        model.addAttribute("request", request);
+        
+        return "user/TinTuyenDung/index";
+    }
+
+    // Tương tự cập nhật cho phương thức tìm kiếm
+    @GetMapping("/tim-kiem")
+    public String timKiemTinTuyenDung(
+        @RequestParam(required = false) String tuKhoa, 
+        @RequestParam(required = false) String diaDiem,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(defaultValue = "ngayDang") String sort,
+        @RequestParam(defaultValue = "desc") String direction,
+        Model model,
+        HttpServletRequest request, 
+        Authentication authentication) {
+        
+        // Tìm kiếm với phân trang
+        Page<TinTuyenDung> pageTinTD = tinTuyenDungService.timKiemTinTuyenDungPaginated(tuKhoa, diaDiem, page, size, sort, direction);
+        List<TinTuyenDung> ketQuaTimKiem = pageTinTD.getContent();
+        
+        // Thêm thông tin bookmark nếu user đã đăng nhập
+        if (authentication != null && authentication.isAuthenticated()) {
+            CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+            User user = userDetails.getUser();
+            
+            boolean isCandidate = userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("CANDIDATE"));
+                
+            if (isCandidate) {
+                List<TinYeuThich> bookmarks = tinYeuThichService.getDSTinYeuThichByUngVienID(user.getId());
+                List<Long> bookmarkIds = bookmarks.stream()
+                    .map(bookmark -> bookmark.getTinTuyenDung().getId())
+                    .collect(Collectors.toList());
+                
+                model.addAttribute("userBookmarks", bookmarkIds);
+            }
+        }
+        
+        // Thêm thông tin phân trang vào model
+        model.addAttribute("dSTinTD", ketQuaTimKiem);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", pageTinTD.getTotalPages());
+        model.addAttribute("totalItems", pageTinTD.getTotalElements());
+        model.addAttribute("size", size);
+        model.addAttribute("sort", sort);
+        model.addAttribute("direction", direction);
+        model.addAttribute("reverseSortDir", direction.equals("asc") ? "desc" : "asc");
+        
+        // Thông tin cho phân trang
+        int startPage = Math.max(0, page - 2);
+        int endPage = Math.min(pageTinTD.getTotalPages() - 1, page + 2);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+        
+        // Truyền dữ liệu tìm kiếm vào view
+        model.addAttribute("tuKhoa", tuKhoa);
+        model.addAttribute("diaDiem", diaDiem);
+        model.addAttribute("request", request);
+        
+        return "user/TinTuyenDung/index";
+    }
+
     @GetMapping("/chitiet-tintd/{id}")
-    public String showChiTietTinTuyenDung(@PathVariable Long id, Model model) {
+    public String chiTietTinTuyenDung(@PathVariable Long id, Model model, Authentication authentication) {
         try {
             TinTuyenDung tinTuyenDung = tinTuyenDungService.getTinTuyenDungById(id);
             model.addAttribute("tinTuyenDung", tinTuyenDung);
+            
+            // Kiểm tra xem tin đã được bookmark chưa
+            if (authentication != null && authentication.isAuthenticated()) {
+                CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+                User user = userDetails.getUser();
+                
+                // Kiểm tra quyền
+                boolean isCandidate = userDetails.getAuthorities().stream()
+                    .anyMatch(auth -> auth.getAuthority().equals("CANDIDATE"));
+                    
+                if (isCandidate) {
+                    boolean isBookmarked = tinYeuThichService.isBookmarked(user.getId(), id);
+                    model.addAttribute("isBookmarked", isBookmarked);
+                }
+            }
+            
             return "user/TinTuyenDung/ChiTiet";
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             return "redirect:/dstintd";
         }
     }
@@ -180,7 +307,7 @@ public class QLyTinTDController {
     }
 
     @GetMapping("/nhatd/dstintd")
-    public String showDSTinTuyenDung(Model model, Authentication authentication) {
+    public String nhaTDShowDSTinTuyenDung(Model model, Authentication authentication) {
         try {
             CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
             User userHienTai = userDetails.getUser();
@@ -286,4 +413,27 @@ public class QLyTinTDController {
         }
         return "redirect:/nhatd/dstintd";
     }
+
+    @GetMapping("/nvhs/dstintd")
+    public String nVHSshowDSTinTuyenDung(Model model, Authentication authentication) {
+        try {
+            CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+            User userHienTai = userDetails.getUser();
+            
+            // Kiểm tra xem user đã có công ty chưa
+            if (userHienTai.getCongTy() == null) {
+                return "redirect:/nvhs";
+            }
+            
+            // Lấy danh sách tin tuyển dụng theo công ty của nhà tuyển dụng
+            List<TinTuyenDung> dSTinTD = tinTuyenDungService.getTinTuyenDungByCongTy(userHienTai.getCongTy());
+            model.addAttribute("dSTinTD", dSTinTD);
+            
+            return "nvhs/QLTinTuyenDung/index";
+        } catch (Exception e) {
+            return "redirect:/nvhs";
+        }
+    }
+
+    
 }

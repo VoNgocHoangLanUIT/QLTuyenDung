@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{user/layout/head :: head}"></head>
+
+<body>
+
+  <div class="page-wrapper dashboard ">
+
+    <!-- Preloader -->
+    <div class="preloader"></div>
+
+    <!-- Header Span -->
+    <span class="header-span"></span>
+
+    <!-- Main Header-->
+    <header th:replace="~{user/layout/header :: header}"></header>
+    <!--End Main Header -->
+
+    <!-- Sidebar Backdrop -->
+    <div class="sidebar-backdrop"></div>
+
+    <!-- User Sidebar - Sử dụng sidebar của ứng viên -->
+    <div th:replace="~{ungvien/layout/sidebar :: sidebar}"></div>
+    <!-- End User Sidebar -->
+
+    <!-- Dashboard -->
+    <section class="user-dashboard">
+      <div class="dashboard-outer">
+        <div class="upper-title-box">
+          <h3>Lịch phỏng vấn</h3>
+          <div class="text">Xem lịch phỏng vấn của các tin tuyển dụng đã ứng tuyển</div>
+        </div>
+
+        <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+        <div class="row">
+          <div class="col-lg-12">
+            <!-- Ls widget -->
+            <div class="ls-widget">
+              <div class="tabs-box">
+                <div class="widget-title">
+                  <h4>Phỏng vấn</h4>
+                </div>
+
+                <div class="widget-content">
+                <!-- Hiển thị thông báo nếu không có phỏng vấn nào -->
+                    <div th:if="${#maps.isEmpty(phongVanByTinTD)}" class="col-12 text-center p-5">
+                        <div class="empty-state">
+                          <img src="/fe/images/resource/empty-interview.png" alt="No interviews" style="max-width: 150px;">
+                          <h5 class="mt-3">Bạn chưa có lịch phỏng vấn nào</h5>
+                          <p>Khi đơn ứng tuyển của bạn được chọn phỏng vấn, lịch phỏng vấn sẽ hiển thị ở đây.</p>
+                          <a href="/dstintd" class="theme-btn btn-style-one mt-3">Tìm kiếm việc làm</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Hiển thị phỏng vấn theo tin tuyển dụng -->
+                    <div th:unless="${#maps.isEmpty(phongVanByTinTD)}" class="job-interview-list">
+                      <div th:each="entry : ${phongVanByTinTD}" class="job-card mb-4">
+                        <!-- Thông tin tin tuyển dụng -->
+                        <div class="job-header">
+                          <div class="company-logo">
+                            <img th:if="${entry.key.congty != null && entry.key.congty.logo != null}" 
+                                 th:src="@{'/fe/images/resource/company-logo/' + ${entry.key.congty.logo}}" 
+                                 th:alt="${entry.key.congty.tenCongTy}">
+                            <img th:unless="${entry.key.congty != null && entry.key.congty.logo != null}" 
+                                 th:src="@{/fe/images/resource/company-logo/default.jpg}" alt="Logo">
+                          </div>
+                          <div class="job-info">
+                            <h4 class="job-title">
+                              <a th:href="@{'/chitiet-tintd/' + ${entry.key.id}}" th:text="${entry.key.tieuDe}">Tên vị trí</a>
+                            </h4>
+                            <div class="company-name" th:text="${entry.key.congty != null ? entry.key.congty.tenCongTy : 'Không xác định'}">Tên công ty</div>
+                            <div class="job-location">
+                              <i class="la la-map-marker"></i> <span th:text="${entry.key.diaDiemLV}">Địa điểm làm việc</span>
+                            </div>
+                          </div>
+                          <div class="interview-count">
+                            <span class="count-badge" th:text="${entry.value.size()} + ' phỏng vấn'">3 phỏng vấn</span>
+                          </div>
+                        </div>
+                        
+                        <!-- Danh sách phỏng vấn cho tin tuyển dụng này -->
+                        <div class="interview-table-wrapper">
+                          <table class="interview-table default_table">
+                            <thead>
+                              <tr>
+                                <th>Ngày phỏng vấn</th>
+                                <th>Địa điểm</th>
+                                <th>Nhân viên TD</th>
+                                <th>Trạng thái</th>
+                                <th>Đánh giá</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr th:each="pv : ${entry.value}" th:data-status="${pv.trangThai}">
+                                <td th:text="${pv.ngayPV != null ? #dates.format(pv.ngayPV, 'dd/MM/yyyy HH:mm') : 'Chưa đặt lịch'}">Ngày PV</td>
+                                <td th:text="${pv.diaDiem != null && !pv.diaDiem.isEmpty() ? pv.diaDiem : 'Chưa có'}">Địa điểm</td>
+                                <td th:text="${pv.nhanVienTD != null ? pv.nhanVienTD.hoTen : 'Chưa phân công'}">Nhân viên TD</td>
+                                <td>
+                                  <span class="badge" th:classappend="${
+                                    pv.trangThai == 'chopv' ? 'badge-warning' :
+                                    pv.trangThai == 'xeplich' ? 'badge-info' :
+                                    pv.trangThai == 'dapv' ? 'badge-success' : 'badge-secondary'
+                                  }" th:text="${
+                                    pv.trangThai == 'chopv' ? 'Chờ phỏng vấn' :
+                                    pv.trangThai == 'xeplich' ? 'Đang xếp lịch' :
+                                    pv.trangThai == 'dapv' ? 'Đã phỏng vấn' : 'Không xác định'
+                                  }">Trạng thái</span>
+                                </td>
+                                <td th:text="${pv.trangThai == 'dapv' ? pv.diemDanhGia + '/10' : 'Chưa đánh giá'}">Điểm đánh giá</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Dashboard -->
+
+    <!-- Copyright -->
+    <div th:replace="~{nhatuyendung/layout/footer :: footer}"></div>
+
+  </div><!-- End Page Wrapper -->
+
+  <div th:replace="~{user/layout/script :: script}"></div>
+
+</body>
+</html>

@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{user/layout/head :: head}"></head>
+
+<body>
+
+  <div class="page-wrapper">
+
+    <!-- Preloader -->
+    <div class="preloader"></div>
+
+    <!-- Header Span -->
+    <span class="header-span"></span>
+
+    <!-- Main Header-->
+    <header th:replace="~{user/layout/header :: header}"></header>
+    <!--End Main Header -->
+
+    <!-- Candidate Detail Section -->
+    <section class="candidate-detail-section">
+      <div class="candidate-detail-outer">
+        <div class="auto-container">
+          <div class="row">
+            <div class="content-column col-lg-8 col-md-12 col-sm-12">
+              <!-- Candidate block Five -->
+              <div class="candidate-block-five at-v4">
+                <div class="inner-box">                  <div class="content">
+                    <figure class="image">
+                      <img th:if="${don.user.hinhAnh != null}" th:src="@{'/fe/images/resource/avatar/' + ${don.user.hinhAnh}}" alt="Candidate Image">
+                      <img th:unless="${don.user.hinhAnh != null}" th:src="@{/fe/images/resource/avatar/default.jpg}" alt="Default Avatar">
+                    </figure>
+                    <h4 class="name"><a th:text="${don.user.hoTen != null ? don.user.hoTen : don.user.username}">Jane Cooper</a></h4>
+                    <ul class="candidate-info at-sv5">
+                      <li class="designation" th:text="${don.user.chuyenNganh != null ? don.user.chuyenNganh : 'Chưa cập nhật chuyên ngành'}">UX Designer</li>
+                      <li th:if="${don.user.diaChi != null}"><span class="icon fal fa-location-dot"></span> <span th:text="${don.user.diaChi}">London, UK</span></li>
+                      <li th:if="${don.user.luongMongMuon > 0}"><span class="icon fal fa-circle-dollar"></span> <span th:text="${don.user.luongMongMuon + ' triệu VND'}">$294 / hour</span></li>
+                      <li><span class="fas fa-star review-color"></span> 4.5 (8 Reviews)</li>
+                    </ul>
+                  </div>
+                </div>
+                <ul class="post-tags at-sv5 mt20">
+                  <li class="mb-2 mb-sm-0" th:if="${don.user.namKinhNghiem > 0}"><a href="#" th:text="${don.user.namKinhNghiem + ' năm kinh nghiệm'}">5 năm kinh nghiệm</a></li>
+                  <li class="mb-2 mb-sm-0" th:if="${don.user.namKinhNghiem == 0 || don.user.namKinhNghiem == null}"><a href="#" class="purple">Mới ra trường</a></li>
+                  <li th:if="${don.user.ngonNgu != null}"><a href="#" th:text="${don.user.ngonNgu}">Ngôn ngữ</a></li>
+                </ul>                
+                <div class="btn-box d-block d-sm-flex mt20">
+                  <div sec:authorize="hasAuthority('HR_STAFF')"><a th:href="@{/nvtd/dsphongvan}" class="ud-btn-transparent mr20 mb-2 mb-sm-0">Quay lại <i class="fal fa-long-arrow-right"></i></a></div>
+                  <div sec:authorize="hasAuthority('CV_STAFF')"><a th:href="@{'/nvhs/dsdonut/' + ${don.tinTuyenDung.id}}" class="ud-btn-transparent mr20 mb-2 mb-sm-0">Quay lại <i class="fal fa-long-arrow-right"></i></a></div>
+                  <div sec:authorize="hasAuthority('RECRUITER')"><a th:href="@{'/nhatd/dsdonut/' + ${don.tinTuyenDung.id}}" class="ud-btn-transparent mr20 mb-2 mb-sm-0">Quay lại <i class="fal fa-long-arrow-right"></i></a></div>
+                  <div sec:authorize="hasAuthority('CANDIDATE')"><a th:href="@{/ungvien/dsdonut}" class="ud-btn-transparent mr20 mb-2 mb-sm-0">Quay lại <i class="fal fa-long-arrow-right"></i></a></div>
+                  <a th:if="${don.cvFile != null}" th:href="@{'/download-cvdon/' + ${don.id}}" class="theme-btn btn-style-one">Tải xuống CV <i class="fal fa-long-arrow-right text-white d-block ml15"></i></a>
+                  
+                </div>
+              </div>
+              <div class="job-detail">
+                <h3 class="fz30 fw500 mb-4">Giới thiệu bản thân</h3>
+                <p th:text="${don.user.gioiThieu != null ? don.user.gioiThieu : 'Thông tin giới thiệu chưa được cập nhật.'}">Hello my name is Nicole Wells and web developer from Portland.</p>
+                <hr class="opacity-100">
+                <!-- Resume / Education -->
+                <div class="resume-outer">
+                  <div class="upper-title">
+                    <h3 class="fz30 fw500 mb-4">Học vấn</h3>
+                  </div>
+                  <!-- Thông báo nếu không có thông tin học vấn -->
+                  <div th:if="${dSHocVan == null || dSHocVan.isEmpty()}">
+                    <p>Chưa có thông tin về học vấn</p>
+                  </div>
+                  <!-- Hiển thị danh sách học vấn nếu có -->
+                  <div th:each="hocVan : ${dSHocVan}" class="resume-block at-sv5">
+                    <div class="inner" th:classappend="${hocVanStat.last} ? 'pb-0 mb-0' : ''">
+                      <span class="name" th:text="${hocVan.tenDVCap != null && !hocVan.tenDVCap.isEmpty() ? hocVan.tenDVCap.substring(0,1) : 'H'}">M</span>
+                      <div class="title-box">
+                        <div class="info-box">
+                          <h3 th:text="${hocVan.tenBang}">Bachelor in Fine Arts</h3>
+                          <span th:text="${hocVan.tenDVCap}">Modern College</span>
+                        </div>
+                        <div class="edit-box">
+                          <span class="year" th:text="${hocVan.namBD + ' - ' + (hocVan.namKT != null ? hocVan.namKT : 'Hiện tại')}">2012 - 2014</span>
+                        </div>
+                      </div>
+                      <div class="text" th:text="${hocVan.moTa}">Mô tả học vấn</div>
+                    </div>
+                  </div>
+                </div>
+                <hr class="opacity-100">
+
+                <!-- Resume / Work & Experience -->
+                <div class="resume-outer theme-blue">
+                  <div class="upper-title">
+                    <h3 class="fz30 fw500 mb-4">Kinh nghiệm làm việc</h3>
+                  </div>
+                  <!-- Thông báo nếu không có thông tin kinh nghiệm -->
+                  <div th:if="${dSKinhNghiem == null || dSKinhNghiem.isEmpty()}">
+                    <p>Chưa có thông tin về kinh nghiệm làm việc</p>
+                  </div>
+                  <!-- Hiển thị danh sách kinh nghiệm nếu có -->
+                  <div th:each="kN : ${dSKinhNghiem}" class="resume-block at-sv5">
+                    <div class="inner" th:classappend="${kNStat.last} ? 'pb-0 mb-0' : ''">
+                      <span class="name" th:text="${kN.tenCongTy != null && !kN.tenCongTy.isEmpty() ? kN.tenCongTy.substring(0,1) : 'C'}">S</span>
+                      <div class="title-box">
+                        <div class="info-box">
+                          <h3 th:text="${kN.viTriCongViec}">Product Designer</h3>
+                          <span th:text="${kN.tenCongTy}">Spotify Inc.</span>
+                        </div>
+                        <div class="edit-box">
+                          <span class="year" th:text="${kN.namBD + ' - ' + (kN.namKT != null ? kN.namKT : 'Hiện tại')}">2008 - 2012</span>
+                        </div>
+                      </div>
+                      <div class="text" th:text="${kN.moTa}">Mô tả công việc</div>
+                    </div>
+                  </div>
+                </div>
+                <hr class="opacity-100">
+
+                <!-- Resume / Awards -->
+                <div class="resume-outer theme-yellow at-sv5">
+                  <div class="upper-title">
+                    <h3 class="fz30 fw500 mb-4">Thành tựu & Vinh danh</h3>
+                  </div>
+                  <!-- Thông báo nếu không có thông tin giải thưởng -->
+                  <div th:if="${dSThanhTuu == null || dSThanhTuu.isEmpty()}">
+                    <p>Chưa có thông tin về thành tựu</p>
+                  </div>
+                  <!-- Hiển thị danh sách giải thưởng nếu có -->
+                  <div th:each="thanhTuu : ${dSThanhTuu}" class="resume-block at-sv5">
+                    <div class="inner" th:classappend="${thanhTuuStat.last} ? 'pb-0 mb-0' : ''">
+                      <span class="name"></span>
+                      <div class="title-box">
+                        <div class="info-box">
+                          <h3 th:text="${thanhTuu.tenThanhTuu}">Perfect Attendance Programs</h3>
+                          <p class="text fz15 mb-0" th:text="${#dates.format(thanhTuu.ngayDat, 'dd MMMM yyyy')}">29 April 2023</p>
+                          <span></span>
+                        </div>
+                      </div>
+                      <div class="text" th:text="${thanhTuu.moTa}">Mô tả thành tựu</div>
+                    </div>
+                  </div>
+                </div>
+                <hr class="opacity-100">
+                
+              </div>
+            </div>
+
+            <div class="sidebar-column col-lg-4 col-md-12 col-sm-12">
+              <aside class="sidebar">
+                <div class="sidebar-widget">
+                  <h4 class="widget-title">Thông tin</h4>                  <div class="widget-content">
+                    <ul class="job-overview at-sv5">
+                      <li>
+                        <i class="icon far fa-circle-dollar"></i>
+                        <div class="ml15" th:if="${don.user.luongMongMuon != null}">
+                          <h5>Mức lương mong muốn</h5>
+                          <span th:text="${don.user.luongMongMuon + ' triệu VND'}">5 triệu VND</span>
+                        </div>
+                        <div class="ml15" th:unless="${don.user.luongMongMuon != null}">
+                          <h5>Mức lương mong muốn</h5>
+                          <span>Chưa cập nhật</span>
+                        </div>
+                      </li>
+                      <li>
+                        <i class="icon flaticon-title"></i>
+                        <div class="ml15" th:if="${don.user.namKinhNghiem != null}">
+                          <h5>Kinh nghiệm</h5>
+                          <span th:text="${don.user.namKinhNghiem > 0 ? don.user.namKinhNghiem + ' năm' : 'Mới ra trường'}">2 năm</span>
+                        </div>
+                        <div class="ml15" th:unless="${don.user.namKinhNghiem != null}">
+                          <h5>Kinh nghiệm</h5>
+                          <span>Chưa cập nhật</span>
+                        </div>
+                      </li>
+                      <li>
+                        <i class="icon far fa-mars"></i>
+                        <div class="ml15" th:if="${don.user.gioiTinh != null}">
+                          <h5>Giới tính</h5>
+                          <span th:text="${don.user.gioiTinh == 'Nam' ? 'Nam' : 'Nữ'}">Nam</span>
+                        </div>
+                        <div class="ml15" th:unless="${don.user.gioiTinh != null}">
+                          <h5>Giới tính</h5>
+                          <span>Chưa cập nhật</span>
+                        </div>
+                      </li>
+                      <li>
+                        <i class="icon far fa-user"></i>
+                        <div class="ml15" th:if="${don.user.tuoi != 0}">
+                          <h5>Tuổi</h5>
+                          <span th:text="${don.user.tuoi}">25-30</span>
+                        </div>
+                        <div class="ml15" th:unless="${don.user.tuoi != 0}">
+                          <h5>Tuổi</h5>
+                          <span>Chưa cập nhật</span>
+                        </div>
+                      </li>
+                      <li>
+                        <i class="icon fal fa-language"></i>
+                        <div class="ml15" th:if="${don.user.ngonNgu != null}">
+                          <h5>Ngôn ngữ</h5>
+                          <span th:text="${don.user.ngonNgu}">English, German, Spanish</span>
+                        </div>
+                        <div class="ml15" th:unless="${don.user.ngonNgu != null}">
+                          <h5>Ngôn ngữ</h5>
+                          <span>Chưa cập nhật</span>
+                        </div>
+                      </li>
+                      <li>
+                        <i class="icon flaticon-email-3"></i>
+                        <div class="ml15" th:if="${don.user.email != null}">
+                          <h5>Email</h5>
+                          <span th:text="${don.user.email}">example@example.com</span>
+                        </div>
+                        <div class="ml15" th:unless="${don.user.email != null}">
+                          <h5>Email</h5>
+                          <span>Chưa cập nhật</span>
+                        </div>
+                      </li>
+                      <li>
+                        <i class="icon flaticon-telephone-1"></i>
+                        <div class="ml15" th:if="${don.user.soDienThoai != null}">
+                          <h5>Số điện thoại</h5>
+                          <span th:text="${don.user.soDienThoai}">0123456789</span>
+                        </div>
+                        <div class="ml15" th:unless="${don.user.soDienThoai != null}">
+                          <h5>Số điện thoại</h5>
+                          <span>Chưa cập nhật</span>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="d-grid mb15">
+                    <a href="#" class="ud-btn-transparent">Send Message</a>
+                  </div>
+                  <div class="text-center">
+                    <div class="social-link-style1">
+                      <a class="me-3" href="#"><i class="fab fa-facebook-f"></i></a>
+                      <a class="me-3" href="#"><i class="fab fa-twitter"></i></a>
+                      <a class="me-3" href="#"><i class="fab fa-instagram"></i></a>
+                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                  </div>
+                </div>
+                <div class="p-0 mb40">
+                  <!-- Job Skills -->
+                  <h4 class="widget-title fz18 mb25 fw500">Location</h4>
+                  <div class="widget-content">
+                    <div class="map-outer">
+                      <div class="map-canvas at-sv5" data-zoom="12" data-lat="-37.817085" data-lng="144.955631" data-type="roadmap" data-hue="#ffc400" data-title="Envato" data-icon-path="images/icons/contact-map-marker.png" data-content="Melbourne VIC 3000, Australia<br><a href='mailto:info@youremail.com'>info@youremail.com</a>">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End candidate Detail Section -->
+
+
+    <!-- Main Footer -->
+    <div th:replace="~{user/layout/footer :: footer}"></div>
+    <!-- End Main Footer -->
+
+
+  </div><!-- End Page Wrapper -->
+
+
+  <div th:replace="~{user/layout/script :: script}"></div>
+  <!--Google Map APi Key-->
+  <!--script src="http://maps.google.com/maps/api/js?key=AIzaSyDaaCBm4FEmgKs5cfVrh3JYue3Chj1kJMw&amp;ver=5.2.4"></script-->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDaaCBm4FEmgKs5cfVrh3JYue3Chj1kJMw"></script>
+  <script th:src="@{/fe/js/map-script.js}"></script>
+  <!--End Google Map APi-->
+  
+</body>
+</html>
